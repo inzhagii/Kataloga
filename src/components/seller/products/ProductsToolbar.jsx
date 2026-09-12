@@ -5,8 +5,8 @@ import FilterPopover from './FilterPopover'
  * the same route. @param {{
  *   search: string,
  *   onSearch: (value: string) => void,
- *   filters: { category: string, condition: string, status: string },
- *   onFilterChange: (next: { category: string, condition: string, status: string }) => void,
+ *   filters: { category: string, condition: string },
+ *   onFilterChange: (next: { category: string, condition: string }) => void,
  *   resetFilters: () => void,
  *   hasActiveFilters: boolean,
  *   sort: string,
@@ -25,8 +25,7 @@ function ProductsToolbar({
   onSort,
   categories,
 }) {
-  const activeFilterCount =
-    (filters.category ? 1 : 0) + (filters.condition ? 1 : 0) + (filters.status ? 1 : 0)
+  const activeFilterCount = (filters.category ? 1 : 0) + (filters.condition ? 1 : 0)
 
   const sortOptions = [
     { value: 'newest', label: 'Terbaru' },

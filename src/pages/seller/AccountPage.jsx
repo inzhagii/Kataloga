@@ -17,7 +17,7 @@ function AccountPage() {
   if (!user.hasStore) {
     return (
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Account</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Profile</h1>
         <EmptyState
           icon="storefront"
           title="Kamu belum membuat toko"
@@ -42,7 +42,7 @@ function AccountPage() {
     <div>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Account</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Profile</h1>
           <p className="mt-1 text-sm text-secondary">Profil akun dan ringkasan toko kamu.</p>
         </div>
       </div>

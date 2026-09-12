@@ -102,7 +102,7 @@ function SellerHeader({ title }) {
                 <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                   person
                 </span>
-                <span>Account</span>
+                <span>Profile</span>
               </Link>
               <Link
                 to="/seller/my-store"

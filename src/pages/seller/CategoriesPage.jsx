@@ -136,7 +136,7 @@ function CategoriesPage() {
     if (used || hasChildren) {
       const reason = used
         ? `Category "${category.name}" masih digunakan oleh ${productCounts[category.name]} product. Pindahkan product ke category lain terlebih dahulu.`
-        : `Category "${category.name}" masih memiliki Sub Kategori. Hapus atau pindahkan Sub Kategori terlebih dahulu.`
+        : `Kategori "${category.name}" masih memiliki Sub Kategori. Hapus atau pindahkan Sub Kategori terlebih dahulu.`
       setNoticed(reason)
       return
     }

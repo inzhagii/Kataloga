@@ -4,9 +4,11 @@ import { useClickOutside } from '../../../hooks/useClickOutside'
 /**
  * Filter popover triggered from the ProductsToolbar. Immediate-apply style
  * (no Apply button): selecting a filter updates the list in real-time.
+ * Filters are limited to Category and Condition; status is handled by the
+ * Active/Draft/Sold Out tabs.
  * @param {{
- *   filters: { category: string, condition: string, status: string },
- *   onChange: (next: { category: string, condition: string, status: string }) => void,
+ *   filters: { category: string, condition: string },
+ *   onChange: (next: { category: string, condition: string }) => void,
  *   resetFilters: () => void,
  *   categories: { id: number, name: string, parentId: number|null }[],
  *   activeCount: number,
@@ -95,28 +97,12 @@ function FilterPopover({ filters, onChange, resetFilters, categories, activeCoun
             </select>
           </div>
 
-          <div className="mb-3">
-            <label className="mb-1.5 block text-xs font-semibold text-on-surface">
-              Status Produk
-            </label>
-            <select
-              value={filters.status}
-              onChange={(event) => setFilter('status', event.target.value)}
-              className="w-full rounded-lg border border-outline-variant bg-surface-container-low p-2 text-xs font-medium text-on-surface"
-            >
-              <option value="">Semua Status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-              <option value="sold_out">Sold Out</option>
-            </select>
-          </div>
-
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="w-full rounded-lg bg-primary py-1.5 text-xs font-semibold text-on-primary transition-colors hover:brightness-110"
+            className="w-full rounded-lg border border-outline-variant bg-surface-container-low px-3 py-1.5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container"
           >
-            Terapkan
+            Tutup
           </button>
         </div>
       ) : null}

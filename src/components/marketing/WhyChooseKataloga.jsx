@@ -6,7 +6,7 @@ const reasons = [
     icon: 'inventory_2',
     title: 'Kelola Produk dengan Mudah',
     description:
-      'Tambah, edit, kategorikan, tandai ketersediaan, dan atur produkmu dari satu tempat.',
+      'Tambah, edit, kategorikan, dan atur produkmu dari satu tempat.',
   },
   {
     icon: 'storefront',

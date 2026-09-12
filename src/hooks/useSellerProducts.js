@@ -57,7 +57,7 @@ export function useSellerProducts({ archived = false, initialCategory = '' } = {
   const [reloadKey, setReloadKey] = useState(0)
   const [tab, setTab] = useState('active')
   const [search, setSearch] = useState('')
-  const [filters, setFilters] = useState({ category: initialCategory, condition: '', status: '' })
+  const [filters, setFilters] = useState({ category: initialCategory, condition: '' })
   const [sort, setSort] = useState('newest')
 
   useEffect(() => {
@@ -112,14 +112,6 @@ export function useSellerProducts({ archived = false, initialCategory = '' } = {
     } else if (!archived && tab === 'draft') {
       list = list.filter((product) => product.status === PRODUCT_STATUS.DRAFT)
     } else if (!archived && tab === 'soldOut') {
-      list = list.filter((product) => product.status === PRODUCT_STATUS.SOLD_OUT)
-    }
-
-    if (!archived && filters.status === 'published') {
-      list = list.filter((product) => product.status === PRODUCT_STATUS.PUBLISHED)
-    } else if (!archived && filters.status === 'draft') {
-      list = list.filter((product) => product.status === PRODUCT_STATUS.DRAFT)
-    } else if (!archived && filters.status === 'sold_out') {
       list = list.filter((product) => product.status === PRODUCT_STATUS.SOLD_OUT)
     }
 
@@ -178,11 +170,11 @@ export function useSellerProducts({ archived = false, initialCategory = '' } = {
     }
   }, [state.products, archived])
 
-  const hasActiveFilters = Boolean(query || filters.category || filters.condition || filters.status)
+  const hasActiveFilters = Boolean(query || filters.category || filters.condition)
 
   function resetFilters() {
     setSearch('')
-    setFilters({ category: '', condition: '', status: '' })
+    setFilters({ category: '', condition: '' })
     setSort('newest')
   }
 

@@ -79,18 +79,18 @@ export function createCategory(payload) {
   }
   const name = payload.name.trim()
   if (!name) {
-    return Promise.reject(new Error('Nama category wajib diisi.'))
+    return Promise.reject(new Error('Nama kategori wajib diisi.'))
   }
 
   const parent = resolveParent(payload.parentId ?? null)
   if (parent === undefined) {
-    return Promise.reject(new Error('Parent category tidak valid.'))
+    return Promise.reject(new Error('Kategori Utama tidak valid.'))
   }
 
   if (
     hasDuplicateCategoryName(visibleCategories(), name, payload.parentId ?? null)
   ) {
-    return Promise.reject(new Error('Nama category sudah digunakan. Gunakan nama lain.'))
+    return Promise.reject(new Error('Nama kategori sudah digunakan. Gunakan nama lain.'))
   }
 
   const category = {
@@ -125,21 +125,21 @@ export function updateCategory(categoryId, payload) {
 
   const nextName = payload.name === undefined ? category.name : payload.name.trim()
   if (!nextName) {
-    return Promise.reject(new Error('Nama category wajib diisi.'))
+    return Promise.reject(new Error('Nama kategori wajib diisi.'))
   }
 
   const nextParentId = payload.parentId === undefined ? category.parentId : payload.parentId
   if (nextParentId !== category.parentId) {
     const parent = resolveParent(nextParentId)
     if (parent === undefined) {
-      return Promise.reject(new Error('Parent category tidak valid.'))
+      return Promise.reject(new Error('Kategori Utama tidak valid.'))
     }
   }
 
   if (
     hasDuplicateCategoryName(visibleCategories(), nextName, nextParentId, category.id)
   ) {
-    return Promise.reject(new Error('Nama category sudah digunakan. Gunakan nama lain.'))
+    return Promise.reject(new Error('Nama kategori sudah digunakan. Gunakan nama lain.'))
   }
 
   if (nextName !== category.name) {
@@ -187,7 +187,7 @@ export function deleteCategory(categoryId) {
   if (hasChildren) {
     return Promise.reject(
       new Error(
-        `Category "${category.name}" masih memiliki subcategory. Hapus atau pindahkan subcategory terlebih dahulu.`,
+        `Kategori "${category.name}" masih memiliki Sub Kategori. Hapus atau pindahkan Sub Kategori terlebih dahulu.`,
       ),
     )
   }

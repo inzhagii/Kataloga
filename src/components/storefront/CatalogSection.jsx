@@ -45,7 +45,7 @@ function CatalogSection({ storeId, storeName, products, onShare }) {
           className="rounded-full bg-surface-container-high px-3 py-1 text-xs text-on-surface-variant"
           aria-live="polite"
         >
-          {filtered.length} Item Tersedia
+          {filtered.length} Produk
         </span>
       </div>
 

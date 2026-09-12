@@ -9,8 +9,8 @@ import EmptyState from '../../components/shared/EmptyState'
 
 /**
  * Seller Dashboard (control center, not a replacement for management pages).
- * Sections in locked order: Catalog Condition, Customer Interest,
- * Recent Activity, Quick Actions.
+ * Sections in locked order: Catalog Condition, then Customer Interest and
+ * Recent Activity side by side, with Quick Actions last.
  */
 function DashboardPage() {
   const {
@@ -96,12 +96,12 @@ function DashboardPage() {
         archivedCount={archivedProducts.length}
       />
 
-      <QuickActions />
-
       <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2 lg:flex-1 lg:grid-rows-[minmax(auto,1fr)]">
         <CustomerInterestSummary interests={interests} />
         <RecentActivity activities={activities} />
       </div>
+
+      <QuickActions />
     </div>
   )
 }

@@ -79,8 +79,8 @@ describe('createCategory', () => {
 
   it('rejects an invalid or invisible parent', async () => {
     actAsStoreB()
-    await expect(createCategory({ name: 'X', parentId: 999 })).rejects.toThrow('Parent category')
-    await expect(createCategory({ name: 'X', parentId: 7 })).rejects.toThrow('Parent category')
+    await expect(createCategory({ name: 'X', parentId: 999 })).rejects.toThrow('Kategori Utama')
+    await expect(createCategory({ name: 'X', parentId: 7 })).rejects.toThrow('Kategori Utama')
   })
 
   it('rejects parenting a subcategory under another subcategory', async () => {
@@ -88,7 +88,7 @@ describe('createCategory', () => {
     const parent = await createCategory({ name: 'Sport', parentId: null })
     const child = await createCategory({ name: 'Lari', parentId: parent.id })
     await expect(createCategory({ name: 'Roda', parentId: child.id })).rejects.toThrow(
-      'Parent category',
+      'Kategori Utama',
     )
   })
 })
@@ -131,7 +131,7 @@ describe('deleteCategory', () => {
 
   it('blocks deleting a parent that still has subcategories', async () => {
     actAsStoreA()
-    await expect(deleteCategory(7)).rejects.toThrow('masih memiliki subcategory')
+    await expect(deleteCategory(7)).rejects.toThrow('masih memiliki Sub Kategori')
   })
 
   it('deletes an unused custom category', async () => {

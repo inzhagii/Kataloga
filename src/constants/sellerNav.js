@@ -10,7 +10,7 @@ export const SELLER_SIDEBAR_ITEMS = [
   { to: '/seller/categories', label: 'Categories', icon: 'category' },
   { to: '/seller/customer-interest', label: 'Customer Interest', icon: 'favorite_border' },
   { to: '/seller/my-store', label: 'My Store', icon: 'storefront' },
-  { to: '/seller/account', label: 'Account', icon: 'person' },
+  { to: '/seller/account', label: 'Profile', icon: 'person' },
 ]
 
 const BOTTOM_NAV_PATHS = ['/seller/dashboard', '/seller/products', '/seller/customer-interest']

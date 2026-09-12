@@ -37,7 +37,7 @@ function getSellerPageTitle(pathname) {
     return 'My Store'
   }
   if (pathname === '/seller/account') {
-    return 'Account'
+    return 'Profile'
   }
   if (pathname === '/seller/activities') {
     return 'Recent Activity'

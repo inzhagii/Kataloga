@@ -23,17 +23,6 @@ function StoreNavbar({ store, returnPath }) {
               {store.name}
             </span>
           </div>
-          {store.fullAddress ? (
-            <span className="flex min-w-0 items-center gap-1 text-[11px] text-secondary">
-              <span
-                className="material-symbols-outlined shrink-0 text-[13px]"
-                aria-hidden="true"
-              >
-                location_on
-              </span>
-              <span className="truncate">{store.fullAddress}</span>
-            </span>
-          ) : null}
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
