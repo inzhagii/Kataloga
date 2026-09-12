@@ -152,6 +152,7 @@ Navbar:
 
 - Store Logo
 - Store Name
+- Address (opsional, compact)
 - Login
 - Daftar
 
@@ -161,14 +162,66 @@ Navbar:
 
 - Store Logo
 - Store Name
+- Address (opsional, compact)
 - Generic User Circle
 - Profile controls
+
+WhatsApp/Contact dan Marketplace BUKAN action navbar pada Store Landing maupun Product Detail.
+
+WhatsApp dan Marketplace tetap tersedia pada area konten/footer storefront yang sesuai.
+
+Address navbar:
+
+- menggunakan optional Full Address
+- compact
+- natural truncation/wrapping jika diperlukan
+- bukan card besar
+
+Jangan menduplikasi Full Address secara tidak perlu pada area storefront yang menonjol.
+
+Lokasi storefront di dekat operating hours tetap:
+
+City, Province
+
+Contoh:
+
+Kota Bandung, Jawa Barat
 
 Customer profile photo tidak digunakan pada navbar.
 
 Tidak menggunakan hamburger/store-specific navigation tambahan pada desktop.
 
 Mobile menggunakan navbar yang lebih compact.
+
+### Storefront Footer
+
+Footer storefront ditampilkan pada Store Landing dan Product Detail.
+
+Bagian:
+
+- Store Identity: Store Logo dan Store Name
+- Contact: WhatsApp / Contact
+- External Sales Channels: marketplace / external sales channels seller
+- Address: Full Address jika tersedia
+- Kataloga: Tentang Kataloga (hanya link/konten existing)
+
+External Sales Channels tetap arbitrary:
+
+```ts
+type ExternalChannel = {
+  name: string;
+  url: string;
+}
+```
+
+Tidak ada persisted channel ID pada model/API contract.
+
+Tidak menggunakan field marketplace-specific seperti:
+
+shopeeUrl
+tokopediaUrl
+
+WhatsApp dan Marketplace pada footer mengikuti aturan authentication + Customer Interest yang sama.
 
 ---
 
@@ -663,6 +716,54 @@ Condition:
 New
 Second
 
+Category bersifat dua level:
+
+State awal: Kategori Utama.
+
+Ketika customer memilih Kategori Utama:
+
+→ menampilkan Sub Kategori milik Kategori Utama tersebut.
+
+Contoh:
+
+Kategori Utama
+- Elektronik
+- Fashion
+
+Customer memilih:
+
+Elektronik
+
+Maka ditampilkan:
+
+Sub Kategori
+- Laptop
+- Smartphone
+- Aksesoris
+
+Hanya Sub Kategori milik Kategori Utama yang dipilih yang ditampilkan.
+
+Terminology user-facing:
+
+Kategori
+Kategori Utama
+Sub Kategori
+
+Jangan menggunakan "Parent Category" pada user-facing UI.
+
+Model teknis tetap dapat menggunakan:
+
+categories.parent_id
+
+Aturan yang dipertahankan:
+
+- maksimal dua level
+- root = Kategori Utama
+- child = Sub Kategori
+- child tidak memiliki child lain
+- satu product memiliki tepat satu category
+- category scoped ke store
+
 Tidak ada filter:
 
 Price
@@ -749,6 +850,15 @@ WhatsApp dan Marketplace mengikuti authentication + Customer Interest rules.
 
 Share tidak membutuhkan authentication dan tidak membuat Customer Interest.
 
+Navbar Product Detail tidak mengandung:
+
+- WhatsApp / Contact
+- Marketplace
+
+Keputusan tersebut hanya menyangkut penempatan navbar.
+
+WhatsApp, Marketplace, dan Share tetap tersedia pada area action Product Detail.
+
 31. Customer Interest
 
 Customer Interest bukan CRM penuh.
@@ -815,19 +925,28 @@ Buka Channel
 
 Dashboard berfungsi sebagai pusat informasi dan shortcut seller.
 
-Prioritas:
+Urutan section:
 
-Catalog Condition
-Customer Interest
-Recent Activity
+1. Catalog Overview
+2. Quick Actions
+3. Customer Interest + Recent Activity
+
+Desktop concept:
+
+Catalog Overview
+
 Quick Actions
-Catalog Condition
+
+Customer Interest        Recent Activity
+
+Catalog Overview
 
 Menampilkan:
 
-Active Products
-Sold Out Products
-Archived Products
+Active
+Draft
+Sold Out
+Archived
 
 Active Products = Published.
 
@@ -893,6 +1012,14 @@ Routes konseptual:
 /seller/products/:productId/edit
 /seller/products/archived
 
+Archived Products menyediakan action:
+
+Kembali
+
+Kembali → /seller/products
+
+Tidak membuat route baru.
+
 Category filter pada seller products menggunakan URL query sebagai source of truth:
 
 /seller/products?category=...
@@ -949,8 +1076,27 @@ Products
 Categories
 Customer Interest
 My Store
-Profile
+
+[ User / Account Card ]
+
 Logout
+
+Tidak ada item "Profile" terpisah pada sidebar utama.
+
+User/Account Card pada bagian bawah sidebar adalah akses ke halaman Profile.
+
+Route tetap:
+
+/seller/account
+
+Logout berada langsung di bawah account card.
+
+Profile page order:
+
+1. Informasi Akun Kamu
+2. Ringkasan Toko
+
+Ringkasan Toko tetap ada dan tidak diduplikasi.
 
 Mobile menggunakan reusable Bottom Navigation dengan:
 

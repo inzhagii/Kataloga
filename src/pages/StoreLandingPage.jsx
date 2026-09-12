@@ -26,7 +26,7 @@ function StoreLandingPage() {
   const { storeId } = useParams()
   const navigate = useNavigate()
   const { user, authLoaded } = useAuth()
-  const { status, store, products, error, reload } = useStoreCatalog(storeId)
+  const { status, store, products, categories, error, reload } = useStoreCatalog(storeId)
   const [shareTarget, setShareTarget] = useState(null)
 
   const returnPath = `/${storeId}`
@@ -198,7 +198,7 @@ function StoreLandingPage() {
 
   return (
     <div className="min-h-svh bg-surface">
-      <StoreNavbar store={store} onWhatsApp={handleWhatsApp} onSelectChannel={handleSelectChannel} />
+      <StoreNavbar store={store} />
 
       <main className="mx-auto max-w-[1140px] px-4 pb-16 pt-20 md:px-6 md:pt-24">
         <StoreHeader
@@ -221,11 +221,16 @@ function StoreLandingPage() {
           storeId={store.storeId}
           storeName={store.name}
           products={products}
+          categories={categories}
           onShare={handleShareProduct}
         />
       </main>
 
-      <StoreFooter />
+      <StoreFooter
+        store={store}
+        onWhatsApp={handleWhatsApp}
+        onSelectChannel={handleSelectChannel}
+      />
 
       <ShareSheet
         open={Boolean(shareTarget)}

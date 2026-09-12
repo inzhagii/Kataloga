@@ -218,10 +218,9 @@ SellerLayout
 Page
 DashboardPage
 Main Sections
-Catalog Condition
-Customer Interest
-Recent Activity
+Catalog Overview
 Quick Actions
+Customer Interest + Recent Activity
 Navigation
 
 Active Products:
@@ -340,6 +339,13 @@ Menampilkan product dengan status:
 ARCHIVED
 Available Actions
 Restore
+Kembali
+
+Kembali behavior:
+
+Archived Products
+     ↓
+/seller/products
 
 Restore behavior:
 
@@ -472,6 +478,15 @@ Terminology UI menggunakan "Profile".
 Route tetap /seller/account.
 
 Seller/account owner dapat memiliki profile photo/avatar.
+
+Urutan halaman:
+
+1. Informasi Akun Kamu
+2. Ringkasan Toko
+
+Ringkasan Toko tidak diduplikasi.
+
+Profile diakses melalui User/Account Card pada bagian bawah sidebar seller.
 
 18. Logout
 

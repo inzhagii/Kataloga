@@ -78,22 +78,32 @@ function sortComparator(sortBy, query) {
 
 /**
  * Pipeline: score → search query filter → category/condition filter → sort.
+ * `categoryList` (when given) wins over the single `category` string and lets
+ * a Kategori Utama selection include all of its Sub Kategori names.
  * @param {import('../data/models.js').Product[]} products
  * @param {{
  *   query?: string,
  *   category?: string,
+ *   categoryList?: string[]|null,
  *   condition?: 'ALL'|'NEW'|'SECOND',
  *   sort?: string,
  * }} options
  * @returns {import('../data/models.js').Product[]}
  */
-export function filterAndSortProducts(products, { query = '', category = 'all', condition = 'all', sort = 'relevance' }) {
+export function filterAndSortProducts(
+  products,
+  { query = '', category = 'all', categoryList = null, condition = 'all', sort = 'relevance' },
+) {
   const scored = products
     .map((product) => ({ product, score: scoreProduct(product, query) }))
     .filter((entry) => entry.score > 0)
 
-  const categoryFiltered =
-    category && category !== 'all' ? scored.filter((entry) => entry.product.category === category) : scored
+  const allowedCategories =
+    category && category !== 'all' ? categoryList ?? [category] : null
+
+  const categoryFiltered = allowedCategories
+    ? scored.filter((entry) => allowedCategories.includes(entry.product.category))
+    : scored
 
   const conditionFiltered =
     condition && condition !== 'all'
@@ -122,4 +132,55 @@ export function extractCategories(products) {
     }
   }
   return result
+}
+
+/**
+ * Build the two-level category tree used by the public catalog filter from the
+ * store's category data (Kategori Utama -> Sub Kategori) and the categories
+ * actually present in the published catalog. Only roots whose subtree contains
+ * at least one catalog category are included; a product category that has no
+ * category record is treated as a standalone root so it stays filterable.
+ * @param {import('../data/models.js').Product[]} products
+ * @param {import('../data/models.js').Category[]} storeCategories
+ * @returns {{ roots: string[], childrenByRoot: Record<string, string[]> }}
+ */
+export function buildCatalogCategoryTree(products, storeCategories) {
+  const leafNames = extractCategories(products)
+  const childrenByRoot = {}
+  const rootNameById = new Map()
+  const rootByChild = new Map()
+
+  for (const category of storeCategories) {
+    if (category.parentId === null) {
+      rootNameById.set(category.id, category.name)
+      childrenByRoot[category.name] = []
+    }
+  }
+  for (const category of storeCategories) {
+    if (category.parentId !== null) {
+      const rootName = rootNameById.get(category.parentId)
+      if (rootName) {
+        rootByChild.set(category.name, rootName)
+        childrenByRoot[rootName].push(category.name)
+      }
+    }
+  }
+
+  const relevantRoots = new Set()
+  for (const leaf of leafNames) {
+    if (rootByChild.has(leaf)) {
+      relevantRoots.add(rootByChild.get(leaf))
+    } else {
+      relevantRoots.add(leaf)
+      childrenByRoot[leaf] = childrenByRoot[leaf] ?? []
+    }
+  }
+
+  const roots = [...relevantRoots]
+  const prunedChildrenByRoot = {}
+  roots.forEach((root) => {
+    prunedChildrenByRoot[root] = childrenByRoot[root] ?? []
+  })
+
+  return { roots, childrenByRoot: prunedChildrenByRoot }
 }

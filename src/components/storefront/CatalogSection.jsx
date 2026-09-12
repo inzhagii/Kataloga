@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { filterAndSortProducts, extractCategories } from '../../utils/productSearch'
+import { filterAndSortProducts, buildCatalogCategoryTree } from '../../utils/productSearch'
 import SearchBar from './SearchBar'
 import CategoryChips from './CategoryChips'
 import FilterControl from './FilterControl'
@@ -10,19 +10,31 @@ import EmptyState from '../shared/EmptyState'
 /**
  * "Semua Produk" catalog block: search, filter, sort, product grid and the
  * empty/empty-search recovery states. All state stays local to the Store
- * Landing page (no separate routes).
+ * Landing page (no separate routes). The category filter is two-level:
+ * Kategori Utama (chips + filter step 1) → Sub Kategori (filter step 2),
+ * scoped to the selected Kategori Utama.
  */
-function CatalogSection({ storeId, storeName, products, onShare }) {
+function CatalogSection({ storeId, storeName, products, categories = [], onShare }) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [condition, setCondition] = useState('all')
   const [sort, setSort] = useState('relevance')
 
-  const categories = useMemo(() => extractCategories(products), [products])
-  const filtered = useMemo(
-    () => filterAndSortProducts(products, { query, category, condition, sort }),
-    [products, query, category, condition, sort],
+  const categoryTree = useMemo(
+    () => buildCatalogCategoryTree(products, categories),
+    [products, categories],
   )
+  const filtered = useMemo(() => {
+    const expandedCategory =
+      category !== 'all' ? [category, ...(categoryTree.childrenByRoot[category] ?? [])] : null
+    return filterAndSortProducts(products, {
+      query,
+      category,
+      categoryList: expandedCategory,
+      condition,
+      sort,
+    })
+  }, [products, query, category, categoryTree, condition, sort])
 
   const hasActiveSearch = query.trim().length > 0
   const hasActiveFilter = category !== 'all' || condition !== 'all'
@@ -53,11 +65,15 @@ function CatalogSection({ storeId, storeName, products, onShare }) {
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="md:min-w-0 md:flex-1">
-          <CategoryChips categories={categories} active={category} onSelect={setCategory} />
+          <CategoryChips
+            tree={categoryTree}
+            active={category}
+            onSelect={setCategory}
+          />
         </div>
         <div className="flex items-center gap-3 md:shrink-0">
           <FilterControl
-            categories={categories}
+            tree={categoryTree}
             appliedCategory={category}
             appliedCondition={condition}
             onApply={(nextCategory, nextCondition) => {

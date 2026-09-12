@@ -4,12 +4,13 @@ import MarketplaceSelector from './MarketplaceSelector'
 import WhatsAppIcon from '../ui/WhatsAppIcon'
 
 /**
- * Storefront navbar: store logo + name on the left; contact (WhatsApp),
- * marketplace, address (compact, when set) and the account controls on the
- * right. Guest sees Masuk/Daftar; logged-in customers see a generic
- * user-circle icon (no uploaded photo). returnPath lets pages (e.g. Product
- * Detail) keep the guest on the current page after login; it defaults to the
- * Store Landing URL.
+ * Storefront navbar: store logo + name on the left; address (compact, when
+ * set) and account controls on the right. WhatsApp/marketplace actions are NOT
+ * part of the navbar anymore — pages opt into them by passing handlers, and
+ * keep them in the page content/actions area. Guest sees Masuk/Daftar;
+ * logged-in customers see a generic user-circle icon (no uploaded photo).
+ * returnPath lets pages (e.g. Product Detail) keep the guest on the current
+ * page after login; it defaults to the Store Landing URL.
  *
  * @param {{
  *   store: import('../../data/models.js').Store,
@@ -47,17 +48,21 @@ function StoreNavbar({ store, returnPath, onWhatsApp, onSelectChannel }) {
             </span>
           ) : null}
 
-          <MarketplaceSelector store={store} onSelectChannel={onSelectChannel} compact />
+          {onSelectChannel ? (
+            <MarketplaceSelector store={store} onSelectChannel={onSelectChannel} compact />
+          ) : null}
 
-          <button
-            type="button"
-            onClick={onWhatsApp}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-whatsapp px-2.5 py-1.5 text-xs font-semibold text-on-whatsapp shadow-sm transition-colors hover:brightness-95 sm:px-3"
-            aria-label="Hubungi via WhatsApp"
-          >
-            <WhatsAppIcon size={15} />
-            <span className="hidden whitespace-nowrap md:inline">WhatsApp</span>
-          </button>
+          {onWhatsApp ? (
+            <button
+              type="button"
+              onClick={onWhatsApp}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-whatsapp px-2.5 py-1.5 text-xs font-semibold text-on-whatsapp shadow-sm transition-colors hover:brightness-95 sm:px-3"
+              aria-label="Hubungi via WhatsApp"
+            >
+              <WhatsAppIcon size={15} />
+              <span className="hidden whitespace-nowrap md:inline">WhatsApp</span>
+            </button>
+          ) : null}
 
           {user ? (
             <span

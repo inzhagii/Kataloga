@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { filterAndSortProducts, scoreProduct, extractCategories } from '../productSearch'
+import {
+  filterAndSortProducts,
+  scoreProduct,
+  extractCategories,
+  buildCatalogCategoryTree,
+} from '../productSearch'
 
 const baseProduct = {
   id: 0,
@@ -132,5 +137,84 @@ describe('extractCategories', () => {
       product('C', { category: 'Laptop' }),
     ])
     expect(result).toEqual(['Laptop', 'Aksesoris'])
+  })
+})
+
+describe('buildCatalogCategoryTree', () => {
+  const storeCategories = [
+    { id: 1, name: 'Elektronik', parentId: null, custom: false },
+    { id: 2, name: 'Laptop', parentId: 1, custom: false },
+    { id: 3, name: 'Smartphone', parentId: 1, custom: false },
+    { id: 4, name: 'Aksesoris', parentId: 1, custom: false },
+    { id: 5, name: 'Fashion', parentId: null, custom: false },
+    { id: 7, name: 'Gaming', parentId: null, custom: true, storeId: 'store' },
+    { id: 8, name: 'Gadget Gaming', parentId: 7, custom: true, storeId: 'store' },
+  ]
+
+  it('groups leaf categories under their Kategori Utama', () => {
+    const products = [
+      product('A', { category: 'Laptop' }),
+      product('B', { category: 'Aksesoris' }),
+      product('C', { category: 'Gadget Gaming' }),
+    ]
+    const tree = buildCatalogCategoryTree(products, storeCategories)
+    expect(tree.roots).toEqual(['Elektronik', 'Gaming'])
+    expect(tree.childrenByRoot).toEqual({
+      Elektronik: ['Laptop', 'Smartphone', 'Aksesoris'],
+      Gaming: ['Gadget Gaming'],
+    })
+  })
+
+  it('excludes roots with no products in the catalog', () => {
+    const tree = buildCatalogCategoryTree([product('A', { category: 'Laptop' })], storeCategories)
+    expect(tree.roots).toEqual(['Elektronik'])
+  })
+
+  it('keeps an unknown product category as a standalone root', () => {
+    const tree = buildCatalogCategoryTree([product('A', { category: 'Kopi' })], storeCategories)
+    expect(tree.roots).toEqual(['Kopi'])
+    expect(tree.childrenByRoot.Kopi).toEqual([])
+  })
+})
+
+describe('filter category via categoryList (Kategori Utama includes descendants)', () => {
+  const storeCategories = [
+    { id: 1, name: 'Elektronik', parentId: null, custom: false },
+    { id: 2, name: 'Laptop', parentId: 1, custom: false },
+    { id: 4, name: 'Aksesoris', parentId: 1, custom: false },
+  ]
+  const products = [
+    product('Lap 1', { category: 'Laptop' }),
+    product('Akse 1', { category: 'Aksesoris' }),
+    product('Mouse 1', { category: 'Gadget Gaming' }),
+  ]
+
+  it('matches a sub category list against the leaf categories', () => {
+    const result = filterAndSortProducts(products, {
+      category: 'Elektronik',
+      categoryList: ['Elektronik', 'Laptop', 'Aksesoris'],
+    })
+    expect(result.map((p) => p.name)).toEqual(['Lap 1', 'Akse 1'])
+  })
+
+  it('falls back to exact category match when categoryList is absent', () => {
+    const result = filterAndSortProducts(products, { category: 'Laptop' })
+    expect(result.map((p) => p.name)).toEqual(['Lap 1'])
+  })
+
+  it('builds the expanded list from the tree for a selected Kategori Utama', () => {
+    const tree = buildCatalogCategoryTree(products, storeCategories)
+    const category = 'Elektronik'
+    const categoryList = [category, ...(tree.childrenByRoot[category] ?? [])]
+    const result = filterAndSortProducts(products, { category, categoryList })
+    expect(result.map((p) => p.name)).toEqual(['Lap 1', 'Akse 1'])
+  })
+
+  it('builds the expanded list for a selected Sub Kategori', () => {
+    const tree = buildCatalogCategoryTree(products, storeCategories)
+    const category = 'Laptop'
+    const categoryList = [category, ...(tree.childrenByRoot[category] ?? [])]
+    const result = filterAndSortProducts(products, { category, categoryList })
+    expect(result.map((p) => p.name)).toEqual(['Lap 1'])
   })
 })

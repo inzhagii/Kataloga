@@ -1,7 +1,9 @@
 /**
- * Quick-apply category chips ("Semua" + each store category). Selecting a
- * chip applies it immediately. The row scrolls horizontally on mobile and
- * wraps on larger screens.
+ * Quick-apply category chips ("Semua" + each Kategori Utama present in the
+ * store catalog). Selecting a Kategori Utama filters immediately and includes
+ * all of its Sub Kategori. When a Sub Kategori is active, its Kategori Utama
+ * stays highlighted. The row scrolls horizontally on mobile and wraps on
+ * larger screens. User-facing terminology stays "Kategori Utama"/"Sub Kategori".
  */
 
 const CATEGORY_ICONS = {
@@ -15,8 +17,17 @@ const CATEGORY_ICONS = {
   Pakaian: 'checkroom',
 }
 
-function CategoryChips({ categories, active, onSelect }) {
-  const options = [{ name: 'Semua', value: 'all' }, ...categories.map((name) => ({ name, value: name }))]
+function CategoryChips({ tree, active, onSelect }) {
+  const roots = tree?.roots ?? []
+  const childrenByRoot = tree?.childrenByRoot ?? {}
+  const activeRoot =
+    active === 'all'
+      ? 'all'
+      : roots.find((root) => root === active) ||
+        roots.find((root) => (childrenByRoot[root] ?? []).includes(active)) ||
+        'all'
+
+  const options = [{ name: 'Semua', value: 'all' }, ...roots.map((name) => ({ name, value: name }))]
 
   return (
     <div
@@ -25,7 +36,7 @@ function CategoryChips({ categories, active, onSelect }) {
       aria-label="Filter kategori"
     >
       {options.map((option) => {
-        const isActive = active === option.value
+        const isActive = activeRoot === option.value
         return (
           <button
             key={option.value}

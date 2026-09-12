@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSellerProducts } from '../../hooks/useSellerProducts'
 import { listCategories } from '../../services/categoryService'
 import { restoreProduct } from '../../services/productService'
@@ -114,6 +114,15 @@ function ArchivedProductsPage() {
             Produk yang diarsipkan. Restore selalu kembali ke draft.
           </p>
         </div>
+        <Link
+          to="/seller/products"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-outline-variant px-5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            arrow_back
+          </span>
+          Kembali
+        </Link>
       </div>
 
       <ProductsToolbar

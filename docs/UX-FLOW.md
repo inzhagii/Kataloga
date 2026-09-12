@@ -299,6 +299,37 @@ Store Landing
     ├── Marketplace
     │
     └── Share Store
+
+### Storefront Footer
+
+Footer ditampilkan pada Store Landing (dan Product Detail).
+
+Berisi:
+
+Store Identity
+- Store Logo
+- Store Name
+
+Contact
+- WhatsApp / Contact
+
+External Sales Channels
+- Marketplace / external sales channels seller
+
+Address
+- Full Address jika tersedia
+
+Kataloga
+- Tentang Kataloga, hanya link/konten existing
+
+External channels tetap:
+
+name
+url
+
+Tidak ada persisted channel ID atau field marketplace-specific.
+
+WhatsApp dan Marketplace pada footer mengikuti aturan authentication + Customer Interest yang sama.
 10. Store Landing — Search Flow
 
 Search hanya mencari produk pada store yang sedang dibuka.
@@ -377,6 +408,46 @@ Bottom Sheet
              │
              ▼
         Apply Filter
+
+Category bersifat dua level.
+
+State awal: Kategori Utama.
+
+Setelah customer memilih Kategori Utama:
+
+→ tampilkan Sub Kategori milik Kategori Utama tersebut.
+
+Contoh:
+
+Kategori Utama
+- Elektronik
+- Fashion
+
+Pilih: Elektronik
+
+→ Sub Kategori
+- Laptop
+- Smartphone
+- Aksesoris
+
+Hanya Sub Kategori milik Kategori Utama yang dipilih yang ditampilkan.
+
+Terminology user-facing:
+
+Kategori
+Kategori Utama
+Sub Kategori
+
+Jangan menggunakan "Parent Category" pada user-facing UI.
+
+Aturan yang dipertahankan:
+
+- maksimal dua level
+- root = Kategori Utama
+- child = Sub Kategori
+- child tidak memiliki child lain
+- satu product memiliki tepat satu category
+- category scoped ke store
 
 Tidak ada filter:
 
@@ -466,6 +537,12 @@ Actions
 Technical Details
       ↓
 Description
+
+Navbar Product Detail tidak mengandung WhatsApp/Contact maupun Marketplace.
+
+Keputusan tersebut hanya menyangkut navbar.
+
+WhatsApp, Marketplace, dan Share tetap tersedia pada area action Product Detail.
 15. Product Detail — WhatsApp Flow
 
 Saat user menekan:
@@ -665,32 +742,40 @@ Route:
 
 Dashboard merupakan control center, bukan tempat untuk mengelola semua data secara langsung.
 
-Prioritas informasi:
+Urutan section:
 
-1. Catalog Condition
-2. Customer Interest
-3. Recent Activity
-4. Quick Actions
+1. Catalog Overview
+2. Quick Actions
+3. Customer Interest + Recent Activity
 
 Flow:
 
 Dashboard
    │
-   ├── Active Products
-   │       └── Products
-   │
-   ├── Archived Products
+   ├── Catalog Overview
+   │       ├── Active Products
+   │       │       └── Products
+   │       ├── Draft Products
+   │       ├── Sold Out Products
    │       └── Archived Products
+   │               └── Archived Products
+   │
+   ├── Quick Actions
    │
    ├── Customer Interest
    │       └── Customer Interest Page
    │
-   ├── Recent Activity
-   │       └── Lihat Semua
-   │              └── /seller/activities
-   │
-   └── Quick Actions
-22. Catalog Condition Flow
+   └── Recent Activity
+           └── Lihat Semua
+                   └── /seller/activities
+22. Catalog Overview Flow
+
+Catalog Overview menampilkan:
+
+Active
+Draft
+Sold Out
+Archived
 
 Active Products hanya:
 
@@ -983,6 +1068,14 @@ Archived Products
 
 Product tidak dihapus secara permanen melalui flow archive.
 
+Archived Products view menyediakan action:
+
+Kembali
+
+Kembali → /seller/products
+
+Tidak membuat route baru.
+
 31. Restore Product Flow
 Archived Products
       │
@@ -1162,6 +1255,17 @@ Profile photo/avatar seller bersifat optional.
 
 Customer tidak menggunakan uploaded profile photo pada UI customer.
 
+Urutan halaman:
+
+1. Informasi Akun Kamu
+2. Ringkasan Toko
+
+Ringkasan Toko tetap ada dan tidak diduplikasi.
+
+Profile diakses melalui User/Account Card pada bagian bawah sidebar seller.
+
+Tidak ada item "Profile" terpisah pada sidebar desktop.
+
 37. Seller Navigation Flow
 Desktop
 
@@ -1172,8 +1276,16 @@ Products
 Categories
 Customer Interest
 My Store
-Profile
+
+[ User / Account Card ]
+
 Logout
+
+Tidak ada item "Profile" terpisah pada sidebar utama.
+
+User/Account Card merupakan akses ke halaman Profile (/seller/account).
+
+Logout berada langsung di bawah account card.
 
 Semua seller page menggunakan sidebar yang sama.
 

@@ -150,8 +150,16 @@ Products
 Categories
 Customer Interest
 My Store
-Profile
+
+[ User / Account Card ]
+
 Logout
+
+Tidak ada item "Profile" terpisah pada sidebar utama.
+
+User/Account Card pada sidebar adalah akses ke halaman Profile (/seller/account).
+
+Logout berada langsung di bawah account card.
 
 Mobile:
 
@@ -183,9 +191,21 @@ Marketing landing berbeda dari storefront seller.
 
 9. Storefront Navbar
 Guest
-[Store Logo] [Store Name] ... [Login] [Daftar]
+[Store Logo] [Store Name] [Address*] ... [Login] [Daftar]
 Logged-in
-[Store Logo] [Store Name] ... [User Circle]
+[Store Logo] [Store Name] [Address*] ... [User Circle]
+
+*Address menggunakan optional Full Address, compact, natural truncation/wrapping, bukan card besar.
+
+WhatsApp/Contact dan Marketplace BUKAN action navbar pada Store Landing maupun Product Detail.
+
+WhatsApp dan Marketplace tetap tersedia pada area konten/footer storefront yang sesuai.
+
+Jangan menduplikasi Full Address secara tidak perlu pada area storefront yang menonjol.
+
+Lokasi storefront di dekat operating hours tetap:
+
+City, Province
 
 Guest tidak menampilkan generic profile icon.
 
@@ -282,6 +302,22 @@ WhatsApp merupakan primary contact action.
 Marketplace merupakan secondary external-channel action.
 
 Share merupakan utility action.
+
+WhatsApp button menggunakan:
+
+- icon WhatsApp yang recognizable
+- warna hijau WhatsApp yang lebih gelap/refined
+
+Jangan menggunakan hijau neon yang terlalu terang.
+
+Warna hijau WhatsApp hanya untuk action WhatsApp aktual.
+
+Jangan menerapkan warna hijau WhatsApp pada:
+
+- success state generic
+- button yang tidak related
+- aksi telepon yang tidak membuka WhatsApp
+- UI yang tidak berhubungan
 
 14. Announcement
 
@@ -407,6 +443,32 @@ Category
 Condition
   ├── New
   └── Second
+
+Category bersifat dua level:
+
+Kategori Utama → Sub Kategori
+
+State awal: Kategori Utama.
+
+Ketika Kategori Utama dipilih:
+
+→ tampilkan Sub Kategori milik Kategori Utama tersebut.
+
+Contoh:
+
+Kategori Utama: Elektronik
+
+→ Sub Kategori: Laptop, Smartphone, Aksesoris
+
+Hanya Sub Kategori milik Kategori Utama yang dipilih yang ditampilkan.
+
+Terminology user-facing:
+
+Kategori
+Kategori Utama
+Sub Kategori
+
+Jangan menggunakan "Parent Category" pada user-facing UI.
 
 Harus ada:
 
@@ -564,22 +626,30 @@ karena Kataloga tidak menggunakan stock quantity pada V1.
 
 29. Seller Dashboard
 
-Dashboard hierarchy:
+Urutan section:
 
-1. Catalog Condition
-2. Customer Interest
-3. Recent Activity
-4. Quick Actions
+1. Catalog Overview
+2. Quick Actions
+3. Customer Interest + Recent Activity
+
+Desktop concept:
+
+Catalog Overview
+
+Quick Actions
+
+Customer Interest        Recent Activity
 
 Dashboard bukan replacement untuk dedicated management pages.
 
-30. Catalog Condition
+30. Catalog Overview
 
 Dashboard menampilkan:
 
-Active Products
-SOLD_OUT Products
-Archived Products
+Active
+Draft
+Sold Out
+Archived
 
 Active Products berarti:
 
@@ -588,6 +658,23 @@ Published
 SOLD_OUT dihitung terpisah.
 Draft dihitung terpisah.
 Archived terpisah.
+
+Visual:
+
+Card tetap berwarna putih.
+
+Status colors adalah subtle accents/tints:
+
+Active → subtle blue accent/tint
+Draft → subtle amber/yellow accent/tint
+Sold Out → subtle red accent/tint
+Archived → subtle neutral/gray accent/tint
+
+Rule:
+
+"Status colors are subtle accents/tints while the main card background remains white."
+
+Jangan menggunakan full-card strong blue/yellow/red/gray background.
 
 Click behavior:
 
@@ -783,6 +870,14 @@ DRAFT
 
 Restore tidak langsung Published.
 
+Archived Products view menyediakan:
+
+Kembali
+
+Kembali → /seller/products
+
+Tidak membuat route baru.
+
 41. Category UI
 
 Category UI maksimal dua level:
@@ -810,6 +905,20 @@ Category deletion harus dicegah jika masih digunakan product.
 Kategori Utama yang masih memiliki child tidak dapat dihapus.
 
 Tidak ada cascade delete.
+
+### Collapse Semua
+
+Desktop:
+
+[ Cari category...                         Collapse Semua ]
+
+"Collapse Semua" berada di sisi kanan search field pada baris yang sama.
+
+Bukan baris/row yang terpisah.
+
+Mobile tetap usable dan responsive.
+
+Fungsi collapse, logika tree category, data model, dan categories.parent_id tidak berubah.
 
 42. My Store UI
 
@@ -1486,3 +1595,77 @@ form validation sesuai requirement
 tidak ada route tambahan yang tidak diperlukan
 tidak ada business rule baru yang dibuat sepihak
 TypeScript/build tidak error
+
+79. Storefront Footer
+
+Footer ditampilkan pada Store Landing dan Product Detail.
+
+Bagian:
+
+Store Identity
+- Store Logo
+- Store Name
+
+Contact
+- WhatsApp / Contact
+
+External Sales Channels
+- Marketplace / external sales channels seller
+
+Address
+- Full Address jika tersedia
+
+Kataloga
+- Tentang Kataloga (hanya link/konten existing)
+
+External channels tetap:
+
+{ name, url }
+
+Tidak ada persisted channel ID.
+
+Tidak ada field marketplace-specific:
+
+shopeeUrl
+tokopediaUrl
+
+WhatsApp dan Marketplace pada footer mengikuti aturan authentication + Customer Interest yang sama.
+
+80. WhatsApp Visual Rule
+
+Setiap action WhatsApp aktual menggunakan:
+
+- icon WhatsApp yang recognizable
+- warna hijau WhatsApp yang lebih gelap/refined
+
+Jangan menggunakan hijau neon yang terlalu terang.
+
+Warna hijau WhatsApp hanya untuk action WhatsApp aktual.
+
+Jangan menerapkan warna hijau WhatsApp pada:
+
+- success state generic
+- button yang tidak related
+- aksi telepon yang tidak membuka WhatsApp
+- UI yang tidak berhubungan
+
+Gunakan icon/component/design token WhatsApp yang sudah ada.
+
+81. Semantic Color Rules
+
+Mapping warna semantik:
+
+Active → blue
+Draft → amber/yellow
+Sold Out → red
+Archived → neutral/gray
+Error → red
+Success → green
+Warning → amber/yellow
+WhatsApp → darker/refined WhatsApp green
+
+Jangan overuse warna semantik.
+
+Gunakan hanya pada konteks yang sesuai.
+
+Warna semantik adalah accents/tints, bukan strong full-card fill.

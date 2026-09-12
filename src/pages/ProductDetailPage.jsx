@@ -206,12 +206,7 @@ function ProductDetailPage() {
 
   return (
     <div className="min-h-svh bg-surface">
-      <StoreNavbar
-        store={store}
-        returnPath={returnPath}
-        onWhatsApp={handleWhatsApp}
-        onSelectChannel={handleSelectChannel}
-      />
+      <StoreNavbar store={store} returnPath={returnPath} />
 
       <main className="mx-auto max-w-[1140px] px-4 pb-16 pt-16 md:px-6">
         <div className="pt-5 sm:pt-7">
@@ -246,7 +241,11 @@ function ProductDetailPage() {
         </div>
       </main>
 
-      <StoreFooter />
+      <StoreFooter
+        store={store}
+        onWhatsApp={handleWhatsApp}
+        onSelectChannel={handleSelectChannel}
+      />
 
       <ShareSheet
         open={Boolean(shareTarget)}

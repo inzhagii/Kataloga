@@ -4,7 +4,8 @@ import DashboardSectionHeading from './DashboardSectionHeading'
 /**
  * Dashboard section 1: Catalog Condition.
  * Active Products = PUBLISHED only. Draft, Sold Out and Archived are
- * counted separately.
+ * counted separately. Cards stay white with a subtle semantic accent:
+ * blue = Active, amber = Draft, red = Sold Out, gray = Archived.
  * @param {{
  *   activeCount: number,
  *   draftCount: number,
@@ -20,7 +21,7 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       count: activeCount,
       subtitle: 'Published',
       icon: 'inventory_2',
-      prominent: true,
+      accentClass: 'border-t-4 border-t-blue-200',
       iconClass: 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white',
       countClass: 'text-blue-600',
     },
@@ -30,7 +31,7 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       count: draftCount,
       subtitle: 'Belum dipublikasi',
       icon: 'edit_note',
-      prominent: false,
+      accentClass: 'border-t-4 border-t-amber-200',
       iconClass: 'bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white',
       countClass: 'text-amber-600',
     },
@@ -40,7 +41,7 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       count: soldOutCount,
       subtitle: 'SOLD_OUT dihitung terpisah',
       icon: 'block',
-      prominent: false,
+      accentClass: 'border-t-4 border-t-red-200',
       iconClass: 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white',
       countClass: 'text-red-600',
     },
@@ -50,7 +51,7 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       count: archivedCount,
       subtitle: 'Produk yang diarsipkan',
       icon: 'archive',
-      prominent: false,
+      accentClass: 'border-t-4 border-t-slate-200',
       iconClass: 'bg-slate-100 text-slate-600 group-hover:bg-slate-500 group-hover:text-white',
       countClass: 'text-slate-600',
     },
@@ -69,11 +70,9 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
           <Link
             key={card.label}
             to={card.to}
-            className={`group rounded-xl border bg-surface-container-lowest p-6 shadow-sm transition-shadow hover:shadow-md ${
-              card.prominent ? 'border-primary/40' : 'border-outline-variant/60'
-            }`}
+            className={`group rounded-xl border border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md ${card.accentClass}`}
           >
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between p-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-secondary">
                   {card.label}
@@ -90,7 +89,7 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
                 </span>
               </div>
             </div>
-            <p className="mt-4 text-xs text-secondary">{card.subtitle}</p>
+            <p className="px-6 pb-6 text-xs text-secondary">{card.subtitle}</p>
           </Link>
         ))}
       </div>
