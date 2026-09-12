@@ -21,6 +21,8 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       subtitle: 'Published',
       icon: 'inventory_2',
       prominent: true,
+      iconClass: 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white',
+      countClass: 'text-blue-600',
     },
     {
       to: '/seller/products',
@@ -29,6 +31,8 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       subtitle: 'Belum dipublikasi',
       icon: 'edit_note',
       prominent: false,
+      iconClass: 'bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white',
+      countClass: 'text-amber-600',
     },
     {
       to: '/seller/products',
@@ -37,6 +41,8 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       subtitle: 'SOLD_OUT dihitung terpisah',
       icon: 'block',
       prominent: false,
+      iconClass: 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white',
+      countClass: 'text-red-600',
     },
     {
       to: '/seller/products/archived',
@@ -45,6 +51,8 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       subtitle: 'Produk yang diarsipkan',
       icon: 'archive',
       prominent: false,
+      iconClass: 'bg-slate-100 text-slate-600 group-hover:bg-slate-500 group-hover:text-white',
+      countClass: 'text-slate-600',
     },
   ]
 
@@ -70,15 +78,13 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
                 <span className="text-xs font-bold uppercase tracking-wider text-secondary">
                   {card.label}
                 </span>
-                <div
-                  className={`mt-2 text-3xl font-extrabold tracking-tight ${
-                    card.prominent ? 'text-primary' : 'text-on-surface'
-                  }`}
-                >
+                <div className={`mt-2 text-3xl font-extrabold tracking-tight ${card.countClass}`}>
                   {card.count}
                 </div>
               </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface-container text-secondary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+              <div
+                className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors ${card.iconClass}`}
+              >
                 <span className="material-symbols-outlined text-[24px]" aria-hidden="true">
                   {card.icon}
                 </span>

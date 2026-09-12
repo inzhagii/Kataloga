@@ -42,9 +42,12 @@ function relevanceScore(product, query) {
  * With `{ archived: true }` it loads the archived list instead and skips the
  * Active/Draft tab and status filter (archived products have their own route).
  *
- * @param {{ archived?: boolean }} [options]
+ * `initialCategory` seeds the active category filter, so callers can drive it
+ * from the URL query (?category=...) as the source of truth.
+ *
+ * @param {{ archived?: boolean, initialCategory?: string }} [options]
  */
-export function useSellerProducts({ archived = false } = {}) {
+export function useSellerProducts({ archived = false, initialCategory = '' } = {}) {
   const [state, setState] = useState({
     status: 'loading',
     products: [],
@@ -54,7 +57,7 @@ export function useSellerProducts({ archived = false } = {}) {
   const [reloadKey, setReloadKey] = useState(0)
   const [tab, setTab] = useState('active')
   const [search, setSearch] = useState('')
-  const [filters, setFilters] = useState({ category: '', condition: '', status: '' })
+  const [filters, setFilters] = useState({ category: initialCategory, condition: '', status: '' })
   const [sort, setSort] = useState('newest')
 
   useEffect(() => {

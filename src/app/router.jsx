@@ -18,6 +18,7 @@ import CategoriesPage from '../pages/seller/CategoriesPage'
 import CustomerInterestPage from '../pages/seller/CustomerInterestPage'
 import MyStorePage from '../pages/seller/MyStorePage'
 import AccountPage from '../pages/seller/AccountPage'
+import RecentActivitiesPage from '../pages/seller/RecentActivitiesPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
 export const router = createBrowserRouter([
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
           { path: '/seller/customer-interest', element: <CustomerInterestPage /> },
           { path: '/seller/my-store', element: <MyStorePage /> },
           { path: '/seller/account', element: <AccountPage /> },
+          { path: '/seller/activities', element: <RecentActivitiesPage /> },
         ],
       },
     ],

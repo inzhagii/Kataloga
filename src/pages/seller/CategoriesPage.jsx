@@ -66,15 +66,12 @@ function CategoriesPage() {
 
   const stats = useMemo(() => {
     const subCount = categories.filter((category) => category.parentId !== null).length
-    const custom = categories.filter((category) => category.custom).length
-    const emptyCount = categories.filter((category) => (productCounts[category.name] || 0) === 0)
     return {
-      hierarchy: parents.length ? `${parents.length} Parent · ${subCount} Sub` : 'Belum ada',
-      typeRatio: `${custom} Custom · ${categories.length - custom} Default`,
+      utama: categories.filter((category) => category.parentId === null).length,
+      sub: subCount,
       totalProducts: String(products.length),
-      empty: String(emptyCount.length),
     }
-  }, [categories, parents, products, productCounts])
+  }, [categories, products])
 
   if (status === 'loading') {
     return (
@@ -139,7 +136,7 @@ function CategoriesPage() {
     if (used || hasChildren) {
       const reason = used
         ? `Category "${category.name}" masih digunakan oleh ${productCounts[category.name]} product. Pindahkan product ke category lain terlebih dahulu.`
-        : `Category "${category.name}" masih memiliki subcategory. Hapus atau pindahkan subcategory terlebih dahulu.`
+        : `Category "${category.name}" masih memiliki Sub Kategori. Hapus atau pindahkan Sub Kategori terlebih dahulu.`
       setNoticed(reason)
       return
     }
@@ -156,7 +153,7 @@ function CategoriesPage() {
             Categories
           </h1>
           <p className="mt-1 text-sm text-secondary">
-            Kelola category &amp; subcategory untuk katalog kamu (maksimal dua level).
+            Kelola Kategori Utama &amp; Sub Kategori untuk katalog kamu (maksimal dua level).
           </p>
         </div>
         <button
@@ -167,15 +164,14 @@ function CategoriesPage() {
           <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
             add
           </span>
-          Tambah Category
+          Tambah Kategori
         </button>
       </div>
 
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Hierarchy" value={stats.hierarchy} icon="account_tree" />
-        <StatCard label="Custom vs Default" value={stats.typeRatio} icon="category" />
-        <StatCard label="Total Products" value={stats.totalProducts} icon="inventory_2" />
-        <StatCard label="Empty Categories" value={stats.empty} icon="inbox" />
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <StatCard label="Kategori Utama" value={stats.utama} icon="account_tree" />
+        <StatCard label="Sub Kategori" value={stats.sub} icon="category" />
+        <StatCard label="Total Product" value={stats.totalProducts} icon="inventory_2" />
       </div>
 
       {customCount === 0 ? (
@@ -184,8 +180,8 @@ function CategoriesPage() {
             lightbulb
           </span>
           <p className="text-sm leading-relaxed text-on-surface">
-            Belum ada custom category. Buat category mu sendiri, misalnya{' '}
-            <span className="font-semibold">Gadget Gaming</span> dengan subcategory{' '}
+            Belum ada Kategori Utama custom. Buat kategori mu sendiri, misalnya{' '}
+            <span className="font-semibold">Gadget Gaming</span> dengan Sub Kategori{' '}
             <span className="font-semibold">Handler</span>.
           </p>
         </div>
@@ -253,7 +249,7 @@ function CategoriesPage() {
 
       <ConfirmDialog
         open={Boolean(deleteCandidate)}
-        title="Hapus Category?"
+        title="Hapus Kategori?"
         message={deleteCandidate ? `"${deleteCandidate.name}" akan dihapus secara permanen. Tindakan ini tidak bisa dibatalkan.` : ''}
         confirmLabel="Hapus"
         danger
@@ -264,7 +260,7 @@ function CategoriesPage() {
       <AlertDialog
         open={Boolean(noticed)}
         icon="lock"
-        title="Category Tidak Dapat Dihapus"
+        title="Kategori Tidak Dapat Dihapus"
         description={noticed || ''}
         actionLabel="Mengerti"
         onClose={() => setNoticed(null)}

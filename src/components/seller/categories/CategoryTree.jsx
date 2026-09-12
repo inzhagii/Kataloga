@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 function parentCount(parent, childrenByParent, productCounts) {
   const children = childrenByParent[parent.id] || []
@@ -25,6 +26,26 @@ function CountChip({ count }) {
     <span className="rounded-md bg-surface-container px-2 py-0.5 text-[11px] font-semibold text-on-surface-variant">
       {count} {count === 1 ? 'Product' : 'Products'}
     </span>
+  )
+}
+
+/**
+ * Link to the seller products list pre-filtered by this category.
+ * /seller/products?category=... is the source of truth for the filter.
+ * @param {{ category: import('../../../data/models.js').Category }} props
+ */
+function ViewProductsLink({ category }) {
+  return (
+    <Link
+      to={`/seller/products?category=${encodeURIComponent(category.name)}`}
+      className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary-container"
+      aria-label={`Lihat Product untuk ${category.name}`}
+    >
+      <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+        visibility
+      </span>
+      Lihat Product
+    </Link>
   )
 }
 
@@ -100,39 +121,42 @@ function ParentRow({
 }) {
   return (
     <div className="overflow-hidden rounded-xl border border-outline-variant/70 bg-surface-container-lowest">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-container-low"
-        aria-expanded={!collapsed}
-      >
-        <span
-          className={`material-symbols-outlined text-[20px] text-secondary transition-transform ${
-            collapsed ? '' : 'rotate-90'
-          }`}
-          aria-hidden="true"
+      <div className="flex items-center gap-1 pr-2">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-container-low"
+          aria-expanded={!collapsed}
         >
-          chevron_right
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold text-on-surface">{parent.name}</span>
-            <TypeBadge custom={parent.custom} />
+          <span
+            className={`material-symbols-outlined text-[20px] text-secondary transition-transform ${
+              collapsed ? '' : 'rotate-90'
+            }`}
+            aria-hidden="true"
+          >
+            chevron_right
           </span>
-          {children.length > 0 ? (
-            <span className="mt-0.5 block text-xs text-secondary">
-              {children.length} Subcategory
+          <span className="min-w-0 flex-1">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-semibold text-on-surface">{parent.name}</span>
+              <TypeBadge custom={parent.custom} />
             </span>
-          ) : null}
-        </span>
-        <CountChip count={totalCount} />
-      </button>
+            {children.length > 0 ? (
+              <span className="mt-0.5 block text-xs text-secondary">
+                {children.length} Sub Kategori
+              </span>
+            ) : null}
+          </span>
+          <CountChip count={totalCount} />
+        </button>
+        <ViewProductsLink category={parent} />
+      </div>
 
       {collapsed ? null : (
         <ul className="border-t border-outline-variant/60 bg-surface-container-low/50">
           {children.length === 0 ? (
             <li className="px-4 py-2 text-xs text-on-surface-variant">
-              Tidak ada subcategory. Subcategory bisa ditambahkan dari tombol tambah category.
+              Tidak ada Sub Kategori. Sub Kategori bisa ditambahkan dari tombol tambah kategori.
             </li>
           ) : (
             children.map((child) => (
@@ -150,6 +174,7 @@ function ParentRow({
                   </span>
                 </span>
                 <CountChip count={productCounts[child.name] || 0} />
+                <ViewProductsLink category={child} />
                 {child.custom ? (
                   <RowActions category={child} onEdit={onEdit} onDelete={onDelete} />
                 ) : null}

@@ -39,6 +39,9 @@ function getSellerPageTitle(pathname) {
   if (pathname === '/seller/account') {
     return 'Account'
   }
+  if (pathname === '/seller/activities') {
+    return 'Recent Activity'
+  }
   return 'Seller'
 }
 

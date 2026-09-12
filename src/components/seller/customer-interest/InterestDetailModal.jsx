@@ -10,9 +10,10 @@ import CustomerAvatar from './CustomerAvatar'
 
 /**
  * Desktop modal / mobile bottom-sheet for a customer interest detail.
- * Informational only: shows customer, product, activity, timestamp and the
- * customer's interaction history. No contact/redirect CTA — recording an
- * interest does not capture the customer's WhatsApp number.
+ * Shows customer, product, activity, timestamp and the customer's
+ * interaction history. Actions open the customer-facing product detail only
+ * ("Lihat Product"); there is no contact CTA — recording an interest does not
+ * capture the customer's WhatsApp number.
  *
  * @param {{
  *   record: import('../../../data/models.js').CustomerInterest | null,
@@ -194,6 +195,19 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t border-outline-variant/30 bg-surface-container-low px-4 py-3 md:px-5 md:py-4">
+          {product ? (
+            <a
+              href={`/${product.storeId}/products/${product.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-outline-variant/50 px-4 text-[13px] font-semibold text-on-surface transition-colors hover:bg-surface-container hover:text-on-surface md:px-5"
+            >
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                visibility
+              </span>
+              Lihat Product
+            </a>
+          ) : null}
           <button
             type="button"
             onClick={onClose}

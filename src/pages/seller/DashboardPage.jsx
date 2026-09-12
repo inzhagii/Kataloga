@@ -63,15 +63,30 @@ function DashboardPage() {
             Selamat datang, kelola toko dan katalog kamu.
           </p>
         </div>
-        <Link
-          to="/seller/products/new"
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
-        >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-            add
-          </span>
-          Tambah Produk
-        </Link>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          {store ? (
+            <a
+              href={`/${store.storeId}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-outline-variant px-5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                storefront
+              </span>
+              Lihat Toko
+            </a>
+          ) : null}
+          <Link
+            to="/seller/products/new"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
+          >
+            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+              add
+            </span>
+            Tambah Produk
+          </Link>
+        </div>
       </div>
 
       <CatalogCondition
@@ -81,12 +96,12 @@ function DashboardPage() {
         archivedCount={archivedProducts.length}
       />
 
+      <QuickActions />
+
       <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2 lg:flex-1 lg:grid-rows-[minmax(auto,1fr)]">
         <CustomerInterestSummary interests={interests} />
         <RecentActivity activities={activities} />
       </div>
-
-      <QuickActions />
     </div>
   )
 }

@@ -1,31 +1,29 @@
 import { Link } from 'react-router-dom'
 
 /**
- * Dashboard section 4: Quick Actions. Shortcuts only, no new business flows.
- * Minimum targets: Add Product, Products, My Store.
+ * Dashboard Quick Actions. Shortcuts only, no new business flows. The
+ * prominent "+ Tambah Produk" action lives in the Dashboard header; this
+ * section keeps the three management shortcuts.
  */
 function QuickActions() {
   const actions = [
     {
-      to: '/seller/products/new',
-      label: 'Add Product',
-      description: 'Tambahkan produk baru',
-      icon: 'add',
-      primary: true,
-    },
-    {
       to: '/seller/products',
-      label: 'Products',
+      label: 'Manage Products',
       description: 'Kelola produk',
       icon: 'inventory_2',
-      primary: false,
+    },
+    {
+      to: '/seller/categories',
+      label: 'Manage Categories',
+      description: 'Kelola Kategori Utama & Sub Kategori',
+      icon: 'category',
     },
     {
       to: '/seller/my-store',
-      label: 'My Store',
+      label: 'Manage Store',
       description: 'Kelola toko',
       icon: 'storefront',
-      primary: false,
     },
   ]
 
@@ -44,13 +42,7 @@ function QuickActions() {
             to={action.to}
             className="group flex items-center gap-3.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                action.primary
-                  ? 'bg-primary text-on-primary shadow-sm'
-                  : 'bg-surface-container text-secondary group-hover:bg-primary group-hover:text-on-primary'
-              }`}
-            >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-container text-secondary transition-colors group-hover:bg-primary group-hover:text-on-primary">
               <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
                 {action.icon}
               </span>

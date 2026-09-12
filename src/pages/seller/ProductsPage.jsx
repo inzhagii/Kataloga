@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSellerProducts } from '../../hooks/useSellerProducts'
 import { listCategories } from '../../services/categoryService'
 import {
@@ -30,6 +30,8 @@ import ConfirmDialog from '../../components/shared/ConfirmDialog'
 function ProductsPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const categoryFromUrl = searchParams.get('category') || ''
   const {
     status,
     products,
@@ -47,7 +49,7 @@ function ProductsPage() {
     setSort,
     hasActiveFilters,
     resetFilters,
-  } = useSellerProducts()
+  } = useSellerProducts({ initialCategory: categoryFromUrl })
 
   const [categories, setCategories] = useState([])
   const [toast, setToast] = useState(location.state?.feedback ?? null)
@@ -75,6 +77,23 @@ function ProductsPage() {
     // Only consume the feedback from a previous route once, on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // ?category=... is the source of truth for the category filter (deep link
+  // from the Categories page). Keep local filter state in sync with the URL.
+  useEffect(() => {
+    setFilters((current) =>
+      current.category === categoryFromUrl ? current : { ...current, category: categoryFromUrl },
+    )
+  }, [categoryFromUrl, setFilters])
+
+  function handleResetFilters() {
+    resetFilters()
+    if (categoryFromUrl) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete('category')
+      setSearchParams(nextParams, { replace: true })
+    }
+  }
 
   async function handlePublish(product) {
     const { valid } = validateProductForPublish(product)
@@ -248,7 +267,7 @@ function ProductsPage() {
         onSearch={setSearch}
         filters={filters}
         onFilterChange={setFilters}
-        resetFilters={resetFilters}
+        resetFilters={handleResetFilters}
         hasActiveFilters={hasActiveFilters}
         sort={sort}
         onSort={setSort}
