@@ -30,7 +30,7 @@ function StoreContactSection({
       subtitle="Cara customer menghubungi kamu dari storefront."
       actions={children}
     >
-      <div className="flex flex-col gap-6">
+      <div className="mt-1.5 flex flex-col gap-6">
         <div>
           <div className="mb-1.5 flex items-center justify-between">
             <label
@@ -66,7 +66,7 @@ function StoreContactSection({
               {errors.whatsapp}
             </p>
           ) : (
-            <p className="mt-1.5 text-[11px] text-secondary">
+            <p className="mt-2 text-[11px] text-secondary">
               Format internasional: 6281234567890.
             </p>
           )}

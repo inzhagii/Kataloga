@@ -18,7 +18,9 @@
  * @property {string} name - Store name.
  * @property {string} [logoUrl] - Store logo URL from API.
  * @property {string} [description] - Store bio/description.
- * @property {string} [city] - City / shipping origin.
+ * @property {string} [province] - Province name (location, required when set).
+ * @property {string} [city] - City/regency name, belongs to the province.
+ * @property {string} [fullAddress] - Optional full street address.
  * @property {string} [operatingHours] - Operating hours.
  * @property {string} [whatsapp] - WhatsApp number.
  * @property {ExternalChannel[]} [channels] - External sales channels.

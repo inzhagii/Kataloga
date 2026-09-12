@@ -1,5 +1,15 @@
 import StoreActions from './StoreActions'
 
+function storeLocationLabel(store) {
+  if (store.city && store.province) {
+    return `${store.city}, ${store.province}`
+  }
+  if (store.city) {
+    return store.city
+  }
+  return '-'
+}
+
 /**
  * Public store profile header: logo (+ verification badge), name, description,
  * city/operating hours and the store actions (WhatsApp / Marketplace / Share).
@@ -66,7 +76,7 @@ function StoreHeader({ store, onWhatsApp, onSelectChannel, onShareStore }) {
             <span className="material-symbols-outlined shrink-0 text-[18px] text-primary" aria-hidden="true">
               location_on
             </span>
-            <span className="leading-relaxed">{store.city ?? '-'}</span>
+            <span className="leading-relaxed">{storeLocationLabel(store)}</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span className="material-symbols-outlined shrink-0 text-[18px] text-secondary" aria-hidden="true">

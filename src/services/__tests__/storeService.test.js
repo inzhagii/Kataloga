@@ -156,3 +156,43 @@ describe('updateStore Store ID change', () => {
     )
   })
 })
+
+describe('Store location updates are isolated per store', () => {
+  it('updates only the owning store (Store A location leaves Store B untouched)', async () => {
+    actAsStoreA()
+    const result = await updateStore(STORE_A_ID, {
+      province: 'Jawa Barat',
+      city: 'Kota Bandung',
+      fullAddress: 'Jl. Raya Merdeka No. 10',
+    })
+    expect(result).toMatchObject({
+      province: 'Jawa Barat',
+      city: 'Kota Bandung',
+      fullAddress: 'Jl. Raya Merdeka No. 10',
+    })
+
+    const storeB = await getStore(STORE_B_ID)
+    expect(storeB.province).toBeUndefined()
+    expect(storeB.city).toBe('Bandung')
+    expect(storeB.fullAddress).toBeUndefined()
+  })
+
+  it('updates only the owning store (Store B location is not visible on Store A)', async () => {
+    actAsStoreB()
+    const result = await updateStore(STORE_B_ID, {
+      province: 'DI Yogyakarta',
+      city: 'Kota Yogyakarta',
+      fullAddress: 'Jl. Malioboro No. 12',
+    })
+    expect(result).toMatchObject({
+      province: 'DI Yogyakarta',
+      city: 'Kota Yogyakarta',
+      fullAddress: 'Jl. Malioboro No. 12',
+    })
+
+    const storeA = await getStore(STORE_A_ID)
+    expect(storeA.province).toBe('Jawa Barat')
+    expect(storeA.city).toBe('Kota Bandung')
+    expect(storeA.fullAddress).toBeUndefined()
+  })
+})

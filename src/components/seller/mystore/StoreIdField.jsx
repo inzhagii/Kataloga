@@ -106,7 +106,7 @@ function StoreIdField({ storeId, error, availability, cooldown, onChange, onBlur
           </p>
         ) : null}
       </div>
-      <p className="mt-0.5 text-[11px] text-secondary">
+      <p className="mt-2 text-[11px] text-secondary">
         Huruf kecil, angka, dan tanda hubung (-). Dapat diubah sekali setiap 30 hari.
       </p>
     </div>

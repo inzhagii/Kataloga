@@ -3,11 +3,14 @@ import SectionCard from '../products/form/SectionCard'
 const INPUT_CLASS =
   'w-full rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20'
 
-const TEXTAREA_CLASS = `${INPUT_CLASS} min-h-24 resize-y`
+const TEXTAREA_CLASS = `${INPUT_CLASS} min-h-[72px] resize-y`
+
+const SELECT_CLASS = `${INPUT_CLASS} appearance-none pr-10 font-medium disabled:cursor-not-allowed disabled:bg-surface-container-high/50`
 
 /**
- * Store information: name, description/bio, city and single-line operating
- * hours. Optional fields can be left empty and shown as-is on the storefront.
+ * Store information: name, description/bio and location. Location requires a
+ * Province and a City/Regency that belongs to it; Full Address is optional.
+ * Changing the province resets an incompatible city.
  *
  * @param {{
  *   store: import('../../../data/models.js').Store,
@@ -15,9 +18,27 @@ const TEXTAREA_CLASS = `${INPUT_CLASS} min-h-24 resize-y`
  *   errors: Record<string, string>,
  *   setField: (field: string, value: string) => void,
  *   children: React.ReactNode,
+ *   provinces: string[],
+ *   cities: string[],
+ *   provincesStatus: 'loading'|'ready'|'error',
+ *   citiesStatus: 'idle'|'loading'|'ready'|'error',
+ *   regionsError: string,
  * }} props
  */
-function StoreInfoSection({ store, form, errors, setField, children }) {
+function StoreInfoSection({
+  store,
+  form,
+  errors,
+  setField,
+  children,
+  provinces,
+  cities,
+  provincesStatus,
+  citiesStatus,
+  regionsError,
+}) {
+  const cityError = errors.city
+
   return (
     <SectionCard
       icon="info"
@@ -25,7 +46,7 @@ function StoreInfoSection({ store, form, errors, setField, children }) {
       subtitle="Detail yang ditampilkan pada storefront."
       actions={children}
     >
-      <div className="flex flex-col gap-5">
+      <div className="mt-1.5 flex flex-col gap-6">
         <div>
           <label
             htmlFor="store-name"
@@ -70,24 +91,136 @@ function StoreInfoSection({ store, form, errors, setField, children }) {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <label
+              htmlFor="store-province"
+              className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
+            >
+              Provinsi <span className="text-error">*</span>
+            </label>
+            <div className="relative">
+              <select
+                id="store-province"
+                value={form.province}
+                onChange={(event) => {
+                  setField('province', event.target.value)
+                  setField('city', '')
+                }}
+                className={`${SELECT_CLASS} ${form.province ? '' : 'text-outline'}`}
+                data-error={Boolean(errors.province)}
+              >
+                <option value="">
+                  {provincesStatus === 'loading' ? 'Memuat...' : 'Pilih Provinsi'}
+                </option>
+                {provinces.map((province) => (
+                  <option key={province} value={province}>
+                    {province}
+                  </option>
+                ))}
+              </select>
+              <span
+                className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-lg text-outline"
+                aria-hidden="true"
+              >
+                unfold_more
+              </span>
+            </div>
+            {errors.province ? (
+              <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-error">
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                  error
+                </span>
+                {errors.province}
+              </p>
+            ) : null}
+            {provincesStatus === 'error' && regionsError ? (
+              <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-error">
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                  error
+                </span>
+                {regionsError}
+              </p>
+            ) : null}
+          </div>
+
           <div>
             <label
               htmlFor="store-city"
               className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
             >
-              Kota{' '}
+              Kota / Kabupaten <span className="text-error">*</span>
+            </label>
+            <div className="relative">
+              <select
+                id="store-city"
+                value={form.city}
+                onChange={(event) => setField('city', event.target.value)}
+                disabled={!form.province || citiesStatus === 'loading'}
+                className={`${SELECT_CLASS} ${form.city ? '' : 'text-outline'}`}
+                data-error={Boolean(cityError)}
+                aria-invalid={Boolean(cityError)}
+                aria-describedby={cityError ? 'store-city-error' : undefined}
+              >
+                <option value="">
+                  {citiesStatus === 'loading'
+                    ? 'Memuat...'
+                    : !form.province
+                      ? 'Pilih provinsi terlebih dahulu'
+                      : 'Pilih Kota/Kabupaten'}
+                </option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+              <span
+                className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-lg text-outline"
+                aria-hidden="true"
+              >
+                unfold_more
+              </span>
+            </div>
+            {cityError ? (
+              <p
+                id="store-city-error"
+                className="mt-1.5 flex items-center gap-1 text-xs font-medium text-error"
+              >
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                  error
+                </span>
+                {cityError}
+              </p>
+            ) : null}
+            {citiesStatus === 'error' && regionsError ? (
+              <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-error">
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                  error
+                </span>
+                {regionsError}
+              </p>
+            ) : null}
+          </div>
+
+          <div>
+            <label
+              htmlFor="store-full-address"
+              className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
+            >
+              Alamat Lengkap{' '}
               <span className="font-normal lowercase text-secondary">(opsional)</span>
             </label>
-            <input
-              id="store-city"
-              type="text"
-              value={form.city}
-              onChange={(event) => setField('city', event.target.value)}
-              placeholder="Contoh: Jakarta"
-              className={INPUT_CLASS}
+            <textarea
+              id="store-full-address"
+              value={form.fullAddress}
+              onChange={(event) => setField('fullAddress', event.target.value)}
+              placeholder="Contoh: Jl. Raya Merdeka No. 10, Kec. Coblong"
+              rows={2}
+              className={TEXTAREA_CLASS}
             />
           </div>
+
           <div>
             <label
               htmlFor="store-hours"

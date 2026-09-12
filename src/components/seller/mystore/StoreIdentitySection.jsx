@@ -140,7 +140,7 @@ function StoreIdentitySection({
       subtitle="Store ID adalah alamat publik toko kamu."
       actions={children}
     >
-      <div className="flex flex-col gap-6">
+      <div className="mt-1.5 flex flex-col gap-6">
         <StoreIdField
           storeId={form.storeId}
           error={errors.storeId}

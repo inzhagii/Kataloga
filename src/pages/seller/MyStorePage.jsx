@@ -2,10 +2,12 @@ import { useMemo, useState } from 'react'
 import EmptyState from '../../components/shared/EmptyState'
 import Toast from '../../components/shared/Toast'
 import StoreIdentitySection from '../../components/seller/mystore/StoreIdentitySection'
+import StoreLinkSection from '../../components/seller/mystore/StoreLinkSection'
 import StoreInfoSection from '../../components/seller/mystore/StoreInfoSection'
 import StoreContactSection from '../../components/seller/mystore/StoreContactSection'
 import AnnouncementSection from '../../components/seller/mystore/AnnouncementSection'
 import { useMyStore } from '../../hooks/useMyStore'
+import { useRegionData } from '../../hooks/useRegionData'
 import { canChangeStoreId, updateStore } from '../../services/storeService'
 import { recordStoreUpdated } from '../../services/activityService'
 import {
@@ -13,6 +15,7 @@ import {
   normalizePhone,
 } from '../../services/authService'
 import { normalizeStoreId, validateStoreId } from '../../utils/storeId'
+import { validateStoreLocation } from '../../utils/storeValidation'
 
 function SectionToggleButton({ open, onToggle }) {
   return (
@@ -66,7 +69,9 @@ function MyStoreEditor({ store, onSaved }) {
     storeId: store.storeId || '',
     name: store.name || '',
     description: store.description || '',
+    province: store.province || '',
     city: store.city || '',
+    fullAddress: store.fullAddress || '',
     operatingHours: store.operatingHours || '',
     whatsapp: store.whatsapp || '',
     logoUrl: store.logoUrl || '',
@@ -87,6 +92,7 @@ function MyStoreEditor({ store, onSaved }) {
   const [errors, setErrors] = useState({})
   const [logoError, setLogoError] = useState('')
   const [channelError, setChannelError] = useState('')
+  const [linkToast, setLinkToast] = useState(null)
   const [saving, setSaving] = useState(false)
   const [openSections, setOpenSections] = useState(() => new Set(['identity']))
 
@@ -99,6 +105,8 @@ function MyStoreEditor({ store, onSaved }) {
   }, [store])
 
   const availability = 'idle'
+
+  const regions = useRegionData(form.province)
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }))
@@ -137,6 +145,8 @@ function MyStoreEditor({ store, onSaved }) {
     if (!form.name.trim()) {
       next.name = 'Nama toko wajib diisi.'
     }
+    const locationValidation = validateStoreLocation(form)
+    Object.assign(next, locationValidation.errors)
     if (form.whatsapp.trim() && !isValidPhone(form.whatsapp.trim())) {
       next.whatsapp = 'Format nomor WhatsApp tidak valid.'
     }
@@ -153,7 +163,9 @@ function MyStoreEditor({ store, onSaved }) {
       const payload = {
         name: form.name.trim() || store.name,
         description: form.description.trim(),
+        province: form.province.trim(),
         city: form.city.trim(),
+        fullAddress: form.fullAddress.trim(),
         operatingHours: form.operatingHours.trim(),
         whatsapp: form.whatsapp.trim() ? normalizePhone(form.whatsapp.trim()) : '',
         channels: channels
@@ -203,8 +215,8 @@ function MyStoreEditor({ store, onSaved }) {
         <StoreTitleBar saving={saving} onSave={handleSave} />
       </div>
 
-      <div className="space-y-5">
-        <section className={openSections.has('identity') ? '' : 'lg:contents'}>
+      <div className="space-y-6">
+        <section>
           <StoreIdentitySection
             form={form}
             errors={errors}
@@ -234,18 +246,33 @@ function MyStoreEditor({ store, onSaved }) {
           </StoreIdentitySection>
         </section>
 
-        <section className={openSections.has('info') ? '' : 'lg:contents'}>
+        <section>
+          <StoreLinkSection
+            store={store}
+            storeId={form.storeId}
+            onNotify={(message) => setLinkToast(message)}
+          >
+            <SectionToggleButton {...toggleProps('link')} />
+          </StoreLinkSection>
+        </section>
+
+        <section>
           <StoreInfoSection
             store={store}
             form={form}
             errors={errors}
             setField={setField}
+            provinces={regions.provinces}
+            cities={regions.cities}
+            provincesStatus={regions.provincesStatus}
+            citiesStatus={regions.citiesStatus}
+            regionsError={regions.error}
           >
             <SectionToggleButton {...toggleProps('info')} />
           </StoreInfoSection>
         </section>
 
-        <section className={openSections.has('contact') ? '' : 'lg:contents'}>
+        <section>
           <StoreContactSection
             form={form}
             errors={errors}
@@ -261,7 +288,7 @@ function MyStoreEditor({ store, onSaved }) {
           </StoreContactSection>
         </section>
 
-        <section className={openSections.has('announcement') ? '' : 'lg:contents'}>
+        <section>
           <AnnouncementSection
             enabled={announcementEnabled}
             text={announcementText}
@@ -293,6 +320,8 @@ function MyStoreEditor({ store, onSaved }) {
       <div className="fixed inset-x-0 bottom-16 z-30 border-t border-outline-variant/60 bg-surface-container-lowest px-4 py-3 lg:hidden">
         <RsSavingButton saving={saving} onSave={handleSave} />
       </div>
+
+      <Toast toast={linkToast} onClose={() => setLinkToast(null)} />
     </div>
   )
 }

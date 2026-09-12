@@ -32,7 +32,9 @@ export function toStore(dto) {
     name: dto.name ?? '',
     logoUrl: dto.logo_url ?? undefined,
     description: dto.description ?? undefined,
+    province: dto.province ?? undefined,
     city: dto.city ?? undefined,
+    fullAddress: dto.full_address ?? undefined,
     operatingHours: dto.operating_hours ?? undefined,
     whatsapp: dto.whatsapp ?? undefined,
     channels: (dto.channels ?? []).map((channel) => ({

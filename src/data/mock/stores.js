@@ -11,7 +11,8 @@ export const stores = [
     logoUrl: undefined,
     description:
       'Menjual laptop, smartphone, dan aksesoris gadget dengan harga bersahabat sejak 2015.',
-    city: 'Jakarta',
+    province: 'Jawa Barat',
+    city: 'Kota Bandung',
     operatingHours: 'Senin - Sabtu, 09.00 - 18.00',
     whatsapp: '6281234567890',
     channels: [

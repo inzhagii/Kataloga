@@ -21,7 +21,7 @@ function AnnouncementSection({ enabled, text, onToggle, onTextChange, children }
       subtitle="Satu pengumuman untuk customer di halaman toko."
       actions={children}
     >
-      <div className="flex flex-col gap-4">
+      <div className="mt-1.5 flex flex-col gap-6">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-on-surface">Tampilkan pengumuman</p>
@@ -64,7 +64,7 @@ function AnnouncementSection({ enabled, text, onToggle, onTextChange, children }
               maxLength={200}
               className="w-full resize-y rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
             />
-            <p className="mt-1 text-right text-[11px] text-secondary">{text.length}/200</p>
+            <p className="mt-2 text-right text-[11px] text-secondary">{text.length}/200</p>
           </div>
         ) : null}
       </div>
