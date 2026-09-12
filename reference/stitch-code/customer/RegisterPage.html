@@ -1,0 +1,2758 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Daftar - Kataloga</title>
+
+
+  <!-- =========================================================
+       GOOGLE FONT
+       ========================================================= -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <!-- =========================================================
+       MATERIAL SYMBOLS
+       ========================================================= -->
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet"
+  >
+
+
+  <!-- =========================================================
+       TAILWIND
+       ========================================================= -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+
+  <script>
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            primary: {
+              DEFAULT: '#004ac6',
+              hover: '#003ea8',
+              active: '#00358f',
+              light: '#eff6ff'
+            },
+
+            surface: '#f9f9ff',
+
+            container: '#ffffff',
+
+            textMain: '#141b2b',
+
+            textMuted: '#434655',
+
+            textSubtle: '#737686',
+
+            borderLight: '#c3c6d7',
+
+            danger: {
+              DEFAULT: '#ba1a1a',
+              surface: '#ffdad6',
+              border: '#ffb4ab'
+            },
+
+            success: {
+              DEFAULT: '#006329',
+              surface: '#dcfce7'
+            }
+
+          },
+
+          fontFamily: {
+
+            sans: [
+              '"Plus Jakarta Sans"',
+              'sans-serif'
+            ]
+
+          }
+
+        }
+
+      }
+
+    };
+
+  </script>
+
+
+  <!-- =========================================================
+       BASE CSS
+       ========================================================= -->
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+
+    body {
+
+      font-family:
+        'Plus Jakarta Sans',
+        sans-serif;
+
+      background-color:
+        #f9f9ff;
+
+      color:
+        #141b2b;
+
+      overscroll-behavior:
+        none;
+
+    }
+
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+
+    input,
+    button,
+    a {
+      -webkit-tap-highlight-color:
+        transparent;
+    }
+
+
+    input:focus {
+      outline: none;
+    }
+
+
+    .input-error {
+
+      border-color:
+        #ba1a1a !important;
+
+      background-color:
+        #fff7f6 !important;
+
+    }
+
+
+    .input-success {
+
+      border-color:
+        #15803d !important;
+
+    }
+
+
+    @keyframes spin {
+
+      from {
+        transform:
+          rotate(0deg);
+      }
+
+      to {
+        transform:
+          rotate(360deg);
+      }
+
+    }
+
+
+    .animate-spin {
+
+      animation:
+        spin 0.8s linear infinite;
+
+    }
+
+
+    @keyframes fadeIn {
+
+      from {
+
+        opacity: 0;
+
+        transform:
+          translateY(4px);
+
+      }
+
+      to {
+
+        opacity: 1;
+
+        transform:
+          translateY(0);
+
+      }
+
+    }
+
+
+    .animate-fade-in {
+
+      animation:
+        fadeIn 0.2s ease-out;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =========================================================
+       PAGE
+       ========================================================= -->
+
+  <main
+    class="
+      min-h-screen
+      w-full
+      flex
+      flex-col
+      items-center
+      justify-center
+      px-4
+      py-8
+      sm:px-6
+    "
+  >
+
+
+    <!-- =======================================================
+         MAIN CONTENT
+         ======================================================= -->
+
+    <div
+      class="
+        w-full
+        max-w-[420px]
+      "
+    >
+
+
+      <!-- =====================================================
+           REGISTER CARD
+           ===================================================== -->
+
+      <section
+        class="
+          w-full
+          bg-white
+          rounded-xl
+          shadow-sm
+          border
+          border-slate-100
+          p-5
+          sm:p-7
+        "
+      >
+
+
+        <!-- ===================================================
+             BRANDING
+             =================================================== -->
+
+        <div
+          class="
+            flex
+            flex-col
+            items-center
+            text-center
+            mb-6
+          "
+        >
+
+          <!-- Kataloga Logo -->
+
+          <a
+            href="/"
+            class="
+              flex
+              items-center
+              gap-2
+              mb-3
+            "
+            aria-label="Kataloga Beranda"
+          >
+
+            <div
+              class="
+                w-8
+                h-8
+                rounded-lg
+                bg-blue-600
+                flex
+                items-center
+                justify-center
+                text-white
+                font-bold
+                text-sm
+              "
+            >
+              K
+            </div>
+
+
+            <span
+              class="
+                text-xl
+                font-bold
+                tracking-tight
+                text-blue-600
+              "
+            >
+              Kataloga
+            </span>
+
+          </a>
+
+
+          <!-- Title -->
+
+          <h1
+            class="
+              text-xl
+              sm:text-2xl
+              font-bold
+              text-slate-900
+            "
+          >
+            Buat akun Kataloga
+          </h1>
+
+
+          <!-- Subtitle -->
+
+          <p
+            class="
+              text-xs
+              sm:text-sm
+              text-slate-500
+              mt-1.5
+              leading-relaxed
+            "
+          >
+            Daftar untuk mulai menggunakan Kataloga.
+          </p>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             GLOBAL ERROR
+             =================================================== -->
+
+        <div
+          id="error-banner"
+          class="
+            hidden
+            mb-5
+            p-3.5
+            rounded-xl
+            bg-red-50
+            border
+            border-red-200
+            flex
+            items-start
+            gap-3
+            animate-fade-in
+          "
+          role="alert"
+          aria-live="polite"
+        >
+
+          <span
+            class="
+              material-symbols-outlined
+              text-[20px]
+              text-red-600
+              shrink-0
+            "
+            aria-hidden="true"
+          >
+            error
+          </span>
+
+
+          <p
+            id="error-banner-message"
+            class="
+              text-xs
+              text-red-800
+              leading-relaxed
+              font-medium
+            "
+          >
+            Terjadi kesalahan.
+          </p>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             REGISTER FORM
+             =================================================== -->
+
+        <form
+          id="register-form"
+          class="flex flex-col gap-4"
+          novalidate
+        >
+
+
+          <!-- =================================================
+               NAME
+               ================================================= -->
+
+          <div>
+
+            <label
+              for="reg-name"
+              class="
+                block
+                text-xs
+                font-semibold
+                text-slate-700
+                mb-1.5
+              "
+            >
+
+              <span>
+                Nama lengkap
+              </span>
+
+              <span
+                class="
+                  text-[11px]
+                  font-normal
+                  text-slate-400
+                  ml-1
+                "
+              >
+                (opsional)
+              </span>
+
+            </label>
+
+
+            <input
+              id="reg-name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              placeholder="Contoh: Budi Santoso"
+
+              class="
+                w-full
+                h-11
+                px-3.5
+                rounded-lg
+                border
+                border-slate-200
+                bg-slate-50
+                text-slate-900
+                text-sm
+                placeholder:text-slate-400
+                transition
+                focus:bg-white
+                focus:border-blue-600
+                focus:ring-4
+                focus:ring-blue-600/10
+              "
+            >
+
+          </div>
+
+
+
+          <!-- =================================================
+               EMAIL / PHONE
+               ================================================= -->
+
+          <div>
+
+            <label
+              for="reg-identifier"
+              class="
+                block
+                text-xs
+                font-semibold
+                text-slate-700
+                mb-1.5
+              "
+            >
+              Email atau No. Handphone
+            </label>
+
+
+            <input
+              id="reg-identifier"
+              name="identifier"
+              type="text"
+              autocomplete="username"
+              inputmode="email"
+              placeholder="nama@email.com atau 0812..."
+
+              class="
+                w-full
+                h-11
+                px-3.5
+                rounded-lg
+                border
+                border-slate-200
+                bg-slate-50
+                text-slate-900
+                text-sm
+                placeholder:text-slate-400
+                transition
+                focus:bg-white
+                focus:border-blue-600
+                focus:ring-4
+                focus:ring-blue-600/10
+              "
+
+              aria-describedby="identifier-error"
+              aria-invalid="false"
+            >
+
+
+            <!-- Identifier Error -->
+
+            <div
+              id="identifier-error"
+              class="
+                hidden
+                items-center
+                gap-1.5
+                text-red-600
+                mt-1.5
+                px-1
+              "
+              role="alert"
+            >
+
+              <span
+                class="
+                  material-symbols-outlined
+                  text-[16px]
+                "
+                aria-hidden="true"
+              >
+                error
+              </span>
+
+
+              <span
+                id="identifier-error-msg"
+                class="text-xs"
+              >
+                Email atau nomor HP tidak valid.
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =================================================
+               PASSWORD
+               ================================================= -->
+
+          <div>
+
+            <label
+              for="reg-password"
+              class="
+                block
+                text-xs
+                font-semibold
+                text-slate-700
+                mb-1.5
+              "
+            >
+              Password
+            </label>
+
+
+            <div
+              class="relative"
+            >
+
+              <input
+                id="reg-password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Minimal 8 karakter"
+
+                class="
+                  w-full
+                  h-11
+                  px-3.5
+                  pr-11
+                  rounded-lg
+                  border
+                  border-slate-200
+                  bg-slate-50
+                  text-slate-900
+                  text-sm
+                  placeholder:text-slate-400
+                  transition
+                  focus:bg-white
+                  focus:border-blue-600
+                  focus:ring-4
+                  focus:ring-blue-600/10
+                "
+
+                aria-describedby="password-hint password-error"
+                aria-invalid="false"
+              >
+
+
+              <!-- Toggle Password -->
+
+              <button
+                type="button"
+                id="toggle-password"
+                class="
+                  absolute
+                  right-2
+                  top-1/2
+                  -translate-y-1/2
+                  w-8
+                  h-8
+                  flex
+                  items-center
+                  justify-center
+                  rounded-md
+                  text-slate-400
+                  hover:text-slate-600
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-blue-600/20
+                "
+                aria-label="Tampilkan password"
+                aria-pressed="false"
+              >
+
+                <span
+                  id="password-icon"
+                  class="
+                    material-symbols-outlined
+                    text-[18px]
+                  "
+                >
+                  visibility
+                </span>
+
+              </button>
+
+            </div>
+
+
+            <!-- Password Hint -->
+
+            <p
+              id="password-hint"
+              class="
+                text-[11px]
+                text-slate-400
+                mt-1.5
+                px-1
+              "
+            >
+              Gunakan minimal 8 karakter.
+            </p>
+
+
+            <!-- Password Error -->
+
+            <div
+              id="password-error"
+              class="
+                hidden
+                items-center
+                gap-1.5
+                text-red-600
+                mt-1.5
+                px-1
+              "
+              role="alert"
+            >
+
+              <span
+                class="
+                  material-symbols-outlined
+                  text-[16px]
+                "
+                aria-hidden="true"
+              >
+                error
+              </span>
+
+
+              <span
+                id="password-error-msg"
+                class="text-xs"
+              >
+                Password tidak valid.
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =================================================
+               CONFIRM PASSWORD
+               ================================================= -->
+
+          <div>
+
+            <label
+              for="reg-password-confirm"
+              class="
+                block
+                text-xs
+                font-semibold
+                text-slate-700
+                mb-1.5
+              "
+            >
+              Konfirmasi Password
+            </label>
+
+
+            <div
+              class="relative"
+            >
+
+              <input
+                id="reg-password-confirm"
+                name="password_confirmation"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Ulangi password di atas"
+
+                class="
+                  w-full
+                  h-11
+                  px-3.5
+                  pr-11
+                  rounded-lg
+                  border
+                  border-slate-200
+                  bg-slate-50
+                  text-slate-900
+                  text-sm
+                  placeholder:text-slate-400
+                  transition
+                  focus:bg-white
+                  focus:border-blue-600
+                  focus:ring-4
+                  focus:ring-blue-600/10
+                "
+
+                aria-describedby="mismatch-error"
+                aria-invalid="false"
+              >
+
+
+              <!-- Toggle Confirm Password -->
+
+              <button
+                type="button"
+                id="toggle-password-confirm"
+                class="
+                  absolute
+                  right-2
+                  top-1/2
+                  -translate-y-1/2
+                  w-8
+                  h-8
+                  flex
+                  items-center
+                  justify-center
+                  rounded-md
+                  text-slate-400
+                  hover:text-slate-600
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-blue-600/20
+                "
+                aria-label="Tampilkan password konfirmasi"
+                aria-pressed="false"
+              >
+
+                <span
+                  id="confirm-password-icon"
+                  class="
+                    material-symbols-outlined
+                    text-[18px]
+                  "
+                >
+                  visibility
+                </span>
+
+              </button>
+
+            </div>
+
+
+            <!-- Password Mismatch -->
+
+            <div
+              id="mismatch-error"
+              class="
+                hidden
+                items-center
+                gap-1.5
+                text-red-600
+                mt-1.5
+                px-1
+              "
+              role="alert"
+            >
+
+              <span
+                class="
+                  material-symbols-outlined
+                  text-[16px]
+                "
+                aria-hidden="true"
+              >
+                error
+              </span>
+
+
+              <span
+                id="mismatch-error-msg"
+                class="text-xs"
+              >
+                Password tidak cocok.
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =================================================
+               TERMS
+               ================================================= -->
+
+          <p
+            class="
+              text-[11px]
+              sm:text-xs
+              text-slate-500
+              leading-relaxed
+              mt-0.5
+            "
+          >
+
+            Dengan mendaftar, kamu menyetujui
+
+            <a
+              href="/terms"
+              class="
+                text-blue-600
+                hover:underline
+                font-medium
+              "
+            >
+              Syarat &amp; Ketentuan
+            </a>
+
+            dan
+
+            <a
+              href="/privacy"
+              class="
+                text-blue-600
+                hover:underline
+                font-medium
+              "
+            >
+              Kebijakan Privasi
+            </a>
+
+            Kataloga.
+
+          </p>
+
+
+
+          <!-- =================================================
+               SUBMIT
+               ================================================= -->
+
+          <button
+            id="btn-submit"
+            type="submit"
+
+            class="
+              w-full
+              h-11
+              mt-1
+              px-4
+              bg-blue-600
+              hover:bg-blue-700
+              active:bg-blue-800
+              text-white
+              text-sm
+              font-semibold
+              rounded-lg
+              shadow-sm
+              transition
+              flex
+              items-center
+              justify-center
+              gap-2
+              focus:outline-none
+              focus:ring-4
+              focus:ring-blue-600/20
+              disabled:opacity-70
+              disabled:cursor-not-allowed
+            "
+          >
+
+            <!-- Normal -->
+
+            <span id="btn-text">
+              Daftar Sekarang
+            </span>
+
+
+            <!-- Spinner -->
+
+            <svg
+              id="btn-spinner"
+              class="
+                hidden
+                animate-spin
+                h-4
+                w-4
+                text-white
+              "
+              fill="none"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              />
+
+            </svg>
+
+
+            <!-- Loading Text -->
+
+            <span
+              id="btn-loading-text"
+              class="hidden"
+            >
+              Memproses...
+            </span>
+
+          </button>
+
+
+        </form>
+
+
+
+        <!-- ===================================================
+             LOGIN LINK
+             =================================================== -->
+
+        <div
+          class="
+            mt-5
+            pt-5
+            border-t
+            border-slate-100
+            text-center
+          "
+        >
+
+          <p
+            class="
+              text-xs
+              text-slate-500
+            "
+          >
+
+            Sudah punya akun?
+
+            <a
+              id="login-link"
+              href="/login"
+              class="
+                text-blue-600
+                font-semibold
+                hover:underline
+                ml-1
+              "
+            >
+              Masuk
+            </a>
+
+          </p>
+
+        </div>
+
+
+      </section>
+
+
+
+      <!-- =====================================================
+           BACK TO STORE
+           ===================================================== -->
+
+      <div
+        class="
+          mt-4
+          text-center
+        "
+      >
+
+        <a
+          id="back-to-store"
+          href="/"
+          class="
+            inline-flex
+            items-center
+            gap-1.5
+            text-xs
+            text-slate-500
+            hover:text-blue-600
+            transition
+            font-medium
+          "
+        >
+
+          <span
+            class="
+              material-symbols-outlined
+              text-[16px]
+            "
+            aria-hidden="true"
+          >
+            arrow_back
+          </span>
+
+
+          <span>
+            Kembali ke Toko
+          </span>
+
+        </a>
+
+      </div>
+
+
+
+      <!-- =====================================================
+           TRUST INFORMATION
+           ===================================================== -->
+
+      <div
+        class="
+          mt-5
+          flex
+          flex-col
+          sm:flex-row
+          items-center
+          justify-center
+          gap-2
+          sm:gap-5
+          text-[11px]
+          text-slate-400
+        "
+      >
+
+        <div
+          class="
+            flex
+            items-center
+            gap-1
+          "
+        >
+
+          <span
+            class="
+              material-symbols-outlined
+              text-[15px]
+            "
+            aria-hidden="true"
+          >
+            verified_user
+          </span>
+
+          <span>
+            Data terenkripsi
+          </span>
+
+        </div>
+
+
+        <div
+          class="
+            hidden
+            sm:block
+          "
+        >
+          •
+        </div>
+
+
+        <div
+          class="
+            flex
+            items-center
+            gap-1
+          "
+        >
+
+          <span
+            class="
+              material-symbols-outlined
+              text-[15px]
+            "
+            aria-hidden="true"
+          >
+            storefront
+          </span>
+
+          <span>
+            Satu akun untuk Kataloga
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =====================================================
+           FOOTER
+           ===================================================== -->
+
+      <footer
+        class="
+          mt-5
+          text-center
+          text-[11px]
+          text-slate-400
+        "
+      >
+
+        <div
+          class="
+            flex
+            flex-wrap
+            items-center
+            justify-center
+            gap-x-3
+            gap-y-1
+          "
+        >
+
+          <span>
+            © 2026 Kataloga
+          </span>
+
+          <span>
+            •
+          </span>
+
+          <a
+            href="/privacy"
+            class="hover:text-slate-600 transition"
+          >
+            Privasi
+          </a>
+
+          <span>
+            •
+          </span>
+
+          <a
+            href="/terms"
+            class="hover:text-slate-600 transition"
+          >
+            Syarat &amp; Ketentuan
+          </a>
+
+          <span>
+            •
+          </span>
+
+          <a
+            href="/help"
+            class="hover:text-slate-600 transition"
+          >
+            Pusat Bantuan
+          </a>
+
+        </div>
+
+      </footer>
+
+
+    </div>
+
+  </main>
+
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+
+
+    /* =========================================================
+       CONFIG
+       ========================================================= */
+
+    const REGISTER_CONFIG = {
+
+      /*
+       * Endpoint backend register.
+       */
+
+      apiEndpoint:
+        '/api/auth/register',
+
+
+      /*
+       * Redirect default.
+       */
+
+      defaultRedirect:
+        '/',
+
+
+      /*
+       * Password minimum.
+       */
+
+      minPasswordLength:
+        8
+
+    };
+
+
+
+    /* =========================================================
+       DOM
+       ========================================================= */
+
+    const registerForm =
+      document.getElementById(
+        'register-form'
+      );
+
+
+    const nameInput =
+      document.getElementById(
+        'reg-name'
+      );
+
+
+    const identifierInput =
+      document.getElementById(
+        'reg-identifier'
+      );
+
+
+    const passwordInput =
+      document.getElementById(
+        'reg-password'
+      );
+
+
+    const confirmPasswordInput =
+      document.getElementById(
+        'reg-password-confirm'
+      );
+
+
+    const identifierError =
+      document.getElementById(
+        'identifier-error'
+      );
+
+
+    const identifierErrorMsg =
+      document.getElementById(
+        'identifier-error-msg'
+      );
+
+
+    const passwordError =
+      document.getElementById(
+        'password-error'
+      );
+
+
+    const passwordErrorMsg =
+      document.getElementById(
+        'password-error-msg'
+      );
+
+
+    const mismatchError =
+      document.getElementById(
+        'mismatch-error'
+      );
+
+
+    const mismatchErrorMsg =
+      document.getElementById(
+        'mismatch-error-msg'
+      );
+
+
+    const errorBanner =
+      document.getElementById(
+        'error-banner'
+      );
+
+
+    const errorBannerMessage =
+      document.getElementById(
+        'error-banner-message'
+      );
+
+
+    const submitButton =
+      document.getElementById(
+        'btn-submit'
+      );
+
+
+    const buttonText =
+      document.getElementById(
+        'btn-text'
+      );
+
+
+    const buttonSpinner =
+      document.getElementById(
+        'btn-spinner'
+      );
+
+
+    const buttonLoadingText =
+      document.getElementById(
+        'btn-loading-text'
+      );
+
+
+    const togglePasswordButton =
+      document.getElementById(
+        'toggle-password'
+      );
+
+
+    const toggleConfirmButton =
+      document.getElementById(
+        'toggle-password-confirm'
+      );
+
+
+    const passwordIcon =
+      document.getElementById(
+        'password-icon'
+      );
+
+
+    const confirmPasswordIcon =
+      document.getElementById(
+        'confirm-password-icon'
+      );
+
+
+
+    /* =========================================================
+       PASSWORD VISIBILITY
+       ========================================================= */
+
+    function togglePassword(
+      input,
+      icon,
+      button
+    ) {
+
+      if (
+        input.type === 'password'
+      ) {
+
+        input.type =
+          'text';
+
+
+        icon.textContent =
+          'visibility_off';
+
+
+        button.setAttribute(
+          'aria-label',
+          'Sembunyikan password'
+        );
+
+
+        button.setAttribute(
+          'aria-pressed',
+          'true'
+        );
+
+      } else {
+
+        input.type =
+          'password';
+
+
+        icon.textContent =
+          'visibility';
+
+
+        button.setAttribute(
+          'aria-label',
+          'Tampilkan password'
+        );
+
+
+        button.setAttribute(
+          'aria-pressed',
+          'false'
+        );
+
+      }
+
+    }
+
+
+    togglePasswordButton.addEventListener(
+      'click',
+      function() {
+
+        togglePassword(
+          passwordInput,
+          passwordIcon,
+          togglePasswordButton
+        );
+
+      }
+    );
+
+
+    toggleConfirmButton.addEventListener(
+      'click',
+      function() {
+
+        togglePassword(
+          confirmPasswordInput,
+          confirmPasswordIcon,
+          toggleConfirmButton
+        );
+
+      }
+    );
+
+
+
+    /* =========================================================
+       EMAIL
+       ========================================================= */
+
+    function isValidEmail(
+      value
+    ) {
+
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        value
+      );
+
+    }
+
+
+
+    /* =========================================================
+       PHONE
+       ========================================================= */
+
+    function normalizePhone(
+      value
+    ) {
+
+      let phone =
+        value.replace(
+          /[\s\-()+]/g,
+          ''
+        );
+
+
+      /*
+       * 08123456789
+       *
+       * menjadi
+       *
+       * 628123456789
+       */
+
+      if (
+        phone.startsWith('0')
+      ) {
+
+        phone =
+          '62' +
+          phone.substring(1);
+
+      }
+
+
+      return phone;
+
+    }
+
+
+
+    function isValidPhone(
+      value
+    ) {
+
+      const phone =
+        normalizePhone(
+          value
+        );
+
+
+      return /^62\d{8,13}$/.test(
+        phone
+      );
+
+    }
+
+
+
+    /* =========================================================
+       IDENTIFIER
+       ========================================================= */
+
+    function isValidIdentifier(
+      value
+    ) {
+
+      return (
+        isValidEmail(value) ||
+        isValidPhone(value)
+      );
+
+    }
+
+
+
+    /* =========================================================
+       CLEAR ALL ERRORS
+       ========================================================= */
+
+    function clearErrors() {
+
+      identifierError.classList.add(
+        'hidden'
+      );
+
+
+      identifierError.classList.remove(
+        'flex'
+      );
+
+
+      passwordError.classList.add(
+        'hidden'
+      );
+
+
+      passwordError.classList.remove(
+        'flex'
+      );
+
+
+      mismatchError.classList.add(
+        'hidden'
+      );
+
+
+      mismatchError.classList.remove(
+        'flex'
+      );
+
+
+      errorBanner.classList.add(
+        'hidden'
+      );
+
+
+      nameInput.classList.remove(
+        'input-error'
+      );
+
+
+      identifierInput.classList.remove(
+        'input-error'
+      );
+
+
+      passwordInput.classList.remove(
+        'input-error'
+      );
+
+
+      confirmPasswordInput.classList.remove(
+        'input-error'
+      );
+
+
+      identifierInput.setAttribute(
+        'aria-invalid',
+        'false'
+      );
+
+
+      passwordInput.setAttribute(
+        'aria-invalid',
+        'false'
+      );
+
+
+      confirmPasswordInput.setAttribute(
+        'aria-invalid',
+        'false'
+      );
+
+    }
+
+
+
+    /* =========================================================
+       SHOW IDENTIFIER ERROR
+       ========================================================= */
+
+    function showIdentifierError(
+      message
+    ) {
+
+      identifierInput.classList.add(
+        'input-error'
+      );
+
+
+      identifierInput.setAttribute(
+        'aria-invalid',
+        'true'
+      );
+
+
+      identifierErrorMsg.textContent =
+        message;
+
+
+      identifierError.classList.remove(
+        'hidden'
+      );
+
+
+      identifierError.classList.add(
+        'flex'
+      );
+
+    }
+
+
+
+    /* =========================================================
+       SHOW PASSWORD ERROR
+       ========================================================= */
+
+    function showPasswordError(
+      message
+    ) {
+
+      passwordInput.classList.add(
+        'input-error'
+      );
+
+
+      passwordInput.setAttribute(
+        'aria-invalid',
+        'true'
+      );
+
+
+      passwordErrorMsg.textContent =
+        message;
+
+
+      passwordError.classList.remove(
+        'hidden'
+      );
+
+
+      passwordError.classList.add(
+        'flex'
+      );
+
+    }
+
+
+
+    /* =========================================================
+       SHOW MISMATCH
+       ========================================================= */
+
+    function showMismatchError(
+      message
+    ) {
+
+      confirmPasswordInput.classList.add(
+        'input-error'
+      );
+
+
+      confirmPasswordInput.setAttribute(
+        'aria-invalid',
+        'true'
+      );
+
+
+      mismatchErrorMsg.textContent =
+        message;
+
+
+      mismatchError.classList.remove(
+        'hidden'
+      );
+
+
+      mismatchError.classList.add(
+        'flex'
+      );
+
+    }
+
+
+
+    /* =========================================================
+       GLOBAL ERROR
+       ========================================================= */
+
+    function showGlobalError(
+      message
+    ) {
+
+      errorBannerMessage.textContent =
+        message;
+
+
+      errorBanner.classList.remove(
+        'hidden'
+      );
+
+    }
+
+
+
+    function hideGlobalError() {
+
+      errorBanner.classList.add(
+        'hidden'
+      );
+
+    }
+
+
+
+    /* =========================================================
+       LOADING
+       ========================================================= */
+
+    function setLoading(
+      loading
+    ) {
+
+      submitButton.disabled =
+        loading;
+
+
+      if (loading) {
+
+        buttonText.classList.add(
+          'hidden'
+        );
+
+
+        buttonSpinner.classList.remove(
+          'hidden'
+        );
+
+
+        buttonLoadingText.classList.remove(
+          'hidden'
+        );
+
+      } else {
+
+        buttonText.classList.remove(
+          'hidden'
+        );
+
+
+        buttonSpinner.classList.add(
+          'hidden'
+        );
+
+
+        buttonLoadingText.classList.add(
+          'hidden'
+        );
+
+      }
+
+    }
+
+
+
+    /* =========================================================
+       RETURN URL
+       ========================================================= */
+
+    function getReturnUrl() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const returnUrl =
+        params.get(
+          'returnUrl'
+        );
+
+
+      if (!returnUrl) {
+
+        return REGISTER_CONFIG.defaultRedirect;
+
+      }
+
+
+      /*
+       * Security:
+       *
+       * Hanya boleh redirect
+       * ke internal path.
+       */
+
+      if (
+        !returnUrl.startsWith('/') ||
+        returnUrl.startsWith('//')
+      ) {
+
+        return REGISTER_CONFIG.defaultRedirect;
+
+      }
+
+
+      return returnUrl;
+
+    }
+
+
+
+    /* =========================================================
+       SESSION
+       ========================================================= */
+
+    function saveSession(
+      registerData
+    ) {
+
+      /*
+       * Password TIDAK PERNAH
+       * disimpan.
+       */
+
+      const session = {
+
+        isLoggedIn:
+          true,
+
+
+        user: {
+
+          id:
+            registerData.user?.id ||
+            null,
+
+
+          name:
+            registerData.user?.name ||
+            '-',
+
+
+          email:
+            registerData.user?.email ||
+            null,
+
+
+          phone:
+            registerData.user?.phone ||
+            null,
+
+
+          photo:
+            registerData.user?.photo ||
+            null
+
+        },
+
+
+        token:
+          registerData.token ||
+          null,
+
+
+        loginAt:
+          new Date().toISOString()
+
+      };
+
+
+      localStorage.setItem(
+        'kataloga_session',
+        JSON.stringify(session)
+      );
+
+    }
+
+
+
+    /* =========================================================
+       REGISTER API
+       ========================================================= */
+
+    async function registerUser(
+      data
+    ) {
+
+      const response =
+        await fetch(
+          REGISTER_CONFIG.apiEndpoint,
+          {
+
+            method:
+              'POST',
+
+
+            headers: {
+
+              'Content-Type':
+                'application/json',
+
+              'Accept':
+                'application/json'
+
+            },
+
+
+            /*
+             * Mendukung backend
+             * dengan cookie session.
+             */
+
+            credentials:
+              'include',
+
+
+            body:
+              JSON.stringify(data)
+
+          }
+        );
+
+
+      let result =
+        null;
+
+
+      try {
+
+        result =
+          await response.json();
+
+      } catch (error) {
+
+        result =
+          null;
+
+      }
+
+
+
+      /* =====================================================
+         REGISTER GAGAL
+         ===================================================== */
+
+      if (!response.ok) {
+
+        return {
+
+          success:
+            false,
+
+          message:
+            result?.message ||
+            'Pendaftaran gagal. Silakan periksa kembali data Anda.',
+
+          field:
+            result?.field ||
+            null
+
+        };
+
+      }
+
+
+
+      /* =====================================================
+         REGISTER BERHASIL
+         ===================================================== */
+
+      return {
+
+        success:
+          true,
+
+        user:
+          result?.user ||
+          null,
+
+        token:
+          result?.token ||
+          null
+
+      };
+
+    }
+
+
+
+    /* =========================================================
+       REGISTER SUBMIT
+       ========================================================= */
+
+    async function handleRegisterSubmit(
+      event
+    ) {
+
+      event.preventDefault();
+
+
+      clearErrors();
+
+
+      hideGlobalError();
+
+
+
+      const name =
+        nameInput.value.trim();
+
+
+      const identifier =
+        identifierInput.value.trim();
+
+
+      const password =
+        passwordInput.value;
+
+
+      const confirmPassword =
+        confirmPasswordInput.value;
+
+
+
+      /* =====================================================
+         IDENTIFIER REQUIRED
+         ===================================================== */
+
+      if (!identifier) {
+
+        showIdentifierError(
+          'Email atau nomor HP wajib diisi.'
+        );
+
+
+        identifierInput.focus();
+
+
+        return;
+
+      }
+
+
+
+      /* =====================================================
+         IDENTIFIER FORMAT
+         ===================================================== */
+
+      if (
+        !isValidIdentifier(
+          identifier
+        )
+      ) {
+
+        showIdentifierError(
+          'Masukkan email atau nomor HP yang valid.'
+        );
+
+
+        identifierInput.focus();
+
+
+        return;
+
+      }
+
+
+
+      /* =====================================================
+         PASSWORD REQUIRED
+         ===================================================== */
+
+      if (!password) {
+
+        showPasswordError(
+          'Password wajib diisi.'
+        );
+
+
+        passwordInput.focus();
+
+
+        return;
+
+      }
+
+
+
+      /* =====================================================
+         PASSWORD LENGTH
+         ===================================================== */
+
+      if (
+        password.length <
+        REGISTER_CONFIG.minPasswordLength
+      ) {
+
+        showPasswordError(
+          'Password minimal 8 karakter.'
+        );
+
+
+        passwordInput.focus();
+
+
+        return;
+
+      }
+
+
+
+      /* =====================================================
+         CONFIRM PASSWORD
+         ===================================================== */
+
+      if (!confirmPassword) {
+
+        showMismatchError(
+          'Konfirmasi password wajib diisi.'
+        );
+
+
+        confirmPasswordInput.focus();
+
+
+        return;
+
+      }
+
+
+
+      /* =====================================================
+         PASSWORD MATCH
+         ===================================================== */
+
+      if (
+        password !==
+        confirmPassword
+      ) {
+
+        showMismatchError(
+          'Password tidak cocok. Pastikan penulisan sama persis.'
+        );
+
+
+        confirmPasswordInput.focus();
+
+
+        return;
+
+      }
+
+
+
+      /* =====================================================
+         NORMALIZE IDENTIFIER
+         ===================================================== */
+
+      let normalizedIdentifier =
+        identifier;
+
+
+      if (
+        !isValidEmail(
+          identifier
+        ) &&
+        isValidPhone(
+          identifier
+        )
+      ) {
+
+        normalizedIdentifier =
+          normalizePhone(
+            identifier
+          );
+
+      }
+
+
+
+      /* =====================================================
+         START LOADING
+         ===================================================== */
+
+      setLoading(true);
+
+
+
+      try {
+
+        const result =
+          await registerUser({
+
+            /*
+             * Nama boleh kosong.
+             */
+
+            name:
+              name || null,
+
+
+            /*
+             * Email atau phone.
+             */
+
+            identifier:
+              normalizedIdentifier,
+
+
+            /*
+             * Password dikirim
+             * hanya ke backend.
+             */
+
+            password:
+              password,
+
+
+            password_confirmation:
+              confirmPassword
+
+          });
+
+
+
+        /* ===================================================
+           REGISTER FAILED
+           =================================================== */
+
+        if (!result.success) {
+
+          setLoading(false);
+
+
+          /*
+           * Jika backend memberi tahu
+           * field tertentu bermasalah,
+           * tampilkan error di field tersebut.
+           */
+
+          if (
+            result.field ===
+            'identifier'
+          ) {
+
+            showIdentifierError(
+              result.message
+            );
+
+            identifierInput.focus();
+
+          } else if (
+            result.field ===
+            'password'
+          ) {
+
+            showPasswordError(
+              result.message
+            );
+
+            passwordInput.focus();
+
+          } else if (
+            result.field ===
+            'password_confirmation'
+          ) {
+
+            showMismatchError(
+              result.message
+            );
+
+            confirmPasswordInput.focus();
+
+          } else {
+
+            /*
+             * Error umum.
+             */
+
+            showGlobalError(
+              result.message
+            );
+
+          }
+
+
+          return;
+
+        }
+
+
+
+        /* ===================================================
+           REGISTER SUCCESS
+           =================================================== */
+
+        if (!result.user) {
+
+          setLoading(false);
+
+
+          showGlobalError(
+            'Pendaftaran berhasil tetapi data akun tidak ditemukan.'
+          );
+
+
+          return;
+
+        }
+
+
+
+        /* ===================================================
+           SAVE SESSION
+           =================================================== */
+
+        saveSession({
+
+          user:
+            result.user,
+
+          token:
+            result.token
+
+        });
+
+
+
+        /* ===================================================
+           REDIRECT
+           =================================================== */
+
+        const returnUrl =
+          getReturnUrl();
+
+
+        /*
+         * Setelah register,
+         * user langsung dianggap login.
+         */
+
+        window.location.replace(
+          returnUrl
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          'Register request error:',
+          error
+        );
+
+
+        setLoading(false);
+
+
+        showGlobalError(
+          'Tidak dapat terhubung ke server. Silakan coba lagi.'
+        );
+
+      }
+
+    }
+
+
+
+    /* =========================================================
+       FORM EVENT
+       ========================================================= */
+
+    registerForm.addEventListener(
+      'submit',
+      handleRegisterSubmit
+    );
+
+
+
+    /* =========================================================
+       LIVE VALIDATION
+       ========================================================= */
+
+    identifierInput.addEventListener(
+      'input',
+      function() {
+
+        identifierInput.classList.remove(
+          'input-error'
+        );
+
+
+        identifierInput.setAttribute(
+          'aria-invalid',
+          'false'
+        );
+
+
+        identifierError.classList.add(
+          'hidden'
+        );
+
+
+        identifierError.classList.remove(
+          'flex'
+        );
+
+
+        hideGlobalError();
+
+      }
+    );
+
+
+
+    passwordInput.addEventListener(
+      'input',
+      function() {
+
+        passwordInput.classList.remove(
+          'input-error'
+        );
+
+
+        passwordInput.setAttribute(
+          'aria-invalid',
+          'false'
+        );
+
+
+        passwordError.classList.add(
+          'hidden'
+        );
+
+
+        passwordError.classList.remove(
+          'flex'
+        );
+
+
+        hideGlobalError();
+
+
+        /*
+         * Jika konfirmasi password
+         * sudah terisi, cek ulang.
+         */
+
+        if (
+          confirmPasswordInput.value
+        ) {
+
+          if (
+            passwordInput.value !==
+            confirmPasswordInput.value
+          ) {
+
+            showMismatchError(
+              'Password tidak cocok.'
+            );
+
+          } else {
+
+            mismatchError.classList.add(
+              'hidden'
+            );
+
+            mismatchError.classList.remove(
+              'flex'
+            );
+
+            confirmPasswordInput.classList.remove(
+              'input-error'
+            );
+
+          }
+
+        }
+
+      }
+    );
+
+
+
+    confirmPasswordInput.addEventListener(
+      'input',
+      function() {
+
+        hideGlobalError();
+
+
+        if (
+          !confirmPasswordInput.value
+        ) {
+
+          mismatchError.classList.add(
+            'hidden'
+          );
+
+          mismatchError.classList.remove(
+            'flex'
+          );
+
+          confirmPasswordInput.classList.remove(
+            'input-error'
+          );
+
+          return;
+
+        }
+
+
+        if (
+          passwordInput.value !==
+          confirmPasswordInput.value
+        ) {
+
+          showMismatchError(
+            'Password tidak cocok.'
+          );
+
+        } else {
+
+          mismatchError.classList.add(
+            'hidden'
+          );
+
+          mismatchError.classList.remove(
+            'flex'
+          );
+
+          confirmPasswordInput.classList.remove(
+            'input-error'
+          );
+
+        }
+
+      }
+    );
+
+
+
+    /* =========================================================
+       LOGIN LINK
+       ========================================================= */
+
+    function setupLoginLink() {
+
+      const loginLink =
+        document.getElementById(
+          'login-link'
+        );
+
+
+      if (!loginLink) {
+
+        return;
+
+      }
+
+
+      const returnUrl =
+        getReturnUrl();
+
+
+      loginLink.href =
+        '/login?returnUrl=' +
+        encodeURIComponent(
+          returnUrl
+        );
+
+    }
+
+
+
+    /* =========================================================
+       BACK TO STORE
+       ========================================================= */
+
+    function setupBackToStore() {
+
+      const backLink =
+        document.getElementById(
+          'back-to-store'
+        );
+
+
+      if (!backLink) {
+
+        return;
+
+      }
+
+
+      backLink.href =
+        getReturnUrl();
+
+    }
+
+
+
+    /* =========================================================
+       INITIALIZE
+       ========================================================= */
+
+    function initRegisterPage() {
+
+      setupLoginLink();
+
+      setupBackToStore();
+
+    }
+
+
+
+    /* =========================================================
+       START
+       ========================================================= */
+
+    initRegisterPage();
+
+  </script>
+
+</body>
+
+</html>

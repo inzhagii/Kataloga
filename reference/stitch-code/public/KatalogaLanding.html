@@ -1,0 +1,338 @@
+<!DOCTYPE html><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kataloga - Solusi Digital Entrepreneur Indonesia</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-brand": "#2563EB",
+                        "text-charcoal": "#111827",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container-low": "#f1f3ff",
+                        "primary-container": "#2563eb",
+                        "tertiary": "#006329",
+                        "on-secondary": "#ffffff",
+                        "background": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#edf0ff",
+                        "inverse-surface": "#293040",
+                        "outline": "#737686",
+                        "surface-bright": "#f9f9ff",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e1e8fd",
+                        "surface-container": "#e9edff",
+                        "secondary-fixed": "#dce3ec",
+                        "surface": "#f9f9ff",
+                        "surface-container-highest": "#dce2f7",
+                        "on-error-container": "#93000a",
+                        "primary": "#004ac6",
+                        "outline-variant": "#c3c6d7",
+                        "on-tertiary-container": "#c7ffca",
+                        "on-surface": "#141b2b",
+                        "on-secondary-fixed-variant": "#40484f",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-container": "#007f36",
+                        "secondary-fixed-dim": "#c0c7d0",
+                        "on-secondary-container": "#5e656d",
+                        "tertiary-fixed-dim": "#62df7d",
+                        "on-secondary-fixed": "#151c23",
+                        "on-tertiary-fixed-variant": "#005320",
+                        "surface-tint": "#0053db",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary-container": "#dce3ec",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed": "#7ffc97",
+                        "on-primary-container": "#eeefff",
+                        "on-tertiary-fixed": "#002109",
+                        "on-background": "#141b2b",
+                        "surface-variant": "#dce2f7",
+                        "secondary": "#585f67",
+                        "surface-dim": "#d3daef",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#434655"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section_gap_md": "96px",
+                        "stack_xs": "8px",
+                        "margin_mobile": "16px",
+                        "section_gap_lg": "120px",
+                        "stack_sm": "16px",
+                        "stack_md": "24px",
+                        "gutter": "24px",
+                        "stack_lg": "48px"
+                    },
+                    "fontFamily": {
+                        "sans": ["Plus Jakarta Sans", "sans-serif"],
+                        "hero-h1": ["Plus Jakarta Sans"],
+                        "body-main": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "card-heading": ["Plus Jakarta Sans"],
+                        "section-h2": ["Plus Jakarta Sans"],
+                        "hero-h1-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "hero-h1": ["52px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-main": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "card-heading": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "section-h2": ["36px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "hero-h1-mobile": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Smooth scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Subtle float animation for hero image */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .btn-hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-text-charcoal font-sans antialiased selection:bg-primary-brand selection:text-white">
+<!-- Navbar Component -->
+<nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+<div class="flex justify-between items-center px-gutter py-4 mx-auto max-w-[1200px]">
+<div class="text-card-heading font-bold text-primary-brand tracking-tight">KATALOGA</div>
+
+<div class="flex items-center gap-4">
+<a class="hidden md:block text-gray-600 hover:text-primary-brand font-medium text-sm transition-colors" href="#">Masuk</a>
+<button class="bg-primary-brand text-white font-medium text-sm px-5 h-[40px] rounded-[8px] hover:bg-blue-700 transition-all duration-200 btn-hover-lift flex items-center gap-1">
+                Buat Toko <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pt-[80px]">
+<!-- Hero Section -->
+<section class="bg-white">
+<div class="max-w-[1200px] mx-auto px-gutter py-section_gap_md md:py-section_gap_lg flex flex-col md:flex-row items-center gap-12 md:justify-between">
+<div class="w-full md:w-1/2 flex flex-col gap-stack_md text-center md:text-left order-2 md:order-1">
+<h1 class="font-hero-h1 text-3xl md:text-[44px] text-text-charcoal font-bold leading-tight">Toko <span class="text-primary-brand">Lebih Rapi</span>. Jualan Jadi <span class="text-primary-brand">Lebih Mudah</span> dengan Kataloga.</h1>
+<p class="text-gray-600 text-lg max-w-xl mx-auto md:mx-0 leading-loose">
+                    Platform katalog digital untuk membantu seller menampilkan produk dan terhubung dengan customer.
+                </p>
+<div class="pt-4 flex justify-center md:justify-start">
+<button class="bg-primary-brand text-white font-medium text-base px-8 h-[48px] rounded-[12px] hover:bg-blue-700 transition-all duration-200 btn-hover-lift flex items-center gap-2">&nbsp;Buat Toko Sekarang <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="w-full md:w-1/2 relative mb-8 md:mb-0 order-1 md:order-2">
+<img alt="Kataloga Hero Mockup" class="w-full h-auto relative z-10 float-anim object-contain scale-110 transition-transform shadow-none drop-shadow-none" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5aoF4f5OplzUqdJFVvYXaEpmTInGP0tm-CcCzP6VbvDpINjzUS6NJSxEkCPwZ2HgjmWfMHtWyYzfwe8IIwcslTJfjSjUcqhA8SvofK_UuA0t4-uEBJsiRST7IhZG-zOEz-ifScc4jeuS8icz9jT0s6klrqltYfIlyL5dx2n_jhhy9TrU7224tgOPX4yA6lJ-mLIXbE-Mp9tE88Mr-yqcwQJo2ukfA4amCakgeAMWhLwPICikt9pB--rVWkCcHcOgeBx-LB4Ms4Z0jppE">
+</div>
+</div>
+</section>
+<!-- Why Choose Kataloga -->
+<section class="bg-surface-container-low py-section_gap_md" id="tentang">
+<div class="max-w-[1200px] mx-auto px-gutter">
+<div class="text-center mb-16 md:mb-20">
+<h2 class="font-section-h2 text-section-h2 text-text-charcoal mb-4">Kenapa Banyak Seller Memilih Kataloga?</h2>
+<p class="text-gray-600">Solusi lengkap untuk manajemen toko digital yang efisien.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bg-white p-8 rounded-[16px] border border-[#E5E7EB] hover:-translate-y-1 transition-all duration-300 group">
+<div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-3xl font-light">inventory_2</span>
+</div>
+<h3 class="font-card-heading text-card-heading text-text-charcoal mb-3">Kelola Produk dengan Mudah</h3>
+<p class="text-gray-600">Tambah, edit, dan atur stok produk dalam satu dashboard yang intuitif tanpa keahlian teknis.</p>
+</div>
+<!-- Card 2 -->
+<div class="bg-white p-8 rounded-[16px] border border-[#E5E7EB] hover:-translate-y-1 transition-all duration-300 group">
+<div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-3xl font-light">storefront</span>
+</div>
+<h3 class="font-card-heading text-card-heading text-text-charcoal mb-3">Tampilkan Toko dengan Rapi</h3>
+<p class="text-gray-600">Katalog digital yang profesional dan terstruktur, memberikan kesan terpercaya bagi pelanggan Anda.</p>
+</div>
+<!-- Card 3 -->
+<div class="bg-white p-8 rounded-[16px] border border-[#E5E7EB] hover:-translate-y-1 transition-all duration-300 group">
+<div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-3xl font-light">hub</span>
+</div>
+<h3 class="font-card-heading text-card-heading text-text-charcoal mb-3">Terhubung dengan Channel Penjualanmu</h3>
+<p class="text-gray-600">Integrasi mulus dengan berbagai platform untuk memperluas jangkauan pasar tanpa ribet.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Benefits Grid -->
+<section class="bg-white py-section_gap_md" id="fitur">
+<div class="max-w-[1200px] mx-auto px-gutter">
+<div class="text-center mb-16 md:mb-20">
+<h2 class="font-section-h2 text-section-h2 text-text-charcoal mb-4">Apa yang Kamu Dapatkan di Kataloga?</h2>
+<p class="text-gray-600">Fitur esensial untuk memaksimalkan potensi bisnis online Anda.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-10">
+<!-- Feature 1 -->
+<div class="flex items-start gap-4 group bg-white p-6 rounded-[16px] border border-[#E5E7EB] transition-all duration-300">
+<div class="mt-1 bg-blue-50 p-2 rounded-lg border border-gray-100 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-2xl font-light">category</span>
+</div>
+<div>
+<h4 class="font-card-heading text-[18px] text-text-charcoal mb-2">Manajemen Produk</h4>
+<p class="text-gray-600 text-sm leading-relaxed">Organisir ribuan SKU dengan sistem kategori yang fleksibel.</p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="flex items-start gap-4 group bg-white p-6 rounded-[16px] border border-[#E5E7EB] transition-all duration-300">
+<div class="mt-1 bg-blue-50 p-2 rounded-lg border border-gray-100 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-2xl font-light">web</span>
+</div>
+<div>
+<h4 class="font-card-heading text-[18px] text-text-charcoal mb-2">Toko Sendiri</h4>
+<p class="text-gray-600 text-sm leading-relaxed">Kelola bisnis dengan mudah dan tampilkan brand secara profesional.</p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="flex items-start gap-4 group bg-white p-6 rounded-[16px] border border-[#E5E7EB] transition-all duration-300">
+<div class="mt-1 bg-blue-50 p-2 rounded-lg border border-gray-100 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-2xl font-light">smartphone</span>
+</div>
+<div>
+<h4 class="font-card-heading text-[18px] text-text-charcoal mb-2">Mobile Friendly</h4>
+<p class="text-gray-600 text-sm leading-relaxed">Tampilan optimal di semua perangkat, terutama smartphone.</p>
+</div>
+</div>
+<!-- Feature 4 -->
+<div class="flex items-start gap-4 group bg-white p-6 rounded-[16px] border border-[#E5E7EB] transition-all duration-300">
+<div class="mt-1 bg-blue-50 p-2 rounded-lg border border-gray-100 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-2xl font-light">forum</span>
+</div>
+<div>
+<h4 class="font-card-heading text-[18px] text-text-charcoal mb-2">Terhubung ke WhatsApp &amp; Marketplace</h4>
+<p class="text-gray-600 text-sm leading-relaxed">Langsung terima pesanan via chat atau arahkan ke platform lain.</p>
+</div>
+</div>
+<!-- Feature 5 -->
+<div class="flex items-start gap-4 group bg-white p-6 rounded-[16px] border border-[#E5E7EB] transition-all duration-300">
+<div class="mt-1 bg-blue-50 p-2 rounded-lg border border-gray-100 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-2xl font-light">insights</span>
+</div>
+<div>
+<h4 class="font-card-heading text-[18px] text-text-charcoal mb-2">Customer Interest</h4>
+<p class="text-gray-600 text-sm leading-relaxed">Pantau produk mana yang paling banyak dilihat dan diminati.</p>
+</div>
+</div>
+<!-- Feature 6 -->
+<div class="flex items-start gap-4 group bg-white p-6 rounded-[16px] border border-[#E5E7EB] transition-all duration-300">
+<div class="mt-1 bg-blue-50 p-2 rounded-lg border border-gray-100 group-hover:bg-blue-100 transition-colors">
+<span class="material-symbols-outlined text-primary-brand text-2xl font-light">link</span>
+</div>
+<div>
+<h4 class="font-card-heading text-[18px] text-text-charcoal mb-2">Satu Link Toko</h4>
+<p class="text-gray-600 text-sm leading-relaxed">Satu tautan untuk semua bio media sosial yang mengarahkan ke toko Anda.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="bg-surface-container-low py-section_gap_lg" id="cara-kerja">
+<div class="max-w-[1200px] mx-auto px-gutter">
+<div class="text-center mb-20 md:mb-24">
+<h2 class="font-section-h2 text-section-h2 text-text-charcoal mb-4">Mulai Buat Toko di Kataloga</h2>
+<p class="text-gray-600">Langkah mudah untuk go digital hari ini.</p>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-start relative">
+<!-- Connector Line -->
+<div class="hidden md:block absolute top-8 left-[12%] right-[12%] h-[1px] bg-gray-200 z-0"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center text-center w-full md:w-1/4 mb-10 md:mb-0">
+<div class="w-16 h-16 rounded-full bg-primary-brand text-white flex items-center justify-center font-bold text-xl mb-6 ring-4 ring-white" style="box-shadow: rgba(37, 99, 235, 0.4) 0px 0px 15px;">01</div>
+<h4 class="font-card-heading text-lg text-text-charcoal mb-2">Daftar Akun</h4>
+<p class="text-gray-600 text-sm px-4">Buat akun dengan email atau nomor telepon Anda.</p>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center text-center w-full md:w-1/4 mb-10 md:mb-0">
+<div class="w-16 h-16 rounded-full bg-white border border-gray-200 text-gray-500 flex items-center justify-center font-bold text-xl mb-6" style="box-shadow: rgba(37, 99, 235, 0.4) 0px 0px 15px;">02</div>
+<h4 class="font-card-heading text-lg text-text-charcoal mb-2">Buat Toko</h4>
+<p class="text-gray-600 text-sm px-4">Pilih nama toko dan sesuaikan profil bisnis.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center text-center w-full md:w-1/4 mb-10 md:mb-0">
+<div class="w-16 h-16 rounded-full bg-white border border-gray-200 text-gray-500 flex items-center justify-center font-bold text-xl mb-6" style="box-shadow: rgba(37, 99, 235, 0.4) 0px 0px 15px;">03</div>
+<h4 class="font-card-heading text-lg text-text-charcoal mb-2">Tambahkan Produk</h4>
+<p class="text-gray-600 text-sm px-4">Upload foto, deskripsi, dan harga produk Anda.</p>
+</div>
+<!-- Step 4 -->
+<div class="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
+<div class="w-16 h-16 rounded-full bg-white border border-gray-200 text-gray-500 flex items-center justify-center font-bold text-xl mb-6" style="box-shadow: rgba(37, 99, 235, 0.4) 0px 0px 15px;">04</div>
+<h4 class="font-card-heading text-lg text-text-charcoal mb-2">Bagikan Toko</h4>
+<p class="text-gray-600 text-sm px-4">Sebarkan link toko dan mulai terima pesanan.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="bg-white py-section_gap_lg pb-section_gap_lg">
+<div class="max-w-[1200px] mx-auto px-gutter">
+<div class="bg-primary-brand text-white rounded-[24px] p-12 md:p-16 text-center" style="background: linear-gradient(135deg, rgb(37, 99, 235) 0%, rgb(29, 78, 216) 100%);">
+<div class="max-w-2xl mx-auto flex flex-col items-center">
+<h2 class="font-section-h2 text-section-h2 mb-6 font-bold">Daftarkan Toko Anda di Kataloga</h2>
+<p class="text-blue-100 text-lg mb-10">Kelola produk, tampilkan toko dengan mudah,
+dan terhubung dengan customer tanpa harus
+berpindah-pindah.</p>
+<button class="bg-white text-primary-brand font-medium text-base px-8 h-[48px] rounded-[12px] hover:bg-gray-50 transition-all duration-200 btn-hover-lift flex items-center gap-2">Buat Toko di Kataloga <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="bg-white border-t border-gray-100"><div class="w-full py-section_gap_md px-gutter flex flex-col md:flex-row justify-between items-start max-w-[1200px] mx-auto"><div class="mb-8 md:mb-0 max-w-xs"><div class="text-card-heading font-bold text-primary-brand tracking-tight mb-4">KATALOGA</div><p class="text-gray-600 text-sm mb-6">Solusi Digital Entrepreneur Indonesia. Kelola toko online Anda dengan mudah, efisien, dan profesional.</p><div class="text-gray-500 text-sm">© 2024 Kataloga.</div></div><div class="flex flex-wrap gap-x-16 gap-y-8"><div class="flex flex-col gap-3"><span class="font-card-heading text-sm font-semibold text-text-charcoal">Produk</span><a class="text-gray-600 text-sm hover:text-primary-brand transition-colors duration-200" href="#">Fitur</a><a class="text-gray-600 text-sm hover:text-primary-brand transition-colors duration-200" href="#">Harga</a><a class="text-gray-600 text-sm hover:text-primary-brand transition-colors duration-200" href="#">Produk Baru</a></div><div class="flex flex-col gap-3"><span class="font-card-heading text-sm font-semibold text-text-charcoal">Bantuan</span><a class="text-gray-600 text-sm hover:text-primary-brand transition-colors duration-200" href="#">Kontak</a><a class="text-gray-600 text-sm hover:text-primary-brand transition-colors duration-200" href="#">Panduan</a><a class="text-gray-600 text-sm hover:text-primary-brand transition-colors duration-200" href="#">FAQ</a></div></div></div></footer>
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,367 @@
+import { useMemo, useState } from 'react'
+import EmptyState from '../../components/shared/EmptyState'
+import Toast from '../../components/shared/Toast'
+import StoreIdentitySection from '../../components/seller/mystore/StoreIdentitySection'
+import StoreInfoSection from '../../components/seller/mystore/StoreInfoSection'
+import StoreContactSection from '../../components/seller/mystore/StoreContactSection'
+import AnnouncementSection from '../../components/seller/mystore/AnnouncementSection'
+import { useMyStore } from '../../hooks/useMyStore'
+import { canChangeStoreId, updateStore } from '../../services/storeService'
+import { recordStoreUpdated } from '../../services/activityService'
+import {
+  isValidPhone,
+  normalizePhone,
+} from '../../services/authService'
+import { normalizeStoreId, validateStoreId } from '../../utils/storeId'
+
+function SectionToggleButton({ open, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={open}
+      aria-label={open ? 'Tutup bagian' : 'Buka bagian'}
+      className="flex h-8 w-8 items-center justify-center rounded-lg text-secondary transition-colors hover:bg-surface-container hover:text-on-surface lg:hidden"
+    >
+      <span
+        className={`material-symbols-outlined text-[20px] transition-transform ${open ? 'rotate-90' : ''}`}
+        aria-hidden="true"
+      >
+        chevron_right
+      </span>
+    </button>
+  )
+}
+
+function StoreTitleBar({ saving, onSave }) {
+  return (
+    <button
+      type="button"
+      onClick={onSave}
+      disabled={saving}
+      className="hidden h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 disabled:opacity-50 lg:inline-flex"
+    >
+      <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        save
+      </span>
+      {saving ? 'Menyimpan...' : 'Simpan'}
+    </button>
+  )
+}
+
+function dateLabel(iso) {
+  return new Date(iso).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+/**
+ * Editor loaded with a concrete store. Keyed by store.storeId from the page so
+ * a successful save (including a Store ID change) remounts with fresh values.
+ */
+function MyStoreEditor({ store, onSaved }) {
+  const [form, setForm] = useState({
+    storeId: store.storeId || '',
+    name: store.name || '',
+    description: store.description || '',
+    city: store.city || '',
+    operatingHours: store.operatingHours || '',
+    whatsapp: store.whatsapp || '',
+    logoUrl: store.logoUrl || '',
+  })
+  const [channels, setChannels] = useState(
+    (store.channels || []).map((channel, index) => ({
+      id: `channel-${index}`,
+      name: channel.name,
+      url: channel.url,
+    })),
+  )
+  const [announcementEnabled, setAnnouncementEnabled] = useState(
+    Boolean(store.announcement && store.announcement.length > 0),
+  )
+  const [announcementText, setAnnouncementText] = useState(
+    (store.announcement || []).join('\n'),
+  )
+  const [errors, setErrors] = useState({})
+  const [logoError, setLogoError] = useState('')
+  const [channelError, setChannelError] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [openSections, setOpenSections] = useState(() => new Set(['identity']))
+
+  const cooldown = useMemo(() => {
+    const { allowed, nextChangeDate } = canChangeStoreId(store)
+    return {
+      locked: !allowed,
+      nextChangeLabel: nextChangeDate ? dateLabel(nextChangeDate) : '',
+    }
+  }, [store])
+
+  const availability = 'idle'
+
+  function setField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }))
+    setErrors((current) => {
+      if (!current[field]) {
+        return current
+      }
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
+
+  function toggleSection(name) {
+    setOpenSections((current) => {
+      const next = new Set(current)
+      if (next.has(name)) {
+        next.delete(name)
+      } else {
+        next.add(name)
+      }
+      return next
+    })
+  }
+
+  function validate() {
+    const next = {}
+    if (!form.storeId.trim()) {
+      next.storeId = 'Store ID wajib diisi.'
+    } else {
+      const validation = validateStoreId(form.storeId)
+      if (!validation.valid) {
+        next.storeId = validation.message
+      }
+    }
+    if (!form.name.trim()) {
+      next.name = 'Nama toko wajib diisi.'
+    }
+    if (form.whatsapp.trim() && !isValidPhone(form.whatsapp.trim())) {
+      next.whatsapp = 'Format nomor WhatsApp tidak valid.'
+    }
+    setErrors(next)
+    return Object.keys(next).length === 0
+  }
+
+  async function handleSave() {
+    if (!validate()) {
+      return
+    }
+    setSaving(true)
+    try {
+      const payload = {
+        name: form.name.trim() || store.name,
+        description: form.description.trim(),
+        city: form.city.trim(),
+        operatingHours: form.operatingHours.trim(),
+        whatsapp: form.whatsapp.trim() ? normalizePhone(form.whatsapp.trim()) : '',
+        channels: channels
+          .map((channel) => ({ name: channel.name.trim(), url: channel.url.trim() }))
+          .filter((channel) => Boolean(channel.name) && Boolean(channel.url)),
+        announcement: announcementEnabled
+          ? announcementText
+              .split('\n')
+              .map((line) => line.trim())
+              .filter(Boolean)
+          : [],
+        logoUrl: form.logoUrl || undefined,
+      }
+      if (!cooldown.locked) {
+        payload.storeId = normalizeStoreId(form.storeId)
+      }
+      await updateStore(store.storeId, payload)
+      await recordStoreUpdated()
+      onSaved()
+    } catch (saveError) {
+      const message =
+        saveError instanceof Error ? saveError.message : 'Gagal menyimpan informasi toko.'
+      if (message.toLowerCase().includes('store id')) {
+        setErrors((current) => ({ ...current, storeId: message }))
+      } else {
+        setChannelError(message)
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const toggleProps = (name) => ({
+    open: openSections.has(name),
+    onToggle: () => toggleSection(name),
+  })
+
+  return (
+    <div>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">My Store</h1>
+          <p className="mt-1 text-sm text-secondary">
+            Informasi yang muncul di halaman toko publik kamu.
+          </p>
+        </div>
+        <StoreTitleBar saving={saving} onSave={handleSave} />
+      </div>
+
+      <div className="space-y-5">
+        <section className={openSections.has('identity') ? '' : 'lg:contents'}>
+          <StoreIdentitySection
+            form={form}
+            errors={errors}
+            availability={availability}
+            cooldown={cooldown}
+            onStoreIdChange={(value) => setField('storeId', value)}
+            onStoreIdBlur={() => setErrors((current) => {
+              const next = { ...current }
+              if (form.storeId.trim()) {
+                const validation = validateStoreId(form.storeId)
+                if (validation.valid) {
+                  delete next.storeId
+                } else {
+                  next.storeId = validation.message
+                }
+              }
+              return next
+            })}
+            onLogoChange={(dataUrl) => {
+              setLogoError('')
+              setForm((current) => ({ ...current, logoUrl: dataUrl }))
+            }}
+            onLogoRemove={() => setForm((current) => ({ ...current, logoUrl: '' }))}
+            onLogoError={setLogoError}
+          >
+            <SectionToggleButton {...toggleProps('identity')} />
+          </StoreIdentitySection>
+        </section>
+
+        <section className={openSections.has('info') ? '' : 'lg:contents'}>
+          <StoreInfoSection
+            store={store}
+            form={form}
+            errors={errors}
+            setField={setField}
+          >
+            <SectionToggleButton {...toggleProps('info')} />
+          </StoreInfoSection>
+        </section>
+
+        <section className={openSections.has('contact') ? '' : 'lg:contents'}>
+          <StoreContactSection
+            form={form}
+            errors={errors}
+            setField={setField}
+            channels={channels}
+            onChannelsChange={(value) => {
+              setChannels(value)
+              setChannelError('')
+            }}
+            onChannelError={setChannelError}
+          >
+            <SectionToggleButton {...toggleProps('contact')} />
+          </StoreContactSection>
+        </section>
+
+        <section className={openSections.has('announcement') ? '' : 'lg:contents'}>
+          <AnnouncementSection
+            enabled={announcementEnabled}
+            text={announcementText}
+            onToggle={setAnnouncementEnabled}
+            onTextChange={setAnnouncementText}
+          >
+            <SectionToggleButton {...toggleProps('announcement')} />
+          </AnnouncementSection>
+        </section>
+
+        {channelError ? (
+          <p className="flex items-center gap-1.5 rounded-xl border border-error/20 bg-error-container px-4 py-3 text-sm font-medium text-error" role="alert">
+            <span className="material-symbols-outlined text-lg" aria-hidden="true">
+              error
+            </span>
+            {channelError}
+          </p>
+        ) : null}
+        {logoError ? (
+          <p className="flex items-center gap-1.5 rounded-xl border border-error/20 bg-error-container px-4 py-3 text-sm font-medium text-error" role="alert">
+            <span className="material-symbols-outlined text-lg" aria-hidden="true">
+              error
+            </span>
+            {logoError}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="fixed inset-x-0 bottom-16 z-30 border-t border-outline-variant/60 bg-surface-container-lowest px-4 py-3 lg:hidden">
+        <RsSavingButton saving={saving} onSave={handleSave} />
+      </div>
+    </div>
+  )
+}
+
+function RsSavingButton({ saving, onSave }) {
+  return (
+    <button
+      type="button"
+      onClick={onSave}
+      disabled={saving}
+      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 disabled:opacity-50"
+    >
+      <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        save
+      </span>
+      {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+    </button>
+  )
+}
+
+function MyStorePage() {
+  const { status, store, error, reload } = useMyStore()
+  const [toast, setToast] = useState(null)
+
+  if (status === 'loading') {
+    return (
+      <div className="space-y-5" aria-busy="true">
+        <div className="h-10 w-56 animate-pulse rounded-xl bg-surface-container-high/60" />
+        <div className="h-72 w-full animate-pulse rounded-2xl bg-surface-container-high/60" />
+        <div className="h-72 w-full animate-pulse rounded-2xl bg-surface-container-high/60" />
+      </div>
+    )
+  }
+
+  if (status === 'error' || !store) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">My Store</h1>
+        <EmptyState
+          icon="error"
+          title="Gagal memuat informasi toko"
+          description={error || 'Store tidak ditemukan.'}
+          action={
+            <button
+              type="button"
+              onClick={reload}
+              className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
+            >
+              Coba Lagi
+            </button>
+          }
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <MyStoreEditor
+        key={store.storeId}
+        store={store}
+        onSaved={() => {
+          setToast({ type: 'success', message: 'Informasi toko berhasil disimpan.' })
+          reload()
+        }}
+      />
+      <Toast toast={toast} onClose={() => setToast(null)} />
+    </div>
+  )
+}
+
+export default MyStorePage

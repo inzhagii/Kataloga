@@ -1,0 +1,2768 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    ThinkPad X1 Carbon Gen 10 - Sinar Jaya Komputer
+  </title>
+
+  <!-- Google Fonts -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+
+      theme: {
+        extend: {
+
+          colors: {
+            "on-error": "#ffffff",
+            "tertiary": "#006329",
+            "inverse-surface": "#293040",
+            "secondary-container": "#dce3ec",
+            "error-container": "#ffdad6",
+            "tertiary-container": "#007f36",
+            "primary-fixed-dim": "#b4c5ff",
+            "surface-container-highest": "#dce2f7",
+            "primary-container": "#2563eb",
+            "error": "#ba1a1a",
+            "surface-variant": "#dce2f7",
+            "surface-dim": "#d3daef",
+            "surface": "#f9f9ff",
+            "on-tertiary-container": "#c7ffca",
+            "secondary-fixed-dim": "#c0c7d0",
+            "tertiary-fixed-dim": "#62df7d",
+            "primary": "#004ac6",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f1f3ff",
+            "on-secondary-container": "#5e656d",
+            "outline-variant": "#c3c6d7",
+            "on-error-container": "#93000a",
+            "secondary": "#585f67",
+            "on-secondary-fixed-variant": "#40484f",
+            "surface-container": "#e9edff",
+            "on-primary-container": "#eeefff",
+            "primary-fixed": "#dbe1ff",
+            "on-surface-variant": "#434655",
+            "inverse-primary": "#b4c5ff",
+            "on-tertiary-fixed-variant": "#005320",
+            "secondary-fixed": "#dce3ec",
+            "on-primary-fixed": "#00174b",
+            "surface-container-lowest": "#ffffff",
+            "outline": "#737686",
+            "surface-container-high": "#e1e8fd",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#151c23",
+            "on-primary-fixed-variant": "#003ea8",
+            "background": "#f9f9ff",
+            "on-primary": "#ffffff",
+            "inverse-on-surface": "#edf0ff",
+            "surface-bright": "#f9f9ff",
+            "surface-tint": "#0053db",
+            "on-tertiary-fixed": "#002109",
+            "on-background": "#141b2b",
+            "tertiary-fixed": "#7ffc97",
+            "on-surface": "#141b2b"
+          },
+
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            "2xl": "1rem",
+            full: "9999px"
+          },
+
+          spacing: {
+            gutter: "24px",
+            stack_sm: "16px",
+            stack_md: "24px",
+            stack_lg: "48px"
+          },
+
+          fontFamily: {
+            "label-sm": ["Plus Jakarta Sans"],
+            "section-h2": ["Plus Jakarta Sans"],
+            "card-heading": ["Plus Jakarta Sans"],
+            "body-main": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      overscroll-behavior: none;
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .share-sheet-enter {
+      animation: sheetUp 0.22s ease-out;
+    }
+
+    .modal-enter {
+      animation: modalUp 0.2s ease-out;
+    }
+
+    @keyframes sheetUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes modalUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 767px) {
+      .mobile-safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    }
+  </style>
+
+</head>
+
+
+<body
+  class="bg-surface text-on-surface antialiased font-body-main"
+>
+
+
+  <!-- =====================================================
+       NAVBAR
+  ====================================================== -->
+
+  <header
+    class="fixed top-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container"
+  >
+
+    <div
+      class="max-w-[1140px] mx-auto h-16 px-4 sm:px-6 flex items-center justify-between"
+    >
+
+      <!-- Store Name -->
+      <a
+        href="#"
+        class="font-bold text-sm sm:text-base tracking-tight text-on-surface truncate max-w-[220px]"
+      >
+        Sinar Jaya Komputer
+      </a>
+
+
+      <!-- Guest -->
+      <div
+        id="nav-guest"
+        class="flex items-center gap-1.5 sm:gap-2"
+      >
+
+        <a
+          href="#"
+          class="px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-medium text-secondary hover:text-primary transition-colors"
+        >
+          Masuk
+        </a>
+
+        <a
+          href="#"
+          class="px-3 sm:px-4 py-2 rounded-lg bg-primary text-on-primary text-xs sm:text-sm font-semibold hover:bg-primary-container transition-colors"
+        >
+          Daftar
+        </a>
+
+      </div>
+
+
+      <!-- Logged In -->
+      <div
+        id="nav-user"
+        class="hidden items-center"
+      >
+
+        <button
+          id="profile-trigger"
+          type="button"
+          class="flex items-center gap-2"
+          aria-expanded="false"
+        >
+
+          <div
+            class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center text-xs font-bold"
+          >
+            AR
+          </div>
+
+          <span
+            class="hidden sm:block text-xs font-semibold text-on-surface"
+          >
+            Aditya R.
+          </span>
+
+          <span
+            class="material-symbols-outlined text-[18px] text-secondary"
+          >
+            expand_more
+          </span>
+
+        </button>
+
+
+        <!-- Profile Dropdown -->
+        <div
+          id="profile-dropdown"
+          class="hidden absolute right-4 sm:right-6 top-14 w-48 bg-surface-container-lowest rounded-xl shadow-xl border border-surface-container p-2"
+        >
+
+          <a
+            href="#"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-on-surface hover:bg-surface-container-low"
+          >
+            <span class="material-symbols-outlined text-[17px]">
+              person
+            </span>
+
+            Profil
+          </a>
+
+          <a
+            href="#"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-on-surface hover:bg-surface-container-low"
+          >
+            <span class="material-symbols-outlined text-[17px]">
+              store
+            </span>
+
+            Kelola Toko
+          </a>
+
+          <div
+            class="h-px bg-surface-container my-1"
+          ></div>
+
+          <button
+            id="logout-btn"
+            type="button"
+            class="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-error hover:bg-error-container"
+          >
+
+            <span class="material-symbols-outlined text-[17px]">
+              logout
+            </span>
+
+            Keluar
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <main
+    class="pt-16"
+  >
+
+
+    <!-- =================================================
+         BACK TO STORE
+    ================================================== -->
+
+    <div
+      class="max-w-[1140px] mx-auto px-4 sm:px-6 pt-5 sm:pt-7"
+    >
+
+      <a
+        href="#"
+        class="inline-flex items-center gap-2 text-xs sm:text-sm text-secondary hover:text-primary transition-colors group"
+      >
+
+        <span
+          class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform"
+        >
+          arrow_back
+        </span>
+
+        <span>
+          Kembali ke Toko
+        </span>
+
+      </a>
+
+    </div>
+
+
+    <!-- =================================================
+         PRODUCT DETAIL
+    ================================================== -->
+
+    <section
+      class="max-w-[1140px] mx-auto px-4 sm:px-6 pt-5 sm:pt-6 pb-10 sm:pb-12"
+    >
+
+      <div
+        class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start"
+      >
+
+
+        <!-- =============================================
+             LEFT : GALLERY
+        ============================================== -->
+
+        <div
+          class="flex flex-col gap-3 sm:gap-4"
+        >
+
+          <!-- Main Image -->
+          <div
+            class="relative w-full aspect-square bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm"
+          >
+
+            <img
+              id="gallery-main-image"
+              src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1000&q=80"
+              alt="ThinkPad X1 Carbon Gen 10"
+              class="w-full h-full object-cover transition-opacity duration-200"
+            >
+
+
+            <!-- Condition -->
+            <div
+              class="absolute top-3 left-3 sm:top-4 sm:left-4"
+            >
+
+              <span
+                class="inline-flex px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-container-lowest/95 backdrop-blur-sm shadow-sm text-[10px] sm:text-[11px] font-bold uppercase tracking-wide"
+              >
+                SECOND
+              </span>
+
+            </div>
+
+
+            <!-- Availability -->
+            <div
+              class="absolute top-3 right-3 sm:top-4 sm:right-4"
+            >
+
+              <span
+                id="floating-status-pill"
+                class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-tertiary text-on-tertiary shadow-sm text-[10px] sm:text-xs font-bold"
+              >
+
+                <span
+                  class="w-1.5 h-1.5 rounded-full bg-on-tertiary"
+                ></span>
+
+                <span id="floating-status-text">
+                  Tersedia
+                </span>
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- Thumbnail -->
+          <div
+            id="thumbnail-list"
+            class="grid grid-cols-4 gap-2.5 sm:gap-3"
+          >
+
+            <button
+              type="button"
+              class="gallery-thumb relative aspect-square rounded-xl overflow-hidden p-1 bg-surface-container-low ring-2 ring-primary ring-offset-2 ring-offset-surface transition-all"
+              data-src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1000&q=80"
+              aria-label="Foto produk 1"
+            >
+
+              <img
+                src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=400&q=80"
+                alt="ThinkPad X1 Carbon depan"
+                class="w-full h-full object-cover rounded-lg"
+              >
+
+            </button>
+
+
+            <button
+              type="button"
+              class="gallery-thumb relative aspect-square rounded-xl overflow-hidden p-1 bg-surface-container-low opacity-60 hover:opacity-100 transition-all"
+              data-src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1000&q=80"
+              aria-label="Foto produk 2"
+            >
+
+              <img
+                src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=400&q=80"
+                alt="ThinkPad X1 Carbon keyboard"
+                class="w-full h-full object-cover rounded-lg"
+              >
+
+            </button>
+
+
+            <button
+              type="button"
+              class="gallery-thumb relative aspect-square rounded-xl overflow-hidden p-1 bg-surface-container-low opacity-60 hover:opacity-100 transition-all"
+              data-src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1000&q=80"
+              aria-label="Foto produk 3"
+            >
+
+              <img
+                src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=400&q=80"
+                alt="ThinkPad X1 Carbon sisi"
+                class="w-full h-full object-cover rounded-lg"
+              >
+
+            </button>
+
+
+            <button
+              type="button"
+              class="gallery-thumb relative aspect-square rounded-xl overflow-hidden p-1 bg-surface-container-low opacity-60 hover:opacity-100 transition-all"
+              data-src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1000&q=80"
+              aria-label="Foto produk 4"
+            >
+
+              <img
+                src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=400&q=80"
+                alt="ThinkPad X1 Carbon tampak atas"
+                class="w-full h-full object-cover rounded-lg"
+              >
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- =============================================
+             RIGHT : PRODUCT INFO
+        ============================================== -->
+
+        <div
+          class="flex flex-col gap-4 sm:gap-5"
+        >
+
+
+          <!-- Product Information Card -->
+          <div
+            class="bg-surface-container-lowest rounded-2xl shadow-sm p-5 sm:p-6 lg:p-7"
+          >
+
+
+            <!-- Brand / Category / Condition -->
+            <div
+              class="flex flex-wrap items-center gap-2 mb-4"
+            >
+
+              <span
+                class="px-2.5 py-1 rounded-lg bg-surface-container text-[10px] sm:text-[11px] font-semibold text-on-surface"
+              >
+                Lenovo ThinkPad
+              </span>
+
+              <span
+                class="px-2.5 py-1 rounded-lg bg-surface-container text-[10px] sm:text-[11px] font-semibold text-secondary"
+              >
+                Laptop
+              </span>
+
+              <span
+                class="px-2.5 py-1 rounded-lg bg-surface-container text-[10px] sm:text-[11px] font-semibold text-secondary"
+              >
+                Second
+              </span>
+
+            </div>
+
+
+            <!-- Product Name -->
+            <h1
+              class="text-2xl sm:text-3xl lg:text-[32px] leading-tight font-bold tracking-tight text-on-surface"
+            >
+              ThinkPad X1 Carbon Gen 10
+            </h1>
+
+
+            <!-- Short Description -->
+            <p
+              class="mt-2 text-xs sm:text-sm text-secondary leading-relaxed"
+            >
+              Laptop bisnis ultralight dengan Intel Core i7,
+              16GB RAM, dan 512GB SSD.
+            </p>
+
+
+            <!-- Price -->
+            <div
+              class="mt-5 p-4 sm:p-5 rounded-xl bg-surface-container-low"
+            >
+
+              <span
+                class="block text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-secondary mb-1"
+              >
+                Harga
+              </span>
+
+              <span
+                class="block text-2xl sm:text-[30px] leading-tight font-bold tracking-tight text-primary"
+              >
+                Rp 12.850.000
+              </span>
+
+            </div>
+
+
+            <!-- Availability -->
+            <div
+              class="mt-3 flex items-center justify-between gap-3"
+            >
+
+              <span
+                class="text-xs sm:text-sm text-secondary"
+              >
+                Ketersediaan
+              </span>
+
+              <span
+                id="product-availability"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-tertiary-fixed text-tertiary text-xs font-semibold"
+              >
+
+                <span
+                  class="w-1.5 h-1.5 rounded-full bg-tertiary"
+                ></span>
+
+                Tersedia
+
+              </span>
+
+            </div>
+
+
+            <!-- Sold Out -->
+            <div
+              id="soldout-banner"
+              class="hidden mt-4 p-3.5 rounded-xl bg-error-container text-error"
+            >
+
+              <div
+                class="flex items-start gap-2.5"
+              >
+
+                <span
+                  class="material-symbols-outlined text-[19px] shrink-0"
+                >
+                  info
+                </span>
+
+                <div>
+
+                  <p
+                    class="text-xs font-bold"
+                  >
+                    Produk Sold Out
+                  </p>
+
+                  <p
+                    class="mt-1 text-xs leading-relaxed"
+                  >
+                    Produk ini sedang tidak tersedia.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =======================================
+                 ACTION BUTTONS
+            ======================================== -->
+
+            <div
+              class="mt-5 flex flex-col gap-2.5"
+            >
+
+              <!-- WhatsApp -->
+              <a
+                id="whatsapp-button"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full min-h-12 rounded-xl bg-tertiary hover:bg-tertiary-container text-on-tertiary flex items-center justify-center gap-2.5 px-4 text-sm font-semibold transition-all shadow-sm"
+              >
+
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                >
+                  chat
+                </span>
+
+                <span>
+                  Hubungi via WhatsApp
+                </span>
+
+              </a>
+
+
+              <!-- Marketplace + Share -->
+              <div
+                class="grid grid-cols-2 gap-2.5"
+              >
+
+                <!-- Marketplace -->
+                <div
+                  class="relative"
+                >
+
+                  <button
+                    id="marketplace-button"
+                    type="button"
+                    class="w-full min-h-11 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center gap-1.5 px-2 sm:px-3 text-xs sm:text-sm font-semibold transition-colors"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+
+                    <span
+                      class="material-symbols-outlined text-[18px]"
+                    >
+                      storefront
+                    </span>
+
+                    <span>
+                      Marketplace
+                    </span>
+
+                    <span
+                      class="material-symbols-outlined text-[16px]"
+                    >
+                      expand_more
+                    </span>
+
+                  </button>
+
+
+                  <!-- Desktop Marketplace -->
+                  <div
+                    id="marketplace-popover"
+                    class="hidden absolute left-0 top-full mt-2 w-64 bg-surface-container-lowest rounded-2xl shadow-xl border border-surface-container p-2 z-30"
+                  >
+
+                    <div
+                      class="px-3 py-2 border-b border-surface-container mb-1"
+                    >
+
+                      <span
+                        class="text-[10px] font-bold uppercase tracking-wider text-secondary"
+                      >
+                        Pilih Saluran
+                      </span>
+
+                    </div>
+
+
+                    <a
+                      href="https://shopee.co.id/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="marketplace-link flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-container-low transition-colors"
+                      data-channel="Shopee"
+                    >
+
+                      <div
+                        class="flex items-center gap-2.5"
+                      >
+
+                        <div
+                          class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center"
+                        >
+
+                          <span
+                            class="material-symbols-outlined text-[17px] text-primary"
+                          >
+                            shopping_bag
+                          </span>
+
+                        </div>
+
+                        <div>
+
+                          <span
+                            class="block text-xs font-semibold"
+                          >
+                            Shopee
+                          </span>
+
+                          <span
+                            class="block text-[10px] text-secondary"
+                          >
+                            Official Store
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                      <span
+                        class="material-symbols-outlined text-[16px] text-secondary"
+                      >
+                        chevron_right
+                      </span>
+
+                    </a>
+
+
+                    <a
+                      href="https://www.tokopedia.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="marketplace-link flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-container-low transition-colors"
+                      data-channel="Tokopedia"
+                    >
+
+                      <div
+                        class="flex items-center gap-2.5"
+                      >
+
+                        <div
+                          class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center"
+                        >
+
+                          <span
+                            class="material-symbols-outlined text-[17px] text-primary"
+                          >
+                            local_mall
+                          </span>
+
+                        </div>
+
+                        <div>
+
+                          <span
+                            class="block text-xs font-semibold"
+                          >
+                            Tokopedia
+                          </span>
+
+                          <span
+                            class="block text-[10px] text-secondary"
+                          >
+                            Official Store
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                      <span
+                        class="material-symbols-outlined text-[16px] text-secondary"
+                      >
+                        chevron_right
+                      </span>
+
+                    </a>
+
+
+                    <a
+                      href="https://example.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="marketplace-link flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-container-low transition-colors"
+                      data-channel="Website"
+                    >
+
+                      <div
+                        class="flex items-center gap-2.5"
+                      >
+
+                        <div
+                          class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center"
+                        >
+
+                          <span
+                            class="material-symbols-outlined text-[17px] text-primary"
+                          >
+                            language
+                          </span>
+
+                        </div>
+
+                        <div>
+
+                          <span
+                            class="block text-xs font-semibold"
+                          >
+                            Website
+                          </span>
+
+                          <span
+                            class="block text-[10px] text-secondary"
+                          >
+                            Website Resmi
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                      <span
+                        class="material-symbols-outlined text-[16px] text-secondary"
+                      >
+                        chevron_right
+                      </span>
+
+                    </a>
+
+                  </div>
+
+                </div>
+
+
+                <!-- Share -->
+                <button
+                  id="share-button"
+                  type="button"
+                  class="w-full min-h-11 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center gap-1.5 px-2 sm:px-3 text-xs sm:text-sm font-semibold transition-colors"
+                  aria-label="Bagikan produk"
+                >
+
+                  <span
+                    class="material-symbols-outlined text-[18px]"
+                  >
+                    share
+                  </span>
+
+                  <span>
+                    Bagikan
+                  </span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =======================================
+               STORE MINI PROFILE
+          ======================================== -->
+
+          <div
+            class="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl shadow-sm"
+          >
+
+            <div
+              class="flex items-center justify-between gap-3"
+            >
+
+              <div
+                class="flex items-center gap-3 min-w-0"
+              >
+
+                <div
+                  class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center font-bold shrink-0"
+                >
+                  SJ
+                </div>
+
+                <div
+                  class="min-w-0"
+                >
+
+                  <div
+                    class="flex items-center gap-1.5"
+                  >
+
+                    <span
+                      class="text-xs sm:text-sm font-bold text-on-surface truncate"
+                    >
+                      Sinar Jaya Komputer
+                    </span>
+
+                    <span
+                      class="material-symbols-outlined text-primary text-[16px]"
+                    >
+                      verified
+                    </span>
+
+                  </div>
+
+                  <span
+                    class="block mt-0.5 text-[10px] sm:text-xs text-secondary truncate"
+                  >
+                    Spesialis Laptop & Komputer
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <a
+                href="#"
+                class="shrink-0 px-3 sm:px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold text-primary hover:bg-primary hover:text-on-primary transition-all"
+              >
+                Kunjungi
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           LOWER PRODUCT INFORMATION
+      ================================================== -->
+
+      <div
+        class="mt-7 sm:mt-10 grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-start"
+      >
+
+
+        <!-- Product Details -->
+        <section
+          class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-sm"
+        >
+
+          <div
+            class="flex items-center gap-2 pb-3 mb-1 border-b border-surface-container"
+          >
+
+            <span
+              class="material-symbols-outlined text-primary text-[21px]"
+            >
+              tune
+            </span>
+
+            <h2
+              class="text-lg font-bold"
+            >
+              Detail Produk
+            </h2>
+
+          </div>
+
+
+          <div
+            class="flex flex-col"
+          >
+
+            <div
+              class="flex items-start justify-between gap-4 py-3 border-b border-surface-container-low"
+            >
+
+              <span
+                class="text-xs text-secondary"
+              >
+                Kategori
+              </span>
+
+              <span
+                class="text-xs sm:text-sm font-semibold text-right"
+              >
+                Laptop
+              </span>
+
+            </div>
+
+
+            <div
+              class="flex items-start justify-between gap-4 py-3 border-b border-surface-container-low"
+            >
+
+              <span
+                class="text-xs text-secondary"
+              >
+                Processor
+              </span>
+
+              <span
+                class="text-xs sm:text-sm font-semibold text-right"
+              >
+                Intel Core i7-1260P
+              </span>
+
+            </div>
+
+
+            <div
+              class="flex items-start justify-between gap-4 py-3 border-b border-surface-container-low"
+            >
+
+              <span
+                class="text-xs text-secondary"
+              >
+                RAM
+              </span>
+
+              <span
+                class="text-xs sm:text-sm font-semibold text-right"
+              >
+                16 GB LPDDR5
+              </span>
+
+            </div>
+
+
+            <div
+              class="flex items-start justify-between gap-4 py-3 border-b border-surface-container-low"
+            >
+
+              <span
+                class="text-xs text-secondary"
+              >
+                Penyimpanan
+              </span>
+
+              <span
+                class="text-xs sm:text-sm font-semibold text-right"
+              >
+                512 GB NVMe SSD
+              </span>
+
+            </div>
+
+
+            <div
+              class="flex items-start justify-between gap-4 py-3 border-b border-surface-container-low"
+            >
+
+              <span
+                class="text-xs text-secondary"
+              >
+                Layar
+              </span>
+
+              <span
+                class="text-xs sm:text-sm font-semibold text-right"
+              >
+                14 Inch IPS 2.2K
+              </span>
+
+            </div>
+
+
+            <div
+              class="flex items-start justify-between gap-4 py-3"
+            >
+
+              <span
+                class="text-xs text-secondary"
+              >
+                Garansi
+              </span>
+
+              <span
+                class="text-xs sm:text-sm font-semibold text-right"
+              >
+                Toko 6 Bulan
+              </span>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- Description -->
+        <section
+          class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-sm"
+        >
+
+          <div
+            class="flex items-center gap-2 pb-3 mb-4 border-b border-surface-container"
+          >
+
+            <span
+              class="material-symbols-outlined text-primary text-[21px]"
+            >
+              subject
+            </span>
+
+            <h2
+              class="text-lg font-bold"
+            >
+              Deskripsi Produk
+            </h2>
+
+          </div>
+
+
+          <div
+            class="text-sm text-on-surface-variant leading-relaxed"
+          >
+
+            <p>
+              <strong class="text-on-surface">
+                ThinkPad X1 Carbon Gen 10
+              </strong>
+              menghadirkan performa komputasi profesional dalam bodi
+              serat karbon ultra-ringan.
+            </p>
+
+
+            <p
+              class="mt-4"
+            >
+              Ditenagai Intel Core i7 generasi ke-12 dengan memori
+              16 GB dan penyimpanan 512 GB SSD. Cocok untuk pekerjaan
+              profesional, pemrograman, multitasking, dan penggunaan
+              harian.
+            </p>
+
+
+            <!-- Extended Description -->
+            <div
+              id="extended-description"
+              class="hidden mt-4 space-y-4"
+            >
+
+              <div
+                class="p-4 rounded-xl bg-surface-container-low"
+              >
+
+                <h3
+                  class="text-xs font-bold text-on-surface mb-2"
+                >
+                  Fitur & Kelengkapan
+                </h3>
+
+                <ul
+                  class="list-disc pl-4 space-y-1.5 text-xs"
+                >
+
+                  <li>
+                    2x Thunderbolt 4 / USB-C
+                  </li>
+
+                  <li>
+                    2x USB-A 3.2 Gen 1
+                  </li>
+
+                  <li>
+                    HDMI 2.0b
+                  </li>
+
+                  <li>
+                    Fingerprint reader
+                  </li>
+
+                  <li>
+                    Webcam FHD dengan privacy shutter
+                  </li>
+
+                </ul>
+
+              </div>
+
+
+              <div
+                class="p-4 rounded-xl bg-surface-container-low"
+              >
+
+                <h3
+                  class="text-xs font-bold text-on-surface mb-2"
+                >
+                  Kondisi Produk
+                </h3>
+
+                <p
+                  class="text-xs leading-relaxed"
+                >
+                  Unit dalam kondisi second dengan kondisi fisik
+                  sangat baik dan fungsi utama telah diperiksa.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Read More -->
+          <button
+            id="description-toggle"
+            type="button"
+            class="mt-4 inline-flex items-center gap-1.5 text-primary text-xs font-bold hover:text-primary-container transition-colors"
+            aria-expanded="false"
+          >
+
+            <span id="description-toggle-text">
+              Baca selengkapnya
+            </span>
+
+            <span
+              id="description-toggle-icon"
+              class="material-symbols-outlined text-[16px] transition-transform"
+            >
+              expand_more
+            </span>
+
+          </button>
+
+        </section>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       MARKETPLACE MOBILE BOTTOM SHEET
+  ====================================================== -->
+
+  <div
+    id="marketplace-sheet"
+    class="hidden fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm items-end md:hidden"
+  >
+
+    <div
+      class="w-full bg-surface-container-lowest rounded-t-3xl p-5 pb-7 shadow-2xl share-sheet-enter mobile-safe-bottom"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="marketplace-sheet-title"
+    >
+
+      <!-- Handle -->
+      <div
+        class="w-10 h-1.5 rounded-full bg-outline-variant/50 mx-auto mb-5"
+      ></div>
+
+
+      <div
+        class="flex items-center justify-between mb-4"
+      >
+
+        <h2
+          id="marketplace-sheet-title"
+          class="text-sm font-bold"
+        >
+          Pilih Saluran
+        </h2>
+
+        <button
+          id="marketplace-sheet-close"
+          type="button"
+          class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center"
+          aria-label="Tutup"
+        >
+
+          <span
+            class="material-symbols-outlined text-[18px]"
+          >
+            close
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div
+        class="flex flex-col gap-2"
+      >
+
+        <a
+          href="https://shopee.co.id/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mobile-marketplace-link flex items-center justify-between p-3 rounded-xl hover:bg-surface-container-low transition-colors"
+          data-channel="Shopee"
+        >
+
+          <div
+            class="flex items-center gap-3"
+          >
+
+            <div
+              class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center"
+            >
+
+              <span
+                class="material-symbols-outlined text-primary"
+              >
+                shopping_bag
+              </span>
+
+            </div>
+
+            <div>
+
+              <span
+                class="block text-sm font-semibold"
+              >
+                Shopee
+              </span>
+
+              <span
+                class="block text-xs text-secondary"
+              >
+                Official Store
+              </span>
+
+            </div>
+
+          </div>
+
+          <span
+            class="material-symbols-outlined text-secondary"
+          >
+            chevron_right
+          </span>
+
+        </a>
+
+
+        <a
+          href="https://www.tokopedia.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mobile-marketplace-link flex items-center justify-between p-3 rounded-xl hover:bg-surface-container-low transition-colors"
+          data-channel="Tokopedia"
+        >
+
+          <div
+            class="flex items-center gap-3"
+          >
+
+            <div
+              class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center"
+            >
+
+              <span
+                class="material-symbols-outlined text-primary"
+              >
+                local_mall
+              </span>
+
+            </div>
+
+            <div>
+
+              <span
+                class="block text-sm font-semibold"
+              >
+                Tokopedia
+              </span>
+
+              <span
+                class="block text-xs text-secondary"
+              >
+                Official Store
+              </span>
+
+            </div>
+
+          </div>
+
+          <span
+            class="material-symbols-outlined text-secondary"
+          >
+            chevron_right
+          </span>
+
+        </a>
+
+
+        <a
+          href="https://example.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mobile-marketplace-link flex items-center justify-between p-3 rounded-xl hover:bg-surface-container-low transition-colors"
+          data-channel="Website"
+        >
+
+          <div
+            class="flex items-center gap-3"
+          >
+
+            <div
+              class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center"
+            >
+
+              <span
+                class="material-symbols-outlined text-primary"
+              >
+                language
+              </span>
+
+            </div>
+
+            <div>
+
+              <span
+                class="block text-sm font-semibold"
+              >
+                Website
+              </span>
+
+              <span
+                class="block text-xs text-secondary"
+              >
+                Website Resmi
+              </span>
+
+            </div>
+
+          </div>
+
+          <span
+            class="material-symbols-outlined text-secondary"
+          >
+            chevron_right
+          </span>
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       SHARE SHEET / MODAL
+  ====================================================== -->
+
+  <div
+    id="share-modal"
+    class="hidden fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm items-end md:items-center justify-center p-0 md:p-4"
+  >
+
+    <div
+      class="w-full md:max-w-md bg-surface-container-lowest rounded-t-3xl md:rounded-2xl shadow-2xl p-5 sm:p-6 modal-enter mobile-safe-bottom"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="share-title"
+    >
+
+      <!-- Mobile Handle -->
+      <div
+        class="md:hidden w-10 h-1.5 rounded-full bg-outline-variant/50 mx-auto mb-5"
+      ></div>
+
+
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between"
+      >
+
+        <div
+          class="flex items-center gap-2"
+        >
+
+          <span
+            class="material-symbols-outlined text-primary"
+          >
+            share
+          </span>
+
+          <h2
+            id="share-title"
+            class="text-base font-bold"
+          >
+            Bagikan Produk
+          </h2>
+
+        </div>
+
+
+        <button
+          id="share-close"
+          type="button"
+          class="w-8 h-8 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-secondary"
+          aria-label="Tutup"
+        >
+
+          <span
+            class="material-symbols-outlined text-[19px]"
+          >
+            close
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <!-- Product Preview -->
+      <div
+        class="mt-4 flex items-center gap-3 p-3 rounded-xl bg-surface-container-low"
+      >
+
+        <div
+          class="w-12 h-12 rounded-lg overflow-hidden bg-surface-container shrink-0"
+        >
+
+          <img
+            src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=200&q=80"
+            alt="ThinkPad X1 Carbon"
+            class="w-full h-full object-cover"
+          >
+
+        </div>
+
+        <div
+          class="min-w-0"
+        >
+
+          <span
+            class="block text-xs font-bold truncate"
+          >
+            ThinkPad X1 Carbon Gen 10
+          </span>
+
+          <span
+            class="block text-xs font-bold text-primary mt-0.5"
+          >
+            Rp 12.850.000
+          </span>
+
+          <span
+            class="block text-[10px] text-secondary truncate mt-0.5"
+          >
+            Sinar Jaya Komputer
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- Share Options -->
+      <div
+        class="mt-4 flex flex-col gap-2.5"
+      >
+
+        <!-- Copy Link -->
+        <div
+          class="flex items-center gap-2 p-1.5 rounded-xl bg-surface-container"
+        >
+
+          <input
+            id="share-link"
+            type="text"
+            readonly
+            value="https://kataloga.id/sinarjayakomputer/product/thinkpad-x1-carbon-gen-10"
+            class="min-w-0 flex-1 bg-transparent px-2.5 text-xs text-on-surface outline-none truncate"
+            aria-label="Link produk"
+          >
+
+          <button
+            id="copy-link"
+            type="button"
+            class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container transition-colors"
+          >
+
+            <span
+              class="material-symbols-outlined text-[14px]"
+            >
+              content_copy
+            </span>
+
+            <span id="copy-link-text">
+              Salin
+            </span>
+
+          </button>
+
+        </div>
+
+
+        <!-- WhatsApp Share -->
+        <button
+          id="share-whatsapp"
+          type="button"
+          class="w-full min-h-11 rounded-xl bg-tertiary/10 hover:bg-tertiary/20 text-tertiary flex items-center justify-center gap-2 text-xs font-semibold transition-colors"
+        >
+
+          <span
+            class="material-symbols-outlined text-[18px]"
+          >
+            chat
+          </span>
+
+          Bagikan ke WhatsApp
+
+        </button>
+
+
+        <!-- Native Share -->
+        <button
+          id="native-share"
+          type="button"
+          class="w-full min-h-11 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center gap-2 text-xs font-semibold transition-colors"
+        >
+
+          <span
+            class="material-symbols-outlined text-[18px]"
+          >
+            ios_share
+          </span>
+
+          Bagikan lainnya
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
+  <footer
+    class="bg-surface-container-lowest border-t border-surface-container"
+  >
+
+    <div
+      class="max-w-[1140px] mx-auto px-4 sm:px-6 py-10 sm:py-12"
+    >
+
+      <div
+        class="flex flex-col sm:flex-row justify-between gap-8"
+      >
+
+        <div
+          class="max-w-sm"
+        >
+
+          <span
+            class="text-primary font-bold text-xl"
+          >
+            Kataloga
+          </span>
+
+          <p
+            class="mt-2 text-xs sm:text-sm text-secondary leading-relaxed"
+          >
+            Platform katalog digital untuk membantu seller
+            menampilkan produk dan terhubung dengan customer.
+          </p>
+
+        </div>
+
+
+        <div
+          class="grid grid-cols-2 gap-8"
+        >
+
+          <div
+            class="flex flex-col gap-2"
+          >
+
+            <span
+              class="text-sm font-semibold"
+            >
+              Platform
+            </span>
+
+            <a
+              href="#"
+              class="text-xs sm:text-sm text-secondary hover:text-primary"
+            >
+              Tentang Kataloga
+            </a>
+
+            <a
+              href="#"
+              class="text-xs sm:text-sm text-secondary hover:text-primary"
+            >
+              Buat Toko
+            </a>
+
+          </div>
+
+
+          <div
+            class="flex flex-col gap-2"
+          >
+
+            <span
+              class="text-sm font-semibold"
+            >
+              Bantuan
+            </span>
+
+            <a
+              href="#"
+              class="text-xs sm:text-sm text-secondary hover:text-primary"
+            >
+              Pusat Bantuan
+            </a>
+
+            <a
+              href="#"
+              class="text-xs sm:text-sm text-secondary hover:text-primary"
+            >
+              Kontak
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="h-px bg-surface-container my-7"
+      ></div>
+
+
+      <div
+        class="flex flex-col sm:flex-row justify-between gap-2 text-xs text-secondary"
+      >
+
+        <span>
+          © 2026 Kataloga
+        </span>
+
+        <span>
+          Made with Kataloga
+        </span>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script>
+
+    /* =====================================================
+       PRODUCT DATA
+    ====================================================== */
+
+    const productData = {
+
+      name: "ThinkPad X1 Carbon Gen 10",
+
+      price: "Rp 12.850.000",
+
+      storeName: "Sinar Jaya Komputer",
+
+      storeId: "sinarjayakomputer",
+
+      productId: "thinkpad-x1-carbon-gen-10",
+
+      productUrl:
+        "https://kataloga.id/sinarjayakomputer/product/thinkpad-x1-carbon-gen-10",
+
+      whatsappNumber:
+        "6281234567890",
+
+      available: true
+
+    };
+
+
+    /* =====================================================
+       GLOBAL ELEMENTS
+    ====================================================== */
+
+    const body =
+      document.body;
+
+
+    /* =====================================================
+       NAVIGATION PROFILE
+    ====================================================== */
+
+    const profileTrigger =
+      document.getElementById("profile-trigger");
+
+    const profileDropdown =
+      document.getElementById("profile-dropdown");
+
+    const logoutBtn =
+      document.getElementById("logout-btn");
+
+    const navGuest =
+      document.getElementById("nav-guest");
+
+    const navUser =
+      document.getElementById("nav-user");
+
+
+    /*
+      Demo state.
+
+      Nanti ini akan diganti dengan state
+      authentication dari backend.
+    */
+
+    let isLoggedIn = false;
+
+
+    function updateNavigation() {
+
+      if (isLoggedIn) {
+
+        navGuest.classList.add("hidden");
+
+        navUser.classList.remove("hidden");
+
+        navUser.classList.add("flex");
+
+      } else {
+
+        navGuest.classList.remove("hidden");
+
+        navUser.classList.add("hidden");
+
+        navUser.classList.remove("flex");
+
+        profileDropdown.classList.add("hidden");
+
+      }
+
+    }
+
+
+    profileTrigger?.addEventListener(
+      "click",
+      function (event) {
+
+        event.stopPropagation();
+
+        profileDropdown.classList.toggle(
+          "hidden"
+        );
+
+      }
+    );
+
+
+    logoutBtn?.addEventListener(
+      "click",
+      function () {
+
+        isLoggedIn = false;
+
+        updateNavigation();
+
+      }
+    );
+
+
+    document.addEventListener(
+      "click",
+      function () {
+
+        profileDropdown?.classList.add(
+          "hidden"
+        );
+
+      }
+    );
+
+
+    updateNavigation();
+
+
+    /* =====================================================
+       PRODUCT GALLERY
+    ====================================================== */
+
+    const mainImage =
+      document.getElementById(
+        "gallery-main-image"
+      );
+
+    const galleryThumbs =
+      document.querySelectorAll(
+        ".gallery-thumb"
+      );
+
+
+    galleryThumbs.forEach(
+      function (thumb) {
+
+        thumb.addEventListener(
+          "click",
+          function () {
+
+            const newImage =
+              thumb.dataset.src;
+
+
+            if (!newImage) {
+              return;
+            }
+
+
+            galleryThumbs.forEach(
+              function (item) {
+
+                item.classList.remove(
+                  "ring-2",
+                  "ring-primary",
+                  "ring-offset-2",
+                  "ring-offset-surface"
+                );
+
+                item.classList.add(
+                  "opacity-60"
+                );
+
+              }
+            );
+
+
+            thumb.classList.add(
+              "ring-2",
+              "ring-primary",
+              "ring-offset-2",
+              "ring-offset-surface"
+            );
+
+            thumb.classList.remove(
+              "opacity-60"
+            );
+
+
+            mainImage.style.opacity =
+              "0.35";
+
+
+            setTimeout(
+              function () {
+
+                mainImage.src =
+                  newImage;
+
+                mainImage.style.opacity =
+                  "1";
+
+              },
+              120
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+    /* =====================================================
+       WHATSAPP
+    ====================================================== */
+
+    const whatsappButton =
+      document.getElementById(
+        "whatsapp-button"
+      );
+
+
+    function createWhatsAppUrl() {
+
+      const message =
+        `Halo ${productData.storeName}, saya tertarik dengan produk ${productData.name} (${productData.price}) di Kataloga.`;
+
+      return (
+        "https://wa.me/" +
+        productData.whatsappNumber +
+        "?text=" +
+        encodeURIComponent(message)
+      );
+
+    }
+
+
+    whatsappButton.href =
+      createWhatsAppUrl();
+
+
+    /* =====================================================
+       AVAILABILITY
+    ====================================================== */
+
+    const availabilityBadge =
+      document.getElementById(
+        "product-availability"
+      );
+
+    const floatingStatus =
+      document.getElementById(
+        "floating-status-pill"
+      );
+
+    const floatingStatusText =
+      document.getElementById(
+        "floating-status-text"
+      );
+
+    const soldOutBanner =
+      document.getElementById(
+        "soldout-banner"
+      );
+
+    const marketplaceButton =
+      document.getElementById(
+        "marketplace-button"
+      );
+
+
+    function updateAvailability(
+      isAvailable
+    ) {
+
+      if (isAvailable) {
+
+        availabilityBadge.className =
+          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-tertiary-fixed text-tertiary text-xs font-semibold";
+
+        availabilityBadge.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+          Tersedia
+        `;
+
+
+        floatingStatus.className =
+          "inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-tertiary text-on-tertiary shadow-sm text-[10px] sm:text-xs font-bold";
+
+        floatingStatusText.textContent =
+          "Tersedia";
+
+
+        soldOutBanner.classList.add(
+          "hidden"
+        );
+
+
+        whatsappButton.classList.remove(
+          "opacity-50",
+          "pointer-events-none",
+          "grayscale"
+        );
+
+
+        marketplaceButton.disabled =
+          false;
+
+        marketplaceButton.classList.remove(
+          "opacity-50",
+          "pointer-events-none"
+        );
+
+      } else {
+
+        availabilityBadge.className =
+          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-error-container text-error text-xs font-semibold";
+
+        availabilityBadge.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+          Sold Out
+        `;
+
+
+        floatingStatus.className =
+          "inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-error text-on-error shadow-sm text-[10px] sm:text-xs font-bold";
+
+        floatingStatusText.textContent =
+          "Sold Out";
+
+
+        soldOutBanner.classList.remove(
+          "hidden"
+        );
+
+
+        whatsappButton.classList.add(
+          "opacity-50",
+          "pointer-events-none",
+          "grayscale"
+        );
+
+
+        marketplaceButton.disabled =
+          true;
+
+        marketplaceButton.classList.add(
+          "opacity-50",
+          "pointer-events-none"
+        );
+
+      }
+
+    }
+
+
+    updateAvailability(
+      productData.available
+    );
+
+
+    /* =====================================================
+       MARKETPLACE DESKTOP
+    ====================================================== */
+
+    const marketplacePopover =
+      document.getElementById(
+        "marketplace-popover"
+      );
+
+
+    marketplaceButton.addEventListener(
+      "click",
+      function (event) {
+
+        event.stopPropagation();
+
+
+        if (
+          !productData.available
+        ) {
+          return;
+        }
+
+
+        const isMobile =
+          window.matchMedia(
+            "(max-width: 767px)"
+          ).matches;
+
+
+        if (isMobile) {
+
+          openMarketplaceSheet();
+
+          return;
+
+        }
+
+
+        marketplacePopover.classList.toggle(
+          "hidden"
+        );
+
+
+        marketplaceButton.setAttribute(
+          "aria-expanded",
+          marketplacePopover.classList.contains(
+            "hidden"
+          )
+            ? "false"
+            : "true"
+        );
+
+      }
+    );
+
+
+    document.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          marketplacePopover &&
+          !marketplacePopover.contains(
+            event.target
+          ) &&
+          event.target !== marketplaceButton
+        ) {
+
+          marketplacePopover.classList.add(
+            "hidden"
+          );
+
+          marketplaceButton.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       MARKETPLACE MOBILE SHEET
+    ====================================================== */
+
+    const marketplaceSheet =
+      document.getElementById(
+        "marketplace-sheet"
+      );
+
+    const marketplaceSheetClose =
+      document.getElementById(
+        "marketplace-sheet-close"
+      );
+
+
+    function openMarketplaceSheet() {
+
+      marketplaceSheet.classList.remove(
+        "hidden"
+      );
+
+      marketplaceSheet.classList.add(
+        "flex"
+      );
+
+      body.classList.add(
+        "overflow-hidden"
+      );
+
+    }
+
+
+    function closeMarketplaceSheet() {
+
+      marketplaceSheet.classList.add(
+        "hidden"
+      );
+
+      marketplaceSheet.classList.remove(
+        "flex"
+      );
+
+      body.classList.remove(
+        "overflow-hidden"
+      );
+
+    }
+
+
+    marketplaceSheetClose?.addEventListener(
+      "click",
+      closeMarketplaceSheet
+    );
+
+
+    marketplaceSheet?.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          event.target ===
+          marketplaceSheet
+        ) {
+
+          closeMarketplaceSheet();
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       MARKETPLACE CLICK
+    ====================================================== */
+
+    const marketplaceLinks =
+      document.querySelectorAll(
+        ".marketplace-link, .mobile-marketplace-link"
+      );
+
+
+    marketplaceLinks.forEach(
+      function (link) {
+
+        link.addEventListener(
+          "click",
+          function (event) {
+
+            const channel =
+              link.dataset.channel;
+
+
+            /*
+              Nanti bagian ini menjadi:
+
+              if (!isLoggedIn) {
+                redirect ke login
+              }
+
+              else {
+                recordCustomerActivity()
+                lalu redirect
+              }
+
+              Untuk prototype sekarang,
+              langsung redirect.
+            */
+
+            console.log(
+              "Marketplace selected:",
+              channel
+            );
+
+
+            if (
+              link.classList.contains(
+                "mobile-marketplace-link"
+              )
+            ) {
+
+              closeMarketplaceSheet();
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+
+    /* =====================================================
+       SHARE
+    ====================================================== */
+
+    const shareButton =
+      document.getElementById(
+        "share-button"
+      );
+
+    const shareModal =
+      document.getElementById(
+        "share-modal"
+      );
+
+    const shareClose =
+      document.getElementById(
+        "share-close"
+      );
+
+    const shareLink =
+      document.getElementById(
+        "share-link"
+      );
+
+    const copyLinkButton =
+      document.getElementById(
+        "copy-link"
+      );
+
+    const copyLinkText =
+      document.getElementById(
+        "copy-link-text"
+      );
+
+    const shareWhatsapp =
+      document.getElementById(
+        "share-whatsapp"
+      );
+
+    const nativeShare =
+      document.getElementById(
+        "native-share"
+      );
+
+
+    function openShareModal() {
+
+      shareModal.classList.remove(
+        "hidden"
+      );
+
+      shareModal.classList.add(
+        "flex"
+      );
+
+      body.classList.add(
+        "overflow-hidden"
+      );
+
+    }
+
+
+    function closeShareModal() {
+
+      shareModal.classList.add(
+        "hidden"
+      );
+
+      shareModal.classList.remove(
+        "flex"
+      );
+
+      body.classList.remove(
+        "overflow-hidden"
+      );
+
+    }
+
+
+    shareButton?.addEventListener(
+      "click",
+      openShareModal
+    );
+
+
+    shareClose?.addEventListener(
+      "click",
+      closeShareModal
+    );
+
+
+    shareModal?.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          event.target ===
+          shareModal
+        ) {
+
+          closeShareModal();
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       COPY LINK
+    ====================================================== */
+
+    copyLinkButton?.addEventListener(
+      "click",
+      async function () {
+
+        try {
+
+          await navigator.clipboard.writeText(
+            productData.productUrl
+          );
+
+
+          copyLinkText.textContent =
+            "Tersalin!";
+
+
+          copyLinkButton.classList.add(
+            "bg-tertiary"
+          );
+
+
+          setTimeout(
+            function () {
+
+              copyLinkText.textContent =
+                "Salin";
+
+              copyLinkButton.classList.remove(
+                "bg-tertiary"
+              );
+
+            },
+            1800
+          );
+
+
+        } catch (error) {
+
+          shareLink.focus();
+
+          shareLink.select();
+
+          copyLinkText.textContent =
+            "Pilih & Salin";
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       WHATSAPP SHARE
+    ====================================================== */
+
+    shareWhatsapp?.addEventListener(
+      "click",
+      function () {
+
+        const message =
+          `Lihat ${productData.name} di ${productData.storeName}: ${productData.productUrl}`;
+
+        const url =
+          "https://api.whatsapp.com/send?text=" +
+          encodeURIComponent(message);
+
+
+        window.open(
+          url,
+          "_blank",
+          "noopener,noreferrer"
+        );
+
+      }
+    );
+
+
+    /* =====================================================
+       NATIVE SHARE
+    ====================================================== */
+
+    nativeShare?.addEventListener(
+      "click",
+      async function () {
+
+        const shareData = {
+
+          title:
+            productData.name,
+
+          text:
+            `Lihat ${productData.name} di ${productData.storeName}`,
+
+          url:
+            productData.productUrl
+
+        };
+
+
+        if (
+          navigator.share
+        ) {
+
+          try {
+
+            await navigator.share(
+              shareData
+            );
+
+          } catch (error) {
+
+            /*
+              User membatalkan native share.
+              Tidak perlu melakukan apa-apa.
+            */
+
+          }
+
+        } else {
+
+          try {
+
+            await navigator.clipboard.writeText(
+              productData.productUrl
+            );
+
+
+            copyLinkText.textContent =
+              "Tersalin!";
+
+
+          } catch (error) {
+
+            shareLink.focus();
+
+            shareLink.select();
+
+          }
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       DESCRIPTION EXPAND / COLLAPSE
+    ====================================================== */
+
+    const descriptionToggle =
+      document.getElementById(
+        "description-toggle"
+      );
+
+    const descriptionText =
+      document.getElementById(
+        "description-toggle-text"
+      );
+
+    const descriptionIcon =
+      document.getElementById(
+        "description-toggle-icon"
+      );
+
+    const extendedDescription =
+      document.getElementById(
+        "extended-description"
+      );
+
+
+    let descriptionExpanded =
+      false;
+
+
+    descriptionToggle?.addEventListener(
+      "click",
+      function () {
+
+        descriptionExpanded =
+          !descriptionExpanded;
+
+
+        if (
+          descriptionExpanded
+        ) {
+
+          extendedDescription.classList.remove(
+            "hidden"
+          );
+
+          descriptionText.textContent =
+            "Baca lebih sedikit";
+
+          descriptionIcon.style.transform =
+            "rotate(180deg)";
+
+          descriptionToggle.setAttribute(
+            "aria-expanded",
+            "true"
+          );
+
+        } else {
+
+          extendedDescription.classList.add(
+            "hidden"
+          );
+
+          descriptionText.textContent =
+            "Baca selengkapnya";
+
+          descriptionIcon.style.transform =
+            "rotate(0deg)";
+
+          descriptionToggle.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       ESCAPE KEY
+    ====================================================== */
+
+    document.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (
+          event.key !== "Escape"
+        ) {
+          return;
+        }
+
+
+        closeMarketplaceSheet();
+
+        closeShareModal();
+
+        marketplacePopover?.classList.add(
+          "hidden"
+        );
+
+      }
+    );
+
+
+  </script>
+
+</body>
+
+</html>

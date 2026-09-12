@@ -1,0 +1,2183 @@
+<!doctype html>
+<html lang="id" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          overscroll-behavior: none;
+        }
+
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      #toastContainer > div {
+        transition: opacity 0.2s ease;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#151c23",
+              "surface-bright": "#f9f9ff",
+              "surface-dim": "#d3daef",
+              "surface-container-highest": "#dce2f7",
+              "primary-fixed-dim": "#b4c5ff",
+              "on-error": "#ffffff",
+              "inverse-surface": "#293040",
+              "inverse-primary": "#b4c5ff",
+              surface: "#f9f9ff",
+              outline: "#737686",
+              "surface-container": "#e9edff",
+              "secondary-fixed-dim": "#c0c7d0",
+              primary: "#004ac6",
+              "on-primary-fixed-variant": "#003ea8",
+              "secondary-fixed": "#dce3ec",
+              "surface-container-lowest": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-secondary-container": "#5e656d",
+              "on-tertiary-fixed": "#002109",
+              "on-tertiary-fixed-variant": "#005320",
+              "surface-tint": "#0053db",
+              error: "#ba1a1a",
+              "surface-variant": "#dce2f7",
+              "on-secondary-fixed-variant": "#40484f",
+              "inverse-on-surface": "#edf0ff",
+              "on-error-container": "#93000a",
+              "on-background": "#141b2b",
+              "surface-container-high": "#e1e8fd",
+              "on-surface": "#141b2b",
+              "primary-fixed": "#dbe1ff",
+              "tertiary-container": "#007f36",
+              "tertiary-fixed": "#7ffc97",
+              "on-primary": "#ffffff",
+              secondary: "#585f67",
+              "secondary-container": "#dce3ec",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#62df7d",
+              "on-secondary": "#ffffff",
+              "primary-container": "#2563eb",
+              "on-primary-fixed": "#00174b",
+              background: "#f9f9ff",
+              tertiary: "#006329",
+              "outline-variant": "#c3c6d7",
+              "on-surface-variant": "#434655",
+              "on-tertiary-container": "#c7ffca",
+              "on-primary-container": "#eeefff",
+              "surface-container-low": "#f1f3ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              section_gap_lg: "120px",
+              stack_sm: "16px",
+              gutter: "24px",
+              margin_mobile: "16px",
+              stack_lg: "48px",
+              stack_xs: "8px",
+              stack_md: "24px",
+              section_gap_md: "96px",
+            },
+            fontFamily: {
+              "hero-h1": ["Plus Jakarta Sans"],
+              "label-sm": ["Plus Jakarta Sans"],
+              "card-heading": ["Plus Jakarta Sans"],
+              "section-h2": ["Plus Jakarta Sans"],
+              "body-main": ["Plus Jakarta Sans"],
+              "hero-h1-mobile": ["Plus Jakarta Sans"],
+            },
+            fontSize: {
+              "hero-h1": [
+                "56px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "label-sm": ["14px", { lineHeight: "1", fontWeight: "500" }],
+              "card-heading": [
+                "20px",
+                { lineHeight: "1.4", fontWeight: "600" },
+              ],
+              "section-h2": ["36px", { lineHeight: "1.3", fontWeight: "700" }],
+              "body-main": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+              "hero-h1-mobile": [
+                "40px",
+                { lineHeight: "1.2", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body
+    class="bg-surface font-body-main text-body-main text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"
+  >
+    <header
+      class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div
+        class="h-16 max-w-[1140px] mx-auto px-margin_mobile md:px-gutter flex items-center justify-between gap-gutter"
+      >
+        <div class="flex items-center gap-stack_sm min-w-0 flex-1">
+          <a
+            class="flex items-center gap-stack_xs group min-w-0"
+            data-path="storefront-catalog"
+            href="#"
+          >
+            <div
+              class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-card-heading shadow-sm shrink-0"
+            >
+              K
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span
+                class="font-card-heading text-card-heading tracking-tight text-on-surface group-hover:text-primary transition-colors truncate"
+                >Kataloga Store</span
+              ><span
+                class="text-[11px] font-label-sm uppercase tracking-wider text-on-surface-variant truncate hidden xs:block sm:block"
+                >Official Merchant</span
+              >
+            </div>
+          </a>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+          <div class="h-5 w-px bg-outline-variant/30 hidden sm:block"></div>
+          <div class="flex items-center gap-1.5 sm:gap-2" id="navAuthArea">
+            <a
+              class="inline-flex items-center justify-center font-label-sm text-xs sm:text-label-sm text-on-surface font-medium hover:text-primary transition-colors px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg hover:bg-surface-container whitespace-nowrap"
+              data-path="customer-login"
+              href="#"
+              id="navLoginBtn"
+              >Masuk</a
+            ><a
+              class="inline-flex items-center justify-center font-label-sm text-xs sm:text-label-sm px-3 sm:px-4 py-1.5 sm:py-2 bg-primary text-on-primary font-semibold rounded-lg hover:bg-on-primary-fixed-variant transition-colors shadow-sm whitespace-nowrap"
+              data-path="customer-register"
+              href="#"
+              id="navRegisterBtn"
+              >Daftar</a
+            >
+            <div class="hidden" id="navProfileSlot"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-16 bg-surface">
+      <div
+        class="max-w-[1140px] mx-auto px-margin_mobile md:px-gutter pt-8 pb-16"
+      >
+        <div class="flex flex-col w-full">
+          <!-- Store Profile Header -->
+          <section
+            class="relative bg-surface-container-lowest rounded-2xl p-5 sm:p-6 md:p-8 shadow-sm border border-outline-variant/20 mb-6 sm:mb-8"
+          >
+            <!-- Store Profile Content -->
+            <div class="flex flex-col items-center text-center w-full">
+              <!-- Store Profile Photo -->
+              <div
+                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-3xl sm:text-4xl shadow-md shrink-0"
+              >
+                <span>SJ</span>
+
+                <!-- Verification Badge -->
+                <div
+                  class="absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary text-[19px] sm:text-[21px]"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                  >
+                    verified
+                  </span>
+                </div>
+              </div>
+
+              <!-- Store Name -->
+              <div class="flex items-center justify-center gap-1.5 mt-4">
+                <h1
+                  class="font-section-h2 text-xl sm:text-2xl md:text-[26px] text-on-surface tracking-tight font-bold leading-tight"
+                >
+                  Sinar Jaya Komputer
+                </h1>
+
+                <span
+                  class="material-symbols-outlined text-primary text-[20px] sm:text-[22px] shrink-0"
+                  title="Toko Terverifikasi"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                >
+                  verified
+                </span>
+              </div>
+
+              <!-- Store Description -->
+              <p
+                class="font-body-main text-xs sm:text-sm md:text-body-main text-on-surface-variant w-full max-w-2xl mt-2 leading-relaxed"
+              >
+                Pusat laptop bisnis, gaming, PC desktop, dan aksesoris komputer
+                berkualitas. Garansi resmi &amp; pengiriman aman se-Indonesia.
+              </p>
+
+              <!-- Store Information -->
+              <div
+                class="grid grid-cols-2 items-start w-full max-w-lg mt-4 gap-3 sm:gap-6 text-on-surface-variant"
+              >
+                <!-- Location -->
+                <div
+                  class="inline-flex items-start justify-center gap-1.5 text-secondary text-[11px] sm:text-xs md:text-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary text-[16px] sm:text-[18px] shrink-0"
+                  >
+                    location_on
+                  </span>
+
+                  <span class="leading-relaxed"> Kota Bandung </span>
+                </div>
+
+                <!-- Operating Hours -->
+                <div
+                  class="inline-flex items-start justify-center gap-1.5 text-secondary text-[11px] sm:text-xs md:text-sm"
+                >
+                  <span
+                    class="material-symbols-outlined text-tertiary text-[16px] sm:text-[18px] shrink-0"
+                  >
+                    schedule
+                  </span>
+
+                  <span class="leading-relaxed">
+                    Senin–Sabtu<br class="sm:hidden" />
+                    09.00–18.00 WIB
+                  </span>
+                </div>
+              </div>
+
+              <!-- Store Actions -->
+              <div class="w-full max-w-[560px] flex flex-col gap-2.5 mt-6">
+                <!-- WhatsApp -->
+                <a
+                  class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-tertiary text-on-tertiary font-label-sm text-label-sm font-semibold hover:bg-tertiary-container transition-all shadow-sm"
+                  href="https://wa.me/6281234567890?text=Halo%20Sinar%20Jaya%20Store,%20saya%20tertarik%20dengan%20katalog%20produk%20Anda"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  id="contactWhatsappBtn"
+                >
+                  <svg
+                    class="w-4 h-4 fill-current shrink-0"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.705 1.554zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"
+                    ></path>
+                  </svg>
+
+                  <span>Hubungi via WhatsApp</span>
+                </a>
+
+                <!-- Marketplace + Share -->
+                <div class="grid grid-cols-2 gap-2.5">
+                  <!-- Marketplace -->
+                  <div class="relative">
+                    <button
+                      class="w-full inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-sm text-xs sm:text-label-sm font-medium hover:bg-surface-container transition-colors shadow-sm border border-outline-variant/20"
+                      id="marketplaceDropdownBtn"
+                      type="button"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px] text-primary"
+                      >
+                        storefront
+                      </span>
+
+                      <span>Marketplace</span>
+
+                      <span class="material-symbols-outlined text-[18px]">
+                        expand_more
+                      </span>
+                    </button>
+
+                    <!-- Desktop Marketplace Dropdown -->
+                    <div
+                      class="absolute left-0 right-0 top-full mt-2 bg-surface-container-lowest rounded-xl shadow-xl p-2 z-30 transition-all hidden"
+                      id="marketplaceDropdown"
+                    >
+                      <div
+                        class="px-3 py-2 text-xs font-label-sm uppercase tracking-wider text-secondary font-semibold"
+                      >
+                        Pilih Saluran Resmi
+                      </div>
+
+                      <div id="marketplaceChannelList"></div>
+                    </div>
+                  </div>
+
+                  <!-- Share -->
+                  <button
+                    class="w-full inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-sm text-xs sm:text-label-sm font-medium hover:bg-surface-container transition-colors shadow-sm border border-outline-variant/20"
+                    id="openShareModalBtn"
+                    type="button"
+                    aria-label="Bagikan toko"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[18px] text-secondary"
+                    >
+                      share
+                    </span>
+
+                    <span>Bagikan</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Marketplace Bottom Sheet - Mobile -->
+            <div
+              class="md:hidden fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex items-end justify-center hidden"
+              id="marketplaceSheet"
+              aria-hidden="true"
+            >
+              <div
+                class="bg-surface-container-lowest w-full rounded-t-3xl p-5 pb-6 shadow-2xl max-h-[75vh] overflow-y-auto"
+              >
+                <div
+                  class="w-10 h-1.5 bg-outline-variant/50 rounded-full mx-auto mb-4"
+                ></div>
+
+                <div class="flex items-center justify-between mb-2">
+                  <span
+                    class="px-1 text-xs font-label-sm uppercase tracking-wider text-secondary font-semibold"
+                  >
+                    Pilih Saluran Resmi
+                  </span>
+
+                  <button
+                    class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
+                    id="closeMarketplaceSheetBtn"
+                    type="button"
+                    aria-label="Tutup"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">
+                      close
+                    </span>
+                  </button>
+                </div>
+
+                <div id="marketplaceChannelListMobile"></div>
+              </div>
+            </div>
+          </section>
+          <!-- Store Announcement Banner (Strictly One) -->
+          <section class="mb-10">
+            <div
+              class="relative overflow-hidden rounded-2xl bg-primary-fixed/60 border border-outline-variant/20 p-5 md:p-6 flex items-start gap-4 shadow-sm"
+            >
+              <div
+                class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-sm mt-0.5"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >campaign</span
+                >
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="px-2 py-0.5 rounded-full bg-primary text-on-primary text-[11px] font-label-sm font-bold uppercase tracking-wider"
+                    >Pengumuman</span
+                  >
+                  <span class="text-xs text-on-surface-variant"
+                    >Berlaku s/d Akhir Pekan</span
+                  >
+                </div>
+                <p
+                  class="font-body-main text-label-sm md:text-body-main text-on-surface mt-1 line-clamp-2 leading-relaxed"
+                  id="announcementText"
+                >
+                  <strong>Promo Awal Bulan:</strong> Diskon hingga 15% untuk
+                  laptop ultrabook pilihan &amp; free instalasi software.
+                  Hubungi kami via WhatsApp untuk konsultasi spesifikasi.
+                  Dapatkan gratis ongkir khusus area Kota Bandung dengan minimum
+                  belanja Rp 500.000.
+                </p>
+                <button
+                  class="text-primary font-label-sm text-xs font-semibold hover:underline mt-1.5 inline-flex items-center gap-0.5"
+                  id="toggleAnnouncementBtn"
+                >
+                  <span class="">Baca selengkapnya</span>
+                  <span class="material-symbols-outlined text-[14px]"
+                    >expand_more</span
+                  >
+                </button>
+              </div>
+            </div>
+          </section>
+          <!-- Featured Products / Produk Unggulan -->
+          <section class="mb-12">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2
+                  class="font-section-h2 text-card-heading md:text-section-h2 text-on-surface tracking-tight"
+                >
+                  Produk Unggulan
+                </h2>
+                <p
+                  class="text-xs md:text-label-sm font-body-main text-on-surface-variant"
+                >
+                  Pilihan terbaik dan paling banyak dicari minggu ini
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  aria-label="Sebelumnya"
+                  class="w-10 h-10 rounded-xl bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container transition-colors shadow-sm disabled:opacity-30"
+                  id="scrollLeftBtn"
+                >
+                  <span class="material-symbols-outlined text-[20px]"
+                    >arrow_back</span
+                  >
+                </button>
+                <button
+                  aria-label="Berikutnya"
+                  class="w-10 h-10 rounded-xl bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container transition-colors shadow-sm disabled:opacity-30"
+                  id="scrollRightBtn"
+                >
+                  <span class="material-symbols-outlined text-[20px]"
+                    >arrow_forward</span
+                  >
+                </button>
+              </div>
+            </div>
+            <!-- Horizontal scroll track (rendered by app.js) -->
+            <div
+              class="flex gap-stack_sm overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-1 -mx-margin_mobile px-margin_mobile md:-mx-0 md:px-0"
+              id="featuredTrack"
+            ></div>
+          </section>
+          <!-- Main Catalog: "Semua Produk" -->
+          <section class="mb-stack_lg">
+            <div class="flex flex-col gap-stack_sm mb-6">
+              <div class="flex items-center justify-between">
+                <h2
+                  class="font-section-h2 text-card-heading md:text-section-h2 text-on-surface tracking-tight"
+                >
+                  Semua Produk
+                </h2>
+                <span
+                  class="font-label-sm text-xs md:text-label-sm text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full"
+                  ><span id="productCountNumber">6</span> Item Tersedia</span
+                >
+              </div>
+              <!-- Search Bar -->
+              <div class="relative w-full">
+                <span
+                  class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]"
+                  >search</span
+                >
+                <input
+                  class="w-full pl-12 pr-4 py-3 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/70 text-body-main font-body-main shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  id="catalogSearch"
+                  placeholder="Cari laptop, monitor, atau sparepart..."
+                  type="text"
+                />
+              </div>
+              <!-- Filter & Sort Row -->
+              <div
+                class="hidden md:flex md:items-center justify-between gap-4 pt-2"
+              >
+                <div
+                  class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full"
+                >
+                  <button
+                    class="category-pill active inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-sm text-xs font-semibold whitespace-nowrap transition-colors shadow-sm border border-primary"
+                    data-filter="all"
+                  >
+                    <span class="material-symbols-outlined text-[16px]"
+                      >apps</span
+                    ><span class="">Semua</span></button
+                  ><button
+                    class="category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium whitespace-nowrap transition-colors border border-outline-variant/30 shadow-sm"
+                    data-filter="laptop"
+                  >
+                    <span class="material-symbols-outlined text-[16px]"
+                      >laptop_mac</span
+                    ><span class="">Laptop</span></button
+                  ><button
+                    class="category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium whitespace-nowrap transition-colors border border-outline-variant/30 shadow-sm"
+                    data-filter="pc-desktop"
+                  >
+                    <span class="material-symbols-outlined text-[16px]"
+                      >desktop_windows</span
+                    ><span class="">PC Desktop</span></button
+                  ><button
+                    class="category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium whitespace-nowrap transition-colors border border-outline-variant/30 shadow-sm"
+                    data-filter="komponen-aksesori"
+                  >
+                    <span class="material-symbols-outlined text-[16px]"
+                      >keyboard</span
+                    ><span class="">Komponen &amp; Aksesori</span></button
+                  ><button
+                    class="category-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium whitespace-nowrap transition-colors border border-outline-variant/30 shadow-sm"
+                    data-filter="monitor"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">tv</span
+                    ><span class="">Monitor</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-3 self-end lg:self-auto shrink-0"
+                >
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium border border-outline-variant/30 shadow-sm transition-colors cursor-pointer"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[18px] text-primary"
+                      >tune</span
+                    ><span class="">Filter</span>
+                  </button>
+                  <div
+                    class="h-5 w-px bg-outline-variant/30 hidden sm:block"
+                  ></div>
+                  <div class="flex items-center gap-2">
+                    <label
+                      class="font-label-sm text-xs text-on-surface-variant whitespace-nowrap"
+                      for="catalogSort"
+                      >Urutkan:</label
+                    >
+                    <div class="relative">
+                      <select
+                        class="appearance-none bg-surface-container-lowest text-on-surface font-label-sm text-xs font-medium rounded-xl pl-3.5 pr-8 py-2 border border-outline-variant/30 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                        id="catalogSort"
+                      >
+                        <option value="relevansi">Relevansi</option>
+                        <option value="terbaru">Terbaru</option>
+                        <option value="harga-rendah">
+                          Harga: Rendah ke Tinggi
+                        </option>
+                        <option value="harga-tinggi">
+                          Harga: Tinggi ke Rendah
+                        </option></select
+                      ><span
+                        class="material-symbols-outlined text-[16px] pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                        >expand_more</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Mobile Filter / Sort triggers (bottom sheets) -->
+              <div class="flex md:hidden items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  id="filterTriggerMobile"
+                  class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium border border-outline-variant/30 shadow-sm transition-colors cursor-pointer"
+                >
+                  <span
+                    class="material-symbols-outlined text-[18px] text-primary"
+                    >tune</span
+                  >
+                  <span>Filter</span>
+                </button>
+                <button
+                  type="button"
+                  id="sortTriggerMobile"
+                  class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-sm text-xs font-medium border border-outline-variant/30 shadow-sm transition-colors cursor-pointer"
+                >
+                  <span
+                    class="material-symbols-outlined text-[18px] text-primary"
+                    >sort</span
+                  >
+                  <span>Urutkan</span>
+                </button>
+              </div>
+            </div>
+            <!-- Product grid (rendered by app.js) -->
+            <div
+              class="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 pt-2"
+              id="productGrid"
+            ></div>
+          </section>
+          <!-- Share Modal (used for both Store Share and Product Share) -->
+          <div
+            class="fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 hidden"
+            id="shareModal"
+            aria-hidden="true"
+          >
+            <div
+              class="bg-surface-container-lowest w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[85vh] overflow-y-auto"
+            >
+              <div
+                class="w-10 h-1.5 bg-outline-variant/50 rounded-full mx-auto mb-3 sm:hidden"
+              ></div>
+              <div class="flex items-center justify-between pb-3">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="material-symbols-outlined text-primary text-[22px]"
+                    >share</span
+                  >
+                  <h3
+                    class="font-card-heading text-card-heading text-on-surface"
+                    id="shareModalTitle"
+                  >
+                    Bagikan Toko
+                  </h3>
+                </div>
+                <button
+                  class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
+                  id="closeShareModalBtn"
+                  type="button"
+                  aria-label="Tutup"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >close</span
+                  >
+                </button>
+              </div>
+              <p
+                class="text-xs font-body-main text-on-surface-variant mt-1 leading-relaxed"
+                id="shareModalDescription"
+              >
+                Bagikan katalog digital Sinar Jaya Store kepada pelanggan,
+                kerabat, atau ke media sosial Anda.
+              </p>
+              <!-- QR Code Placeholder -->
+              <div
+                class="my-6 p-4 rounded-xl bg-surface-container-low flex flex-col items-center justify-center gap-2 text-center"
+              >
+                <div
+                  class="w-36 h-36 bg-surface-container-lowest rounded-lg p-2 flex items-center justify-center shadow-inner"
+                >
+                  <svg
+                    class="w-full h-full text-on-surface"
+                    fill="currentColor"
+                    viewBox="0 0 100 100"
+                  >
+                    <rect
+                      fill="none"
+                      height="30"
+                      rx="4"
+                      stroke="currentColor"
+                      stroke-width="6"
+                      width="30"
+                      x="10"
+                      y="10"
+                    ></rect>
+                    <rect
+                      fill="currentColor"
+                      height="10"
+                      width="10"
+                      x="20"
+                      y="20"
+                    ></rect>
+                    <rect
+                      fill="none"
+                      height="30"
+                      rx="4"
+                      stroke="currentColor"
+                      stroke-width="6"
+                      width="30"
+                      x="60"
+                      y="10"
+                    ></rect>
+                    <rect
+                      fill="currentColor"
+                      height="10"
+                      width="10"
+                      x="70"
+                      y="20"
+                    ></rect>
+                    <rect
+                      fill="none"
+                      height="30"
+                      rx="4"
+                      stroke="currentColor"
+                      stroke-width="6"
+                      width="30"
+                      x="10"
+                      y="60"
+                    ></rect>
+                    <rect
+                      fill="currentColor"
+                      height="10"
+                      width="10"
+                      x="20"
+                      y="70"
+                    ></rect>
+                    <circle cx="50" cy="50" fill="currentColor" r="5"></circle>
+                    <rect
+                      fill="currentColor"
+                      height="10"
+                      width="10"
+                      x="60"
+                      y="60"
+                    ></rect>
+                    <rect
+                      fill="currentColor"
+                      height="10"
+                      width="10"
+                      x="80"
+                      y="60"
+                    ></rect>
+                    <rect
+                      fill="currentColor"
+                      height="10"
+                      width="10"
+                      x="60"
+                      y="80"
+                    ></rect>
+                    <rect
+                      fill="currentColor"
+                      height="15"
+                      width="15"
+                      x="75"
+                      y="75"
+                    ></rect>
+                  </svg>
+                </div>
+                <span class="text-[11px] font-label-sm text-secondary"
+                  >Scan untuk membuka toko langsung di ponsel</span
+                >
+              </div>
+              <!-- Copy Store/Product Link -->
+              <div
+                class="flex items-center gap-2 p-1.5 rounded-xl bg-surface-container-low"
+              >
+                <input
+                  class="w-full bg-transparent px-3 py-1.5 text-xs font-label-sm font-semibold text-on-surface focus:outline-none select-all"
+                  id="storeUrlInput"
+                  readonly=""
+                  type="text"
+                  value="kataloga.id/sinarjaya"
+                />
+                <button
+                  class="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-primary text-on-primary font-label-sm text-xs font-semibold hover:bg-on-primary-fixed-variant transition-colors shrink-0 shadow-sm"
+                  id="copyUrlBtn"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-[16px]"
+                    >content_copy</span
+                  >
+                  <span id="copyBtnText" class="">Salin</span>
+                </button>
+              </div>
+              <!-- Additional share channels: WhatsApp + Native Share -->
+              <div class="flex items-center gap-2 mt-3">
+                <button
+                  type="button"
+                  id="shareWhatsappBtn"
+                  class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-tertiary text-on-tertiary font-label-sm text-label-sm font-semibold hover:bg-tertiary-container transition-colors shadow-sm"
+                >
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.705 1.554zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"
+                    ></path>
+                  </svg>
+                  <span>WhatsApp</span>
+                </button>
+                <button
+                  type="button"
+                  id="shareNativeBtn"
+                  class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold hover:bg-surface-container-high transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >ios_share</span
+                  >
+                  <span>Bagikan lainnya</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Filter Bottom Sheet (Category + Condition, staged until "Terapkan Filter") -->
+          <div
+            class="fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 hidden"
+            id="filterSheet"
+            aria-hidden="true"
+          >
+            <div
+              class="bg-surface-container-lowest w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl relative max-h-[85vh] overflow-y-auto"
+            >
+              <div
+                class="w-10 h-1.5 bg-outline-variant/50 rounded-full mx-auto mb-3 sm:hidden"
+              ></div>
+              <div class="flex items-center justify-between pb-3">
+                <h3 class="font-card-heading text-card-heading text-on-surface">
+                  Filter Produk
+                </h3>
+                <button
+                  class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
+                  id="closeFilterSheetBtn"
+                  type="button"
+                  aria-label="Tutup"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >close</span
+                  >
+                </button>
+              </div>
+              <div class="flex flex-col gap-4">
+                <div>
+                  <span
+                    class="text-xs font-label-sm uppercase tracking-wider text-secondary font-semibold"
+                    >Kategori</span
+                  >
+                  <div
+                    class="flex flex-wrap gap-2 mt-2"
+                    id="filterCategoryPills"
+                  ></div>
+                </div>
+                <div>
+                  <span
+                    class="text-xs font-label-sm uppercase tracking-wider text-secondary font-semibold"
+                    >Kondisi</span
+                  >
+                  <div
+                    class="flex flex-wrap gap-2 mt-2"
+                    id="filterConditionPills"
+                  ></div>
+                </div>
+              </div>
+              <button
+                type="button"
+                id="applyFilterBtn"
+                class="w-full mt-5 py-3 rounded-xl bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-on-primary-fixed-variant transition-colors shadow-sm"
+              >
+                Terapkan Filter
+              </button>
+            </div>
+          </div>
+          <!-- Sort Bottom Sheet -->
+          <div
+            class="fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 hidden"
+            id="sortSheet"
+            aria-hidden="true"
+          >
+            <div
+              class="bg-surface-container-lowest w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl relative max-h-[85vh] overflow-y-auto"
+            >
+              <div
+                class="w-10 h-1.5 bg-outline-variant/50 rounded-full mx-auto mb-3 sm:hidden"
+              ></div>
+              <div class="flex items-center justify-between pb-3">
+                <h3 class="font-card-heading text-card-heading text-on-surface">
+                  Urutkan
+                </h3>
+                <button
+                  class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
+                  id="closeSortSheetBtn"
+                  type="button"
+                  aria-label="Tutup"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >close</span
+                  >
+                </button>
+              </div>
+              <div class="flex flex-col gap-1" id="sortOptionsList"></div>
+            </div>
+          </div>
+          <!-- Auth Prompt Modal (guest gate for Marketplace / WhatsApp Contact) -->
+          <div
+            class="fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex items-center justify-center p-4 hidden"
+            id="authModal"
+            aria-hidden="true"
+          >
+            <div
+              class="bg-surface-container-lowest w-full max-w-sm rounded-2xl p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
+            >
+              <div class="flex items-center justify-between pb-3">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="material-symbols-outlined text-primary text-[22px]"
+                    >lock</span
+                  >
+                  <h3
+                    class="font-card-heading text-card-heading text-on-surface"
+                  >
+                    Masuk Diperlukan
+                  </h3>
+                </div>
+                <button
+                  class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
+                  id="closeAuthModalBtn"
+                  type="button"
+                  aria-label="Tutup"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >close</span
+                  >
+                </button>
+              </div>
+              <p
+                class="text-xs font-body-main text-on-surface-variant mt-1 mb-5 leading-relaxed"
+              >
+                Silakan masuk atau daftar terlebih dahulu untuk melanjutkan ke
+                marketplace atau menghubungi penjual.
+              </p>
+              <div class="flex items-center gap-2">
+                <a
+                  href="#"
+                  data-path="customer-login"
+                  class="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold hover:bg-surface-container-high transition-colors"
+                  >Masuk</a
+                >
+                <a
+                  href="#"
+                  data-path="customer-register"
+                  class="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-on-primary-fixed-variant transition-colors shadow-sm"
+                  >Daftar</a
+                >
+              </div>
+              <button
+                type="button"
+                id="authModalDemoLoginBtn"
+                class="w-full mt-3 text-center text-[11px] font-label-sm text-on-surface-variant hover:text-primary underline underline-offset-2"
+              >
+                (Demo) Simulasikan sudah masuk
+              </button>
+            </div>
+          </div>
+          <!-- Toast container for lightweight, non-blocking feedback -->
+          <div
+            id="toastContainer"
+            class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 items-end"
+            aria-live="polite"
+          ></div>
+        </div>
+      </div>
+    </main>
+    <footer
+      class="w-full bg-surface-container-low border-t border-outline-variant/30 mt-section_gap_md"
+    >
+      <div
+        class="max-w-[1140px] mx-auto px-margin_mobile md:px-gutter py-section_gap_md"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-stack_lg">
+          <div class="md:col-span-6 flex flex-col gap-stack_xs">
+            <div class="flex items-center gap-stack_xs">
+              <div
+                class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-xs"
+              >
+                K
+              </div>
+              <span
+                class="font-card-heading text-card-heading text-on-surface font-bold"
+                >Kataloga</span
+              >
+            </div>
+            <p
+              class="font-body-main text-body-main text-on-surface-variant max-w-sm mt-stack_xs leading-relaxed"
+            >
+              Platform katalog digital untuk membantu seller menampilkan produk
+              dan terhubung dengan customer.
+            </p>
+          </div>
+          <div class="md:col-span-2 flex flex-col gap-stack_xs">
+            <span
+              class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface font-semibold"
+              >Platform</span
+            >
+            <nav class="flex flex-col gap-2">
+              <a
+                class="font-body-main text-body-main text-on-surface-variant hover:text-primary transition-colors"
+                href="#"
+                >Tentang Kataloga</a
+              ><a
+                class="font-body-main text-body-main text-on-surface-variant hover:text-primary transition-colors"
+                href="#"
+                >Buat Toko</a
+              >
+            </nav>
+          </div>
+          <div class="md:col-span-2 flex flex-col gap-stack_xs">
+            <span
+              class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface font-semibold"
+              >Bantuan</span
+            >
+            <nav class="flex flex-col gap-2">
+              <a
+                class="font-body-main text-body-main text-on-surface-variant hover:text-primary transition-colors"
+                href="#"
+                >Pusat Bantuan</a
+              ><a
+                class="font-body-main text-body-main text-on-surface-variant hover:text-primary transition-colors"
+                href="#"
+                >Kontak</a
+              >
+            </nav>
+          </div>
+          <div class="md:col-span-2 flex flex-col gap-stack_xs">
+            <span
+              class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface font-semibold"
+              >Legal</span
+            >
+            <nav class="flex flex-col gap-2">
+              <a
+                class="font-body-main text-body-main text-on-surface-variant hover:text-primary transition-colors"
+                href="#"
+                >Kebijakan</a
+              ><a
+                class="font-body-main text-body-main text-on-surface-variant hover:text-primary transition-colors"
+                href="#"
+                >Privasi</a
+              >
+            </nav>
+          </div>
+        </div>
+        <div
+          class="pt-stack_md border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-stack_sm text-on-surface-variant font-label-sm text-xs"
+        >
+          <p class="text-on-surface-variant">© 2026 Kataloga</p>
+          <p class="text-on-surface-variant font-bold text-body-main">
+            Made with Kataloga
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script>/* =========================================================================
+   KATALOGA — Storefront Frontend Logic (Vanilla JS)
+   -------------------------------------------------------------------------
+   This file implements all customer-side functionality described in the
+   Kataloga spec on top of the existing, visually-locked HTML/CSS.
+
+   No UI redesign is performed here — this file only adds behavior.
+   ========================================================================= */
+
+(function () {
+  'use strict';
+
+  /* ----------------------------------------------------------------------
+   * 0. CONFIG / MOCK DATA
+   *    In production, `getProducts()` and `getStore()` would call a real
+   *    API (e.g. fetch('/api/stores/:storeId/products')). For now they
+   *    return mock data shaped exactly like the future API response, so
+   *    swapping to a real backend later does not require touching any
+   *    other function in this file.
+   * ------------------------------------------------------------------- */
+
+  const STORE_ID = 'sinarjaya';
+
+  const store = {
+    id: STORE_ID,
+    name: 'Sinar Jaya Komputer',
+    url: 'kataloga.id/sinarjaya',
+    phone: '6281234567890'
+  };
+
+  // Seller-configured channels only — nothing here is a hardcoded global
+  // requirement; a seller with different channels would simply have a
+  // different list, and the dropdown/sheet render whatever is present.
+  const marketplaceChannels = [
+    { id: 'shopee', name: 'Shopee', subtitle: 'Sinar Jaya Official', url: 'https://shopee.co.id', icon: 'shopping_cart', iconBg: 'bg-primary-fixed', iconColor: 'text-primary' },
+    { id: 'tokopedia', name: 'Tokopedia', subtitle: 'SinarJaya Bandung', url: 'https://tokopedia.com', icon: 'store', iconBg: 'bg-tertiary-fixed', iconColor: 'text-tertiary' }
+  ];
+
+  const categoryOptions = [
+    { value: 'all', label: 'Semua', icon: 'apps' },
+    { value: 'laptop', label: 'Laptop', icon: 'laptop_mac' },
+    { value: 'pc-desktop', label: 'PC Desktop', icon: 'desktop_windows' },
+    { value: 'komponen-aksesori', label: 'Komponen & Aksesori', icon: 'keyboard' },
+    { value: 'monitor', label: 'Monitor', icon: 'tv' }
+  ];
+
+  const conditionOptions = [
+    { value: 'all', label: 'Semua Kondisi' },
+    { value: 'new', label: 'Baru (New)' },
+    { value: 'second', label: 'Second' }
+  ];
+
+  const sortOptions = [
+    { value: 'relevansi', label: 'Relevansi' },
+    { value: 'terbaru', label: 'Terbaru' },
+    { value: 'harga-rendah', label: 'Harga: Rendah ke Tinggi' },
+    { value: 'harga-tinggi', label: 'Harga: Tinggi ke Rendah' }
+  ];
+
+  // Mirrors the product cards already present in the locked HTML.
+  const rawProducts = [
+    {
+      id: 'p1', name: 'Laptop Ultrabook Slim 14" i5 16GB', category: 'Laptop', categorySlug: 'laptop',
+      brand: 'Generic', price: 8499000, condition: 'new', availability: 'available',
+      details: 'Intel Core i5, RAM 16GB, SSD 512GB', description: 'Laptop ultrabook ringan untuk kebutuhan kerja dan produktivitas harian.',
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
+      dateAdded: '2026-09-01', featured: true
+    },
+    {
+      id: 'p2', name: 'MacBook Air M2 256GB Midnight', category: 'Laptop', categorySlug: 'laptop',
+      brand: 'Apple', price: 12899000, condition: 'second', availability: 'available',
+      details: 'Apple M2, RAM 8GB, SSD 256GB', description: 'MacBook Air M2 mulus, garansi toko, cocok untuk desain dan editing ringan.',
+      image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=600&q=80',
+      dateAdded: '2026-08-28', featured: true
+    },
+    {
+      id: 'p3', name: 'Monitor IPS 24 Inch 144Hz Bezel-less', category: 'Monitor', categorySlug: 'monitor',
+      brand: 'Generic', price: 1750000, condition: 'new', availability: 'available',
+      details: 'Panel IPS, 144Hz, Bezel-less', description: 'Monitor gaming/produktivitas dengan refresh rate tinggi dan warna akurat.',
+      image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=600&q=80',
+      dateAdded: '2026-08-20', featured: true
+    },
+    {
+      id: 'p4', name: 'Mechanical Keyboard RGB Wireless 75%', category: 'Komponen & Aksesori', categorySlug: 'komponen-aksesori',
+      brand: 'Generic', price: 650000, condition: 'new', availability: 'available',
+      details: 'Wireless, Hot-swappable, RGB', description: 'Keyboard mekanikal 75% dengan konektivitas wireless dan lampu RGB.',
+      image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80',
+      dateAdded: '2026-08-15', featured: false
+    },
+    {
+      id: 'p5', name: 'PC Gaming Intel Core i7 RTX 4060', category: 'PC Desktop', categorySlug: 'pc-desktop',
+      brand: 'Generic', price: 14500000, condition: 'new', availability: 'available',
+      details: 'Intel Core i7, RTX 4060, RAM 16GB', description: 'PC rakitan gaming performa tinggi, siap main game AAA di 1440p.',
+      image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80',
+      dateAdded: '2026-08-25', featured: true
+    },
+    {
+      id: 'p6', name: 'Laptop ThinkPad T14 Ryzen 7 Pro', category: 'Laptop', categorySlug: 'laptop',
+      brand: 'Lenovo', price: 7200000, condition: 'second', availability: 'soldout',
+      details: 'AMD Ryzen 7 Pro, RAM 16GB, SSD 512GB', description: 'Laptop bisnis tangguh, kondisi second mulus, baterai masih sehat.',
+      image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80',
+      dateAdded: '2026-08-10', featured: false
+    }
+  ];
+
+  /* ----------------------------------------------------------------------
+   * 1. STATE
+   * ------------------------------------------------------------------- */
+
+  const appState = {
+    isAuthenticated: false,
+    currentUser: null, // { name, photoUrl }
+
+    searchQuery: '',
+    selectedCategory: 'all',
+    selectedCondition: 'all',
+    sortBy: 'relevansi',
+
+    products: [],
+    filteredProducts: [],
+
+    marketplaceOpen: false,
+    shareOpen: false,
+
+    // Holds what the share modal is currently sharing: 'store' or a product id
+    shareContext: null,
+    // Holds a pending action (e.g. marketplace channel open, whatsapp contact)
+    // that should run once the user finishes the login/register flow.
+    pendingAuthAction: null
+  };
+
+  /* ----------------------------------------------------------------------
+   * 2. DATA LAYER (API-ready)
+   * ------------------------------------------------------------------- */
+
+  async function getProducts() {
+    // TODO(api): replace with `const res = await fetch(`/api/stores/${STORE_ID}/products`); return res.json();`
+    return Promise.resolve(rawProducts.slice());
+  }
+
+  async function getStore() {
+    // TODO(api): replace with `const res = await fetch(`/api/stores/${STORE_ID}`); return res.json();`
+    return Promise.resolve(store);
+  }
+
+  async function recordCustomerActivity(activity) {
+    // TODO(api): replace with `fetch('/api/activities', { method: 'POST', body: JSON.stringify(activity) })`
+    const entry = Object.assign({ timestamp: new Date().toISOString() }, activity);
+    try {
+      const existing = JSON.parse(localStorage.getItem('kataloga_activities') || '[]');
+      existing.push(entry);
+      localStorage.setItem('kataloga_activities', JSON.stringify(existing));
+    } catch (err) {
+      console.warn('Could not persist activity log:', err);
+    }
+    console.info('[customer-activity]', entry);
+  }
+
+  /* ----------------------------------------------------------------------
+   * 3. UTILITIES
+   * ------------------------------------------------------------------- */
+
+  function formatRupiah(amount) {
+    return 'Rp ' + Number(amount).toLocaleString('id-ID');
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  function isValidExternalUrl(url) {
+    try {
+      const parsed = new URL(url, window.location.href);
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function openExternal(url) {
+    if (!isValidExternalUrl(url)) {
+      console.warn('Blocked navigation to invalid URL:', url);
+      showToast('Tautan tidak valid.', 'error');
+      return;
+    }
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!win) {
+      showToast('Popup diblokir oleh browser. Izinkan popup untuk melanjutkan.', 'error');
+    }
+  }
+
+  let toastTimer = null;
+  function showToast(message, variant) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'px-4 py-2.5 rounded-lg shadow-lg text-xs font-label-sm font-semibold bg-inverse-surface/90 text-inverse-on-surface backdrop-blur-sm ' +
+      (variant === 'error' ? 'border border-error/40' : '');
+    toast.textContent = message;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('opacity-100'));
+    setTimeout(() => {
+      toast.remove();
+    }, 2600);
+  }
+
+  function debounce(fn, delay) {
+    let t;
+    return function (...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  /* ----------------------------------------------------------------------
+   * 4. SEARCH + RELEVANCE
+   * ------------------------------------------------------------------- */
+
+  function scoreProduct(product, query) {
+    if (!query) return 1; // neutral score when no query
+    const q = query.trim().toLowerCase();
+    if (!q) return 1;
+
+    const name = product.name.toLowerCase();
+    const brand = (product.brand || '').toLowerCase();
+    const category = (product.category || '').toLowerCase();
+    const details = (product.details || '').toLowerCase();
+    const description = (product.description || '').toLowerCase();
+
+    let score = 0;
+
+    if (name === q) score = Math.max(score, 100);
+    else if (name.startsWith(q)) score = Math.max(score, 90);
+    else if (name.includes(q)) score = Math.max(score, 70);
+
+    if (brand.includes(q)) score = Math.max(score, 50);
+    if (category.includes(q)) score = Math.max(score, 40);
+    if (details.includes(q)) score = Math.max(score, 30);
+    if (description.includes(q)) score = Math.max(score, 20);
+
+    return score; // 0 means "no match"
+  }
+
+  /* ----------------------------------------------------------------------
+   * 5. FILTER + SORT PIPELINE
+   * ------------------------------------------------------------------- */
+
+  function computeFilteredProducts() {
+    const query = appState.searchQuery;
+
+    let scored = appState.products
+      .map((p) => ({ product: p, score: scoreProduct(p, query) }))
+      .filter((entry) => entry.score > 0);
+
+    if (appState.selectedCategory !== 'all') {
+      scored = scored.filter((entry) => entry.product.categorySlug === appState.selectedCategory);
+    }
+
+    if (appState.selectedCondition !== 'all') {
+      scored = scored.filter((entry) => entry.product.condition === appState.selectedCondition);
+    }
+
+    const comparator = getSortComparator(appState.sortBy);
+
+    // Availability priority first, then the chosen sort within each group.
+    const available = scored.filter((e) => e.product.availability === 'available').sort(comparator);
+    const soldOut = scored.filter((e) => e.product.availability !== 'available').sort(comparator);
+
+    return available.concat(soldOut).map((e) => e.product);
+  }
+
+  function getSortComparator(sortBy) {
+    switch (sortBy) {
+      case 'terbaru':
+        return (a, b) => new Date(b.product.dateAdded) - new Date(a.product.dateAdded);
+      case 'harga-rendah':
+        return (a, b) => a.product.price - b.product.price;
+      case 'harga-tinggi':
+        return (a, b) => b.product.price - a.product.price;
+      case 'relevansi':
+      default:
+        return (a, b) => b.score - a.score;
+    }
+  }
+
+  function applyFiltersAndRender() {
+    appState.filteredProducts = computeFilteredProducts();
+    renderProductGrid(appState.filteredProducts);
+    updateProductCount(appState.filteredProducts.length);
+  }
+
+  /* ----------------------------------------------------------------------
+   * 6. RENDERING — PRODUCT CARDS
+   *    Card markup mirrors the original locked HTML exactly, just
+   *    templated so it can be regenerated for search/filter/sort.
+   * ------------------------------------------------------------------- */
+
+  function badgeMarkup(product) {
+    const label = product.condition === 'new' ? 'NEW' : 'SECOND';
+    const cls = product.condition === 'new'
+      ? 'bg-primary text-on-primary'
+      : 'bg-secondary text-on-secondary';
+    return `<span class="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-md ${cls} text-[11px] font-label-sm font-bold uppercase tracking-wider shadow-sm">${label}</span>`;
+  }
+
+  function gridCardMarkup(product) {
+    const soldOut = product.availability !== 'available';
+    const imgClasses = soldOut
+      ? 'w-full h-full object-cover grayscale-[30%]'
+      : 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300';
+
+    const soldOutOverlay = soldOut
+      ? `<div class="absolute inset-0 bg-inverse-surface/30 backdrop-blur-[1px] z-10 flex items-center justify-center"><span class="px-4 py-1.5 rounded-lg bg-inverse-surface/90 text-inverse-on-surface font-label-sm text-xs font-bold uppercase tracking-widest shadow-md">TERJUAL (SOLD OUT)</span></div>`
+      : '';
+
+    const actionButton = soldOut
+      ? `<button class="flex-1 py-2 sm:py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-label-sm text-xs sm:text-label-sm font-semibold cursor-not-allowed text-center" disabled>Habis Terjual</button>`
+      : `<button type="button" class="product-detail-btn flex-1 py-2 sm:py-2.5 rounded-lg bg-primary text-on-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-on-primary-fixed-variant transition-colors text-center shadow-sm" data-product-id="${product.id}">Lihat Detail</button>`;
+
+    return `
+<div class="product-card h-full ${soldOut ? 'bg-surface-container-lowest/70 opacity-75' : 'bg-surface-container-lowest'} rounded-2xl p-3 sm:p-4 shadow-sm border border-outline-variant/20 flex flex-col justify-between group hover:shadow-md transition-all duration-200" data-product-id="${product.id}">
+  <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-surface-container-low mb-2 sm:mb-3">
+    ${soldOutOverlay}
+    ${badgeMarkup(product)}
+    <img class="${imgClasses}" alt="${escapeHtml(product.name)}" src="${product.image}">
+  </div>
+  <div class="flex-1 flex flex-col justify-between">
+    <div class="flex flex-col">
+      <span class="text-xs font-label-sm font-semibold uppercase tracking-wider ${soldOut ? 'text-secondary' : 'text-primary'}">${escapeHtml(product.category)}</span>
+      <h3 class="font-card-heading text-card-heading ${soldOut ? 'text-on-surface/80' : 'text-on-surface'} font-semibold line-clamp-2 mt-1">${escapeHtml(product.name)}</h3>
+    </div>
+    <div class="mt-3 sm:mt-4 pt-1">
+      <p class="text-[18px] sm:text-[22px] font-bold ${soldOut ? 'text-on-surface/70' : 'text-on-surface'} leading-tight">${formatRupiah(product.price)}</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 mt-3 sm:mt-4 pt-3 border-t border-outline-variant/20">
+    ${actionButton}
+    <button type="button" class="product-share-btn w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-surface-container text-on-surface-variant hover:text-primary flex items-center justify-center transition-colors shrink-0" title="Bagikan produk" aria-label="Bagikan produk" data-product-id="${product.id}">
+      <span class="material-symbols-outlined text-[16px] sm:text-[18px]">share</span>
+    </button>
+  </div>
+</div>`;
+  }
+
+  function featuredCardMarkup(product) {
+    return `
+<div class="min-w-[260px] md:min-w-[280px] max-w-[280px] snap-start bg-surface-container-lowest rounded-2xl p-3.5 shadow-sm border border-outline-variant/20 flex flex-col justify-between group hover:shadow-md transition-all duration-200" data-product-id="${product.id}">
+  <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-surface-container-low mb-3">
+    ${badgeMarkup(product)}
+    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(product.name)}" src="${product.image}">
+  </div>
+  <div class="flex-1 flex flex-col justify-between">
+    <div class="flex flex-col">
+      <span class="text-[11px] font-label-sm font-semibold uppercase tracking-wider text-primary">${escapeHtml(product.category)}</span>
+      <h3 class="font-card-heading text-label-sm md:text-card-heading text-on-surface font-semibold line-clamp-2 mt-0.5">${escapeHtml(product.name)}</h3>
+    </div>
+    <div class="mt-3 pt-1">
+      <p class="text-[20px] font-bold text-on-surface leading-tight">${formatRupiah(product.price)}</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 mt-3 pt-3 border-t border-outline-variant/20">
+    <button type="button" class="product-detail-btn flex-1 py-2 rounded-lg bg-primary text-on-primary font-label-sm text-xs font-semibold hover:bg-on-primary-fixed-variant transition-colors text-center shadow-sm" data-product-id="${product.id}">Lihat Detail</button>
+    <button type="button" class="product-share-btn w-8 h-8 rounded-lg bg-surface-container text-on-surface-variant hover:text-primary flex items-center justify-center transition-colors shrink-0" title="Bagikan produk" aria-label="Bagikan produk" data-product-id="${product.id}">
+      <span class="material-symbols-outlined text-[16px]">share</span>
+    </button>
+  </div>
+</div>`;
+  }
+
+  function emptyStateMarkup() {
+    return `
+<div class="col-span-full flex flex-col items-center justify-center text-center py-16 px-4">
+  <span class="material-symbols-outlined text-[40px] text-on-surface-variant/50 mb-3">search_off</span>
+  <p class="font-card-heading text-card-heading text-on-surface font-semibold">Produk tidak ditemukan</p>
+  <p class="font-body-main text-label-sm text-on-surface-variant mt-1">Coba gunakan kata kunci lain.</p>
+</div>`;
+  }
+
+  function renderProductGrid(products) {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+    grid.innerHTML = products.length
+      ? products.map(gridCardMarkup).join('')
+      : emptyStateMarkup();
+  }
+
+  function renderFeatured(products) {
+    const track = document.getElementById('featuredTrack');
+    if (!track) return;
+    const featured = products.filter((p) => p.featured);
+    track.innerHTML = featured.map(featuredCardMarkup).join('');
+    updateFeaturedScrollButtons();
+  }
+
+  function updateProductCount(count) {
+    const el = document.getElementById('productCountNumber');
+    if (el) el.textContent = String(count);
+  }
+
+  /* ----------------------------------------------------------------------
+   * 7. INIT: SEARCH
+   * ------------------------------------------------------------------- */
+
+  function initializeSearch() {
+    const input = document.getElementById('catalogSearch');
+    if (!input) return;
+    input.addEventListener('input', debounce((e) => {
+      appState.searchQuery = e.target.value;
+      applyFiltersAndRender();
+    }, 150));
+  }
+
+  /* ----------------------------------------------------------------------
+   * 8. INIT: CATEGORY FILTERS
+   * ------------------------------------------------------------------- */
+
+  function syncCategoryPillsUI(value) {
+    document.querySelectorAll('.category-pill').forEach((p) => {
+      const isActive = (p.dataset.filter || 'all') === value;
+      p.classList.toggle('active', isActive);
+      p.classList.toggle('bg-primary', isActive);
+      p.classList.toggle('text-on-primary', isActive);
+      p.classList.toggle('font-semibold', isActive);
+      p.classList.toggle('border-primary', isActive);
+      p.classList.toggle('bg-surface-container-lowest', !isActive);
+      p.classList.toggle('text-on-surface-variant', !isActive);
+      p.classList.toggle('font-medium', !isActive);
+      p.classList.toggle('border-outline-variant/30', !isActive);
+    });
+  }
+
+  function initializeFilters() {
+    document.querySelectorAll('.category-pill').forEach((pill) => {
+      pill.addEventListener('click', () => {
+        appState.selectedCategory = pill.dataset.filter || 'all';
+        syncCategoryPillsUI(appState.selectedCategory);
+        applyFiltersAndRender();
+      });
+    });
+  }
+
+  /* ----------------------------------------------------------------------
+   * 9. INIT: SORT (desktop <select> + mobile bottom sheet, kept in sync)
+   * ------------------------------------------------------------------- */
+
+  function syncSortSelectUI(value) {
+    const select = document.getElementById('catalogSort');
+    if (select) select.value = value;
+  }
+
+  function initializeSorting() {
+    const select = document.getElementById('catalogSort');
+    if (select) {
+      select.addEventListener('change', (e) => {
+        appState.sortBy = e.target.value;
+        applyFiltersAndRender();
+      });
+    }
+  }
+
+  function renderSortSheetOptions() {
+    const list = document.getElementById('sortOptionsList');
+    if (!list) return;
+    list.innerHTML = sortOptions.map((opt) => {
+      const active = opt.value === appState.sortBy;
+      return `
+<button type="button" class="sort-option-btn w-full flex items-center justify-between px-3 py-3 rounded-lg font-label-sm text-label-sm text-left transition-colors ${active ? 'bg-primary-fixed/40 text-on-surface font-semibold' : 'text-on-surface hover:bg-surface-container'}" data-value="${opt.value}">
+  <span>${escapeHtml(opt.label)}</span>
+  ${active ? '<span class="material-symbols-outlined text-[20px] text-primary">check</span>' : ''}
+</button>`;
+    }).join('');
+  }
+
+  function openSortSheet() {
+    renderSortSheetOptions();
+    const sheet = document.getElementById('sortSheet');
+    if (!sheet) return;
+    sheet.classList.remove('hidden');
+    sheet.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeSortSheet() {
+    const sheet = document.getElementById('sortSheet');
+    if (!sheet) return;
+    sheet.classList.add('hidden');
+    sheet.setAttribute('aria-hidden', 'true');
+  }
+
+  function initializeSortSheet() {
+    const trigger = document.getElementById('sortTriggerMobile');
+    const sheet = document.getElementById('sortSheet');
+    const closeBtn = document.getElementById('closeSortSheetBtn');
+    const list = document.getElementById('sortOptionsList');
+    if (!trigger || !sheet) return;
+
+    trigger.addEventListener('click', openSortSheet);
+    if (closeBtn) closeBtn.addEventListener('click', closeSortSheet);
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) closeSortSheet();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !sheet.classList.contains('hidden')) closeSortSheet();
+    });
+    if (list) {
+      list.addEventListener('click', (e) => {
+        const btn = e.target.closest('.sort-option-btn');
+        if (!btn) return;
+        appState.sortBy = btn.dataset.value;
+        syncSortSelectUI(appState.sortBy);
+        applyFiltersAndRender();
+        closeSortSheet();
+      });
+    }
+  }
+
+  /* ----------------------------------------------------------------------
+   * 9b. INIT: FILTER BOTTOM SHEET (Category + Condition, staged apply)
+   * ------------------------------------------------------------------- */
+
+  let pendingFilters = { category: 'all', condition: 'all' };
+
+  function pillClass(active) {
+    return active
+      ? 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-on-primary font-label-sm text-xs font-semibold whitespace-nowrap transition-colors border border-primary'
+      : 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium whitespace-nowrap transition-colors border border-outline-variant/30';
+  }
+
+  function renderFilterSheetOptions() {
+    const categoryEl = document.getElementById('filterCategoryPills');
+    const conditionEl = document.getElementById('filterConditionPills');
+    if (categoryEl) {
+      categoryEl.innerHTML = categoryOptions.map((opt) => `
+<button type="button" class="filter-pill ${pillClass(opt.value === pendingFilters.category)}" data-type="category" data-value="${opt.value}">
+  <span class="material-symbols-outlined text-[16px]">${opt.icon}</span><span>${escapeHtml(opt.label)}</span>
+</button>`).join('');
+    }
+    if (conditionEl) {
+      conditionEl.innerHTML = conditionOptions.map((opt) => `
+<button type="button" class="filter-pill ${pillClass(opt.value === pendingFilters.condition)}" data-type="condition" data-value="${opt.value}">
+  <span>${escapeHtml(opt.label)}</span>
+</button>`).join('');
+    }
+  }
+
+  function openFilterSheet() {
+    pendingFilters = { category: appState.selectedCategory, condition: appState.selectedCondition };
+    renderFilterSheetOptions();
+    const sheet = document.getElementById('filterSheet');
+    if (!sheet) return;
+    sheet.classList.remove('hidden');
+    sheet.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeFilterSheet() {
+    const sheet = document.getElementById('filterSheet');
+    if (!sheet) return;
+    sheet.classList.add('hidden');
+    sheet.setAttribute('aria-hidden', 'true');
+  }
+
+  function initializeFilterSheet() {
+    const trigger = document.getElementById('filterTriggerMobile');
+    const sheet = document.getElementById('filterSheet');
+    const closeBtn = document.getElementById('closeFilterSheetBtn');
+    const applyBtn = document.getElementById('applyFilterBtn');
+    if (!trigger || !sheet) return;
+
+    trigger.addEventListener('click', openFilterSheet);
+    if (closeBtn) closeBtn.addEventListener('click', closeFilterSheet);
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) closeFilterSheet();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !sheet.classList.contains('hidden')) closeFilterSheet();
+    });
+
+    sheet.addEventListener('click', (e) => {
+      const pill = e.target.closest('.filter-pill');
+      if (!pill) return;
+      pendingFilters[pill.dataset.type] = pill.dataset.value;
+      renderFilterSheetOptions();
+    });
+
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        appState.selectedCategory = pendingFilters.category;
+        appState.selectedCondition = pendingFilters.condition;
+        syncCategoryPillsUI(appState.selectedCategory);
+        applyFiltersAndRender();
+        closeFilterSheet();
+      });
+    }
+  }
+
+  /* ----------------------------------------------------------------------
+   * 10. INIT: ANNOUNCEMENT
+   * ------------------------------------------------------------------- */
+
+  function initializeAnnouncement() {
+    const btn = document.getElementById('toggleAnnouncementBtn');
+    const text = document.getElementById('announcementText');
+    if (!btn || !text) return;
+
+    let expanded = false;
+    btn.addEventListener('click', () => {
+      expanded = !expanded;
+      text.classList.toggle('line-clamp-2', !expanded);
+      btn.innerHTML = expanded
+        ? '<span>Tutup selengkapnya</span><span class="material-symbols-outlined text-[14px]">expand_less</span>'
+        : '<span>Baca selengkapnya</span><span class="material-symbols-outlined text-[14px]">expand_more</span>';
+    });
+  }
+
+  /* ----------------------------------------------------------------------
+   * 11. INIT: FEATURED SCROLL
+   * ------------------------------------------------------------------- */
+
+  function updateFeaturedScrollButtons() {
+    const track = document.getElementById('featuredTrack');
+    const leftBtn = document.getElementById('scrollLeftBtn');
+    const rightBtn = document.getElementById('scrollRightBtn');
+    if (!track || !leftBtn || !rightBtn) return;
+
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    leftBtn.disabled = track.scrollLeft <= 4;
+    rightBtn.disabled = track.scrollLeft >= maxScroll - 4;
+  }
+
+  function initializeFeaturedScroll() {
+    const track = document.getElementById('featuredTrack');
+    const leftBtn = document.getElementById('scrollLeftBtn');
+    const rightBtn = document.getElementById('scrollRightBtn');
+    if (!track || !leftBtn || !rightBtn) return;
+
+    leftBtn.addEventListener('click', () => track.scrollBy({ left: -300, behavior: 'smooth' }));
+    rightBtn.addEventListener('click', () => track.scrollBy({ left: 300, behavior: 'smooth' }));
+    track.addEventListener('scroll', debounce(updateFeaturedScrollButtons, 50));
+    window.addEventListener('resize', debounce(updateFeaturedScrollButtons, 100));
+    // Touch swipe works natively via overflow-x-auto + snap classes already on the track.
+  }
+
+  /* ----------------------------------------------------------------------
+   * 12. INIT: MARKETPLACE DROPDOWN + AUTH-GATED CHANNEL FLOW
+   * ------------------------------------------------------------------- */
+
+  function channelLinkMarkup(channel) {
+    return `
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-container transition-colors text-left group" href="${channel.url}" rel="noopener noreferrer" data-channel="${channel.id}">
+  <div class="w-8 h-8 rounded-lg ${channel.iconBg} flex items-center justify-center ${channel.iconColor} shrink-0">
+    <span class="material-symbols-outlined text-[18px]">${channel.icon}</span>
+  </div>
+  <div class="flex flex-col min-w-0">
+    <span class="font-label-sm text-label-sm font-semibold text-on-surface truncate">${escapeHtml(channel.name)}</span>
+    <span class="text-xs text-on-surface-variant truncate">${escapeHtml(channel.subtitle)}</span>
+  </div>
+</a>`;
+  }
+
+  function renderMarketplaceChannelLists() {
+    const desktopList = document.getElementById('marketplaceChannelList');
+    const mobileList = document.getElementById('marketplaceChannelListMobile');
+    const markup = marketplaceChannels.map(channelLinkMarkup).join('');
+    if (desktopList) desktopList.innerHTML = markup;
+    if (mobileList) mobileList.innerHTML = markup;
+  }
+
+  function isDesktopViewport() {
+    return window.matchMedia('(min-width: 768px)').matches;
+  }
+
+  function initializeMarketplace() {
+    const btn = document.getElementById('marketplaceDropdownBtn');
+    const dropdown = document.getElementById('marketplaceDropdown');
+    const sheet = document.getElementById('marketplaceSheet');
+    const closeSheetBtn = document.getElementById('closeMarketplaceSheetBtn');
+    if (!btn || !dropdown || !sheet) return;
+
+    renderMarketplaceChannelLists();
+
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-haspopup', 'true');
+
+    function closeAll() {
+      dropdown.classList.add('hidden');
+      sheet.classList.add('hidden');
+      sheet.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+      appState.marketplaceOpen = false;
+    }
+    function openMarketplace() {
+      if (isDesktopViewport()) {
+        dropdown.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+      } else {
+        sheet.classList.remove('hidden');
+        sheet.setAttribute('aria-hidden', 'false');
+      }
+      appState.marketplaceOpen = true;
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      appState.marketplaceOpen ? closeAll() : openMarketplace();
+    });
+
+    if (closeSheetBtn) closeSheetBtn.addEventListener('click', closeAll);
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) closeAll();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (appState.marketplaceOpen && !dropdown.contains(e.target) && !btn.contains(e.target) && !sheet.contains(e.target)) {
+        closeAll();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && appState.marketplaceOpen) {
+        closeAll();
+        btn.focus();
+      }
+    });
+
+    // Channel links (rendered into both the desktop dropdown and the mobile
+    // sheet from the same data source): check auth before leaving the site.
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('#marketplaceChannelList a[data-channel], #marketplaceChannelListMobile a[data-channel]');
+      if (!link) return;
+      e.preventDefault();
+      closeAll();
+      const channel = marketplaceChannels.find((c) => c.id === link.dataset.channel);
+      if (!channel) return;
+      handleMarketplaceChannelSelect(channel);
+    });
+  }
+
+  function handleMarketplaceChannelSelect(channel) {
+    if (!appState.isAuthenticated) {
+      requireAuth(() => handleMarketplaceChannelSelect(channel));
+      return;
+    }
+    recordCustomerActivity({
+      customer: appState.currentUser && appState.currentUser.name,
+      store: store.name,
+      product: null,
+      channel: channel.name,
+      type: 'marketplace_redirect'
+    });
+    openExternal(channel.url);
+  }
+
+  /* ----------------------------------------------------------------------
+   * 13. INIT: WHATSAPP CONTACT SELLER (different from WhatsApp Share!)
+   * ------------------------------------------------------------------- */
+
+  function initializeWhatsappContact() {
+    const link = document.getElementById('contactWhatsappBtn');
+    if (!link) return;
+
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = link.getAttribute('href');
+      handleWhatsappContact(url);
+    });
+  }
+
+  function handleWhatsappContact(url) {
+    if (!appState.isAuthenticated) {
+      requireAuth(() => handleWhatsappContact(url));
+      return;
+    }
+    recordCustomerActivity({
+      customer: appState.currentUser && appState.currentUser.name,
+      store: store.name,
+      product: null,
+      channel: 'WhatsApp',
+      type: 'contact_seller'
+    });
+    openExternal(url);
+  }
+
+  /* ----------------------------------------------------------------------
+   * 14. AUTH (prototype-level state, API-ready)
+   * ------------------------------------------------------------------- */
+
+  function requireAuth(onAuthenticated) {
+    appState.pendingAuthAction = onAuthenticated || null;
+    openAuthModal();
+  }
+
+  function openAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function initializeAuth() {
+    const modal = document.getElementById('authModal');
+    const closeBtn = document.getElementById('closeAuthModalBtn');
+    const demoLoginBtn = document.getElementById('authModalDemoLoginBtn');
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      closeAuthModal();
+      appState.pendingAuthAction = null;
+    });
+
+    if (modal) modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeAuthModal();
+        appState.pendingAuthAction = null;
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+        closeAuthModal();
+        appState.pendingAuthAction = null;
+      }
+    });
+
+    // DEMO ONLY: simulates a successful login so the rest of the auth-gated
+    // flows (marketplace redirect, WhatsApp contact) can be exercised
+    // without a real backend. Replace with a real login/register redirect
+    // (data-path="customer-login" / "customer-register") once the API exists.
+    if (demoLoginBtn) {
+      demoLoginBtn.addEventListener('click', () => {
+        setAuthState(true, { name: 'Customer Demo', photoUrl: null });
+        closeAuthModal();
+        const pending = appState.pendingAuthAction;
+        appState.pendingAuthAction = null;
+        if (pending) pending();
+      });
+    }
+  }
+
+  function setAuthState(isAuthenticated, user) {
+    appState.isAuthenticated = isAuthenticated;
+    appState.currentUser = user || null;
+    renderAuthUI();
+  }
+
+  function renderAuthUI() {
+    const loginBtn = document.getElementById('navLoginBtn');
+    const registerBtn = document.getElementById('navRegisterBtn');
+    const profileSlot = document.getElementById('navProfileSlot');
+    if (!loginBtn || !registerBtn || !profileSlot) return;
+
+    if (appState.isAuthenticated && appState.currentUser) {
+      loginBtn.classList.add('hidden');
+      registerBtn.classList.add('hidden');
+      profileSlot.classList.remove('hidden');
+      const initial = (appState.currentUser.name || '?').trim().charAt(0).toUpperCase();
+      profileSlot.innerHTML = appState.currentUser.photoUrl
+        ? `<img src="${appState.currentUser.photoUrl}" alt="${escapeHtml(appState.currentUser.name)}" class="w-9 h-9 rounded-full object-cover shadow-sm">`
+        : `<div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-semibold text-sm shadow-sm">${initial}</div>`;
+    } else {
+      loginBtn.classList.remove('hidden');
+      registerBtn.classList.remove('hidden');
+      profileSlot.classList.add('hidden');
+      profileSlot.innerHTML = '';
+    }
+  }
+
+  // Expose a small, explicit integration point for wiring up a real
+  // login/register flow later without touching internal functions.
+  window.__kataloga = window.__kataloga || {};
+  window.__kataloga.setAuthState = setAuthState;
+
+  /* ----------------------------------------------------------------------
+   * 15. SHARE (Store + Product) — Copy Link / WhatsApp / Native Share
+   * ------------------------------------------------------------------- */
+
+  function buildProductUrl(productId) {
+    return `https://${store.url}/product/${productId}`;
+  }
+  function buildStoreUrl() {
+    return `https://${store.url}`;
+  }
+
+  function openShareModal(context) {
+    const modal = document.getElementById('shareModal');
+    const titleEl = document.getElementById('shareModalTitle');
+    const descEl = document.getElementById('shareModalDescription');
+    const urlInput = document.getElementById('storeUrlInput');
+    if (!modal || !urlInput) return;
+
+    appState.shareContext = context; // { type: 'store' } or { type: 'product', productId }
+
+    let url, waText, title, desc;
+    if (context.type === 'product') {
+      const product = appState.products.find((p) => p.id === context.productId);
+      if (!product) return;
+      url = buildProductUrl(product.id);
+      waText = `Lihat produk ini di Kataloga:\n\n${product.name}\n${url}`;
+      title = 'Bagikan Produk';
+      desc = `Bagikan "${product.name}" kepada pelanggan, kerabat, atau ke media sosial Anda.`;
+    } else {
+      url = buildStoreUrl();
+      waText = `Lihat toko ini di Kataloga:\n\n${store.name}\n${url}`;
+      title = 'Bagikan Toko';
+      desc = `Bagikan katalog digital ${store.name} kepada pelanggan, kerabat, atau ke media sosial Anda.`;
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (descEl) descEl.textContent = desc;
+    urlInput.value = url;
+    modal.dataset.shareUrl = url;
+    modal.dataset.shareWaText = waText;
+
+    resetCopyButtonLabel();
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    appState.shareOpen = true;
+  }
+
+  function closeShareModal() {
+    const modal = document.getElementById('shareModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+    appState.shareOpen = false;
+    appState.shareContext = null;
+  }
+
+  function resetCopyButtonLabel() {
+    const copyBtnText = document.getElementById('copyBtnText');
+    if (copyBtnText) copyBtnText.textContent = 'Salin';
+  }
+
+  async function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.warn('Clipboard API failed, falling back:', err);
+      }
+    }
+    // Fallback for browsers without Clipboard API support.
+    try {
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.focus();
+      temp.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(temp);
+      return ok;
+    } catch (err) {
+      console.error('Copy fallback failed:', err);
+      return false;
+    }
+  }
+
+  function initializeShare() {
+    const openStoreShareBtn = document.getElementById('openShareModalBtn');
+    const closeShareModalBtn = document.getElementById('closeShareModalBtn');
+    const shareModal = document.getElementById('shareModal');
+    const copyUrlBtn = document.getElementById('copyUrlBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const storeUrlInput = document.getElementById('storeUrlInput');
+    const waShareBtn = document.getElementById('shareWhatsappBtn');
+    const nativeShareBtn = document.getElementById('shareNativeBtn');
+
+    if (openStoreShareBtn) {
+      openStoreShareBtn.addEventListener('click', () => openShareModal({ type: 'store' }));
+    }
+    if (closeShareModalBtn) {
+      closeShareModalBtn.addEventListener('click', closeShareModal);
+    }
+    if (shareModal) {
+      shareModal.addEventListener('click', (e) => {
+        if (e.target === shareModal) closeShareModal();
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && appState.shareOpen) closeShareModal();
+    });
+
+    if (copyUrlBtn && storeUrlInput && copyBtnText) {
+      copyUrlBtn.addEventListener('click', async () => {
+        storeUrlInput.select();
+        const ok = await copyTextToClipboard(storeUrlInput.value);
+        copyBtnText.textContent = ok ? 'Tersalin!' : 'Gagal';
+        showToast(ok ? 'Link berhasil disalin' : 'Gagal menyalin link, silakan salin manual.', ok ? 'success' : 'error');
+        setTimeout(resetCopyButtonLabel, 2000);
+      });
+    }
+
+    if (waShareBtn) {
+      waShareBtn.addEventListener('click', () => {
+        const modal = document.getElementById('shareModal');
+        const text = modal ? modal.dataset.shareWaText : '';
+        const waUrl = 'https://wa.me/?text=' + encodeURIComponent(text || '');
+        openExternal(waUrl);
+        // Sharing (store or product) is not a customer interest — no activity recorded.
+      });
+    }
+
+    if (nativeShareBtn) {
+      if (!navigator.share) {
+        nativeShareBtn.classList.add('hidden');
+      } else {
+        nativeShareBtn.addEventListener('click', async () => {
+          const modal = document.getElementById('shareModal');
+          const url = modal ? modal.dataset.shareUrl : '';
+          const title = document.getElementById('shareModalTitle');
+          try {
+            await navigator.share({ title: title ? title.textContent : 'Kataloga', url });
+          } catch (err) {
+            if (err && err.name !== 'AbortError') {
+              console.warn('Native share failed:', err);
+              showToast('Bagikan dibatalkan atau gagal.', 'error');
+            }
+          }
+        });
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------------
+   * 16. PRODUCT ACTIONS (Detail + Share) — event delegation
+   * ------------------------------------------------------------------- */
+
+  function initializeProductActions() {
+    document.addEventListener('click', (e) => {
+      const detailBtn = e.target.closest('.product-detail-btn');
+      if (detailBtn) {
+        navigateToProductDetail(detailBtn.dataset.productId);
+        return;
+      }
+      const shareBtn = e.target.closest('.product-share-btn');
+      if (shareBtn) {
+        openShareModal({ type: 'product', productId: shareBtn.dataset.productId });
+      }
+    });
+  }
+
+  function navigateToProductDetail(productId) {
+    const product = appState.products.find((p) => p.id === productId);
+    if (!product) return;
+    const path = `/${STORE_ID}/product/${productId}`;
+
+    // Product Detail page is not part of this project yet. We update the
+    // URL (so the route is real and shareable/bookmarkable) and notify the
+    // user, without introducing a new page design.
+    try {
+      window.history.pushState({ productId }, '', path);
+    } catch (err) {
+      console.warn('pushState not available:', err);
+    }
+    showToast(`Membuka detail: ${product.name}`);
+    // TODO: once a Product Detail page/route exists in the project, replace
+    // this stub with real navigation, e.g. `window.location.assign(path)`.
+  }
+
+  /* ----------------------------------------------------------------------
+   * 17. BOOTSTRAP
+   * ------------------------------------------------------------------- */
+
+  async function initializeApp() {
+    try {
+      const [products] = await Promise.all([getProducts(), getStore()]);
+      appState.products = products;
+    } catch (err) {
+      console.error('Failed to load catalog data:', err);
+      showToast('Gagal memuat produk. Silakan coba lagi.', 'error');
+      appState.products = [];
+    }
+
+    initializeSearch();
+    initializeFilters();
+    initializeSorting();
+    initializeFilterSheet();
+    initializeSortSheet();
+    initializeMarketplace();
+    initializeShare();
+    initializeProductActions();
+    initializeAnnouncement();
+    initializeFeaturedScroll();
+    initializeWhatsappContact();
+    initializeAuth();
+    renderAuthUI();
+
+    renderFeatured(appState.products);
+    applyFiltersAndRender();
+  }
+
+  document.addEventListener('DOMContentLoaded', initializeApp);
+})();
+</script>
+  </body>
+</html>

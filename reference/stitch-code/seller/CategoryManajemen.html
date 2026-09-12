@@ -1,0 +1,1806 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>
+  @layer base {
+    html, body { margin: 0; padding: 0; }
+    body { overscroll-behavior: none; }
+    main > :first-child { margin-top: 0 !important; }
+    main > :last-child { margin-bottom: 0 !important; }
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#004ac6",
+        "primary-container": "#2563eb",
+        "on-primary": "#ffffff",
+        "primary-fixed": "#dbe1ff",
+        "primary-fixed-dim": "#b4c5ff",
+        "secondary": "#565e74",
+        "secondary-container": "#dae2fd",
+        "on-secondary-container": "#5c647a",
+        "tertiary": "#006242",
+        "tertiary-container": "#007d55",
+        "on-tertiary-container": "#bdffdb",
+        "background": "#f8f9ff",
+        "surface": "#f8f9ff",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e5eeff",
+        "surface-container-high": "#dce9ff",
+        "surface-container-highest": "#d3e4fe",
+        "on-surface": "#0b1c30",
+        "on-surface-variant": "#434655",
+        "outline": "#737686",
+        "outline-variant": "#c3c6d7",
+        "error": "#ba1a1a",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "on-error-container": "#93000a",
+        "inverse-surface": "#213145",
+        "inverse-on-surface": "#eaf1ff"
+      },
+      borderRadius: {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "2xl": "1rem",
+        "full": "9999px"
+      },
+      spacing: {
+        "sidebar-width": "16rem",
+        "content-max-width": "80rem"
+      },
+      fontFamily: {
+        "sans": ["Plus Jakarta Sans", "sans-serif"],
+        "body-default": ["Plus Jakarta Sans", "sans-serif"]
+      }
+    }
+  }
+};
+</script></head><body class="bg-[#f8f9ff] font-body-default text-on-surface antialiased min-h-screen overflow-x-hidden pb-20 md:pb-8">
+<!-- DESKTOP SIDEBAR -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-surface-container-lowest border-r border-slate-200/80 shadow-[0_1px_8px_rgba(0,0,0,0.02)] z-50 hidden md:flex flex-col justify-between pt-4 pb-5"><div class="flex flex-col"><div class="h-16 px-6 flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg shadow-sm">K</div><span class="text-[17px] font-bold text-slate-900 tracking-wider uppercase">KATALOGA</span></div><div class="px-3 mt-4"><nav class="flex flex-col gap-1.5"><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 font-medium text-[14px] hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px] text-slate-400">grid_view</span><span class="">Dashboard</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 font-medium text-[14px] hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="products" href="#"><span class="material-symbols-outlined text-[20px] text-slate-400">inventory_2</span><span class="">Products</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 font-medium text-[14px] hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="customer-interest" href="#"><span class="material-symbols-outlined text-[20px] text-slate-400">query_stats</span><span class="">Customer Interest</span></a><a aria-current="page" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-50/80 border border-blue-100 text-primary font-semibold text-[14px] transition-colors" data-path="categories" href="#"><span class="material-symbols-outlined text-[20px] text-primary">folder</span><span class="">Categories</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 font-medium text-[14px] hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="my-store" href="#"><span class="material-symbols-outlined text-[20px] text-slate-400">store</span><span class="">My Store</span></a></nav></div></div><div class="px-3 border-t border-slate-100/80 pt-3"><nav class="flex flex-col"><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 font-medium text-[14px] hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="account" href="#"><span class="material-symbols-outlined text-[20px] text-slate-400">person</span><span class="">Account</span></a></nav></div></aside>
+<!-- MOBILE TOPBAR -->
+<header class="sticky top-0 z-40 h-14 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 flex md:hidden items-center justify-between shadow-xs">
+<div class="flex items-center gap-2">
+<button aria-label="Go Back" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface hover:bg-slate-100 transition-colors" onclick="history.back()">
+<span class="material-symbols-outlined text-[22px]">arrow_back</span>
+</button>
+<div class="flex items-center gap-2">
+<h1 class="text-base font-bold text-on-surface">Categories</h1>
+<span class="bg-primary/10 text-primary text-[11px] font-semibold px-2 py-0.5 rounded-full" id="mobile-badge-total">5 Parent</span>
+</div>
+</div>
+<button class="h-9 px-3 bg-primary-container hover:bg-primary text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1 transition-all active:scale-[0.98]" onclick="openAddCategoryModal()">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add</span>
+</button>
+</header>
+<!-- MAIN WRAPPER -->
+<div class="md:pl-sidebar-width min-h-screen flex flex-col">
+<!-- DESKTOP TOPBAR -->
+<header class="h-16 bg-surface-container-lowest border-b border-slate-200/80 sticky top-0 z-40 hidden md:flex items-center justify-between px-8"><div class="flex items-center flex-1 max-w-md"><div class="relative w-full"></div></div><div class="flex items-center gap-4"><div class="flex items-center gap-3 cursor-pointer p-1.5 rounded-xl hover:bg-slate-50 transition-colors"><div class="relative"><img alt="Sarah Anindita" class="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0"><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span></div><div class="text-left hidden lg:flex lg:flex-col"><span class="text-sm font-semibold text-slate-800 leading-tight">Sarah Anindita</span><span class="text-xs text-slate-500">Toko Komputer Jaya</span></div><span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span></div></div></header>
+<!-- MAIN CONTENT CONTAINER -->
+<main class="w-full flex-1 px-4 md:px-8 py-5 md:py-6 max-w-content-max-width mx-auto">
+<!-- Toast Notification Container -->
+<div class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[100] flex flex-col gap-2 pointer-events-none" id="toast-container"></div>
+<!-- PAGE HEADER -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+<div>
+<div class="flex items-center gap-2.5">
+<h1 class="text-xl md:text-2xl font-bold text-on-surface tracking-tight">Categories</h1>
+<span class="bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5 rounded-full" id="header-total-badge">5 Parent Categories</span>
+</div>
+<p class="text-xs md:text-sm text-on-surface-variant mt-1">Manage categories for your product catalog.</p>
+</div>
+<div class="flex items-center gap-2.5">
+<button class="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary-container text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow transition-all active:scale-[0.98]" onclick="openAddCategoryModal()" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="">+ Add Category</span>
+</button>
+</div>
+</div>
+<!-- STATS & INFO BAR -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+<!-- Total Categories -->
+<div class="bg-surface-container-lowest p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+<div>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-wider">Hierarchy</span>
+<div class="text-lg md:text-xl font-bold text-on-surface mt-0.5" id="stat-hierarchy">5 <span class="text-xs font-medium text-outline">Parent</span> / 11 <span class="text-xs font-medium text-outline">Sub</span></div>
+</div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+</div>
+</div>
+<!-- Default vs Custom -->
+<div class="bg-surface-container-lowest p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+<div>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-wider">Type Ratio</span>
+<div class="text-lg md:text-xl font-bold text-on-surface mt-0.5" id="stat-types">11 <span class="text-xs font-medium text-slate-500">Def</span> · 5 <span class="text-xs font-medium text-primary">Cust</span></div>
+</div>
+<div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+</div>
+<!-- Total Connected Products -->
+<div class="bg-surface-container-lowest p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+<div>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-wider">Total Products</span>
+<div class="text-lg md:text-xl font-bold text-on-surface mt-0.5" id="stat-products">64</div>
+</div>
+<div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+</div>
+</div>
+<!-- Empty Categories -->
+<div class="bg-surface-container-lowest p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+<div>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-wider">Empty Categories</span>
+<div class="text-lg md:text-xl font-bold text-amber-600 mt-0.5" id="stat-empty">1</div>
+</div>
+<div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+</div>
+</div>
+</div>
+<!-- SEARCH & FILTER TOOLBAR -->
+<div class="bg-surface-container-lowest p-3 rounded-xl border border-slate-200/80 shadow-xs mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+<div class="relative flex-1 max-w-lg">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full pl-9 pr-8 h-10 bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-on-surface placeholder:text-outline text-xs md:text-sm rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all" id="search-input" placeholder="Search categories (e.g. Laptop, Gaming, Keyboard)..." type="text">
+<button aria-label="Clear Search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface" id="btn-clear-search" onclick="clearSearch()" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Quick Actions / Legend -->
+<div class="flex items-center gap-2 justify-between sm:justify-end text-xs">
+<button class="inline-flex items-center gap-1 text-slate-600 hover:text-primary px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors font-medium" onclick="toggleExpandAll()" type="button">
+<span class="material-symbols-outlined text-[16px]" id="icon-expand-all">unfold_more</span>
+<span id="text-expand-all" class="">Expand All</span>
+</button>
+<div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+<div class="hidden sm:flex items-center gap-2 text-[11px] text-outline font-medium">
+<span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Default</span>
+<span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span>Custom</span>
+</div>
+</div>
+</div>
+<!-- 2-LEVEL CATEGORY HIERARCHY TREE CONTAINER -->
+<div class="bg-surface-container-lowest rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden" id="tree-container">
+<!-- Table Header (Desktop) -->
+<div class="hidden md:grid grid-cols-12 px-5 py-3 bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+<div class="col-span-7 flex items-center gap-2">Category Hierarchy (Max 2 Levels)</div>
+<div class="col-span-2">Type</div>
+<div class="col-span-2">Products</div>
+<div class="col-span-1 text-right">Actions</div>
+</div>
+<!-- Hierarchy Root Rows -->
+<div class="divide-y divide-slate-100" id="category-hierarchy-list"><div class="group/parent transition-colors"><div class="px-4 md:px-5 py-3.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-50/70 transition-colors border-b border-slate-100/60">
+        <!-- Col 1: Hierarchy Tree / Name (Col 7) -->
+        <div class="col-span-7 flex items-center gap-2.5">
+          <button type="button" onclick="toggleExpand('cat-1')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-200/60 transition-transform rotate-90" aria-label="Toggle Subcategories">
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+
+          <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">folder_open</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface">Computer</span>
+            <span class="text-[11px] font-medium text-outline">(3 sub)</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Badge (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+        </div>
+
+        <!-- Col 3: Products Count (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+            20 products total
+          </span>
+        </div>
+
+        <!-- Col 4: Action Menu (Col 1) -->
+        <div class="col-span-1 flex items-center justify-end relative pl-9 md:pl-0">
+          
+            <span class="text-[11px] text-slate-400 italic hidden md:inline px-2">—</span>
+          
+        </div>
+      </div><div class="bg-slate-50/40 divide-y divide-slate-100/60 pl-4 md:pl-6"><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ├─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Laptop</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                12 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ├─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Desktop</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                5 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                └─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-blue-100/60 text-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Mini PC</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Custom
+        </span>
+      
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                3 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <div class="relative">
+                  <button type="button" onclick="toggleMenu(event, 'menu-child-cat-1-3')" class="btn-dropdown-trigger w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-white transition-colors" aria-label="Actions for Mini PC">
+                    <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                  </button>
+                  <div id="menu-child-cat-1-3" class="dropdown-menu hidden absolute right-0 top-8 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                    <button type="button" onclick="openEditCategoryModal('cat-1-3', false, 'cat-1')" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px] text-slate-400">edit</span>
+                      <span class="">Edit Category</span>
+                    </button>
+                    <button type="button" onclick="promptDeleteCategory('cat-1-3', false, 'cat-1')" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px]">delete</span>
+                      <span class="">Delete Category</span>
+                    </button>
+                  </div>
+                </div>
+              
+            </div>
+          </div></div></div><div class="group/parent transition-colors"><div class="px-4 md:px-5 py-3.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-50/70 transition-colors border-b border-slate-100/60">
+        <!-- Col 1: Hierarchy Tree / Name (Col 7) -->
+        <div class="col-span-7 flex items-center gap-2.5">
+          <button type="button" onclick="toggleExpand('cat-2')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-200/60 transition-transform rotate-90" aria-label="Toggle Subcategories">
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+
+          <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">folder_open</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface">Accessories</span>
+            <span class="text-[11px] font-medium text-outline">(2 sub)</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Badge (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+        </div>
+
+        <!-- Col 3: Products Count (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+            14 products total
+          </span>
+        </div>
+
+        <!-- Col 4: Action Menu (Col 1) -->
+        <div class="col-span-1 flex items-center justify-end relative pl-9 md:pl-0">
+          
+            <span class="text-[11px] text-slate-400 italic hidden md:inline px-2">—</span>
+          
+        </div>
+      </div><div class="bg-slate-50/40 divide-y divide-slate-100/60 pl-4 md:pl-6"><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ├─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Keyboard</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                8 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                └─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Mouse</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                6 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div></div></div><div class="group/parent transition-colors"><div class="px-4 md:px-5 py-3.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-50/70 transition-colors border-b border-slate-100/60">
+        <!-- Col 1: Hierarchy Tree / Name (Col 7) -->
+        <div class="col-span-7 flex items-center gap-2.5">
+          <button type="button" onclick="toggleExpand('cat-3')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-200/60 transition-transform rotate-90" aria-label="Toggle Subcategories">
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+
+          <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">folder_open</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface">Networking</span>
+            <span class="text-[11px] font-medium text-outline">(2 sub)</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Badge (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+        </div>
+
+        <!-- Col 3: Products Count (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+            7 products total
+          </span>
+        </div>
+
+        <!-- Col 4: Action Menu (Col 1) -->
+        <div class="col-span-1 flex items-center justify-end relative pl-9 md:pl-0">
+          
+            <span class="text-[11px] text-slate-400 italic hidden md:inline px-2">—</span>
+          
+        </div>
+      </div><div class="bg-slate-50/40 divide-y divide-slate-100/60 pl-4 md:pl-6"><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ├─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Router</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                4 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                └─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Modem</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                3 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div></div></div><div class="group/parent transition-colors"><div class="px-4 md:px-5 py-3.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-50/70 transition-colors border-b border-slate-100/60">
+        <!-- Col 1: Hierarchy Tree / Name (Col 7) -->
+        <div class="col-span-7 flex items-center gap-2.5">
+          <button type="button" onclick="toggleExpand('cat-4')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-200/60 transition-transform rotate-90" aria-label="Toggle Subcategories">
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+
+          <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">folder_open</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface">Mobile</span>
+            <span class="text-[11px] font-medium text-outline">(1 sub)</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Badge (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+        </div>
+
+        <!-- Col 3: Products Count (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+            15 products total
+          </span>
+        </div>
+
+        <!-- Col 4: Action Menu (Col 1) -->
+        <div class="col-span-1 flex items-center justify-end relative pl-9 md:pl-0">
+          
+            <span class="text-[11px] text-slate-400 italic hidden md:inline px-2">—</span>
+          
+        </div>
+      </div><div class="bg-slate-50/40 divide-y divide-slate-100/60 pl-4 md:pl-6"><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                └─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-slate-200/70 text-slate-500 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Handphone</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                15 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              
+            </div>
+          </div></div></div><div class="group/parent transition-colors"><div class="px-4 md:px-5 py-3.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-50/70 transition-colors border-b border-slate-100/60">
+        <!-- Col 1: Hierarchy Tree / Name (Col 7) -->
+        <div class="col-span-7 flex items-center gap-2.5">
+          <button type="button" onclick="toggleExpand('cat-5')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-200/60 transition-transform rotate-90" aria-label="Toggle Subcategories">
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">folder_open</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface">Gaming</span>
+            <span class="text-[11px] font-medium text-outline">(3 sub)</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Badge (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Custom
+        </span>
+      
+        </div>
+
+        <!-- Col 3: Products Count (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+            8 products total
+          </span>
+        </div>
+
+        <!-- Col 4: Action Menu (Col 1) -->
+        <div class="col-span-1 flex items-center justify-end relative pl-9 md:pl-0">
+          
+            <div class="relative">
+              <button type="button" onclick="toggleMenu(event, 'menu-parent-cat-5')" class="btn-dropdown-trigger w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-100 transition-colors" aria-label="Actions for Gaming">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div id="menu-parent-cat-5" class="dropdown-menu hidden absolute right-0 top-9 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                <button type="button" onclick="openEditCategoryModal('cat-5', true)" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">edit</span>
+                  <span class="">Edit Category</span>
+                </button>
+                <button type="button" onclick="promptDeleteCategory('cat-5', true)" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">delete</span>
+                  <span class="">Delete Category</span>
+                </button>
+              </div>
+            </div>
+          
+        </div>
+      </div><div class="bg-slate-50/40 divide-y divide-slate-100/60 pl-4 md:pl-6"><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ├─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-blue-100/60 text-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Gaming PC</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Custom
+        </span>
+      
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                4 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <div class="relative">
+                  <button type="button" onclick="toggleMenu(event, 'menu-child-cat-5-1')" class="btn-dropdown-trigger w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-white transition-colors" aria-label="Actions for Gaming PC">
+                    <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                  </button>
+                  <div id="menu-child-cat-5-1" class="dropdown-menu hidden absolute right-0 top-8 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                    <button type="button" onclick="openEditCategoryModal('cat-5-1', false, 'cat-5')" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px] text-slate-400">edit</span>
+                      <span class="">Edit Category</span>
+                    </button>
+                    <button type="button" onclick="promptDeleteCategory('cat-5-1', false, 'cat-5')" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px]">delete</span>
+                      <span class="">Delete Category</span>
+                    </button>
+                  </div>
+                </div>
+              
+            </div>
+          </div><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ├─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-blue-100/60 text-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Gaming Laptop</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Custom
+        </span>
+      
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-slate-600 bg-white border border-slate-200/60 px-2 py-0.5 rounded-md">
+                4 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <div class="relative">
+                  <button type="button" onclick="toggleMenu(event, 'menu-child-cat-5-2')" class="btn-dropdown-trigger w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-white transition-colors" aria-label="Actions for Gaming Laptop">
+                    <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                  </button>
+                  <div id="menu-child-cat-5-2" class="dropdown-menu hidden absolute right-0 top-8 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                    <button type="button" onclick="openEditCategoryModal('cat-5-2', false, 'cat-5')" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px] text-slate-400">edit</span>
+                      <span class="">Edit Category</span>
+                    </button>
+                    <button type="button" onclick="promptDeleteCategory('cat-5-2', false, 'cat-5')" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px]">delete</span>
+                      <span class="">Delete Category</span>
+                    </button>
+                  </div>
+                </div>
+              
+            </div>
+          </div><div class="px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative">
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                └─
+              </span>
+
+              <div class="w-6 h-6 rounded-md bg-blue-100/60 text-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">Gaming Accessories</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Custom
+        </span>
+      
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium text-amber-600 bg-amber-50/80 border border-slate-200/60 px-2 py-0.5 rounded-md">
+                0 products
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              
+                <div class="relative">
+                  <button type="button" onclick="toggleMenu(event, 'menu-child-cat-5-3')" class="btn-dropdown-trigger w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-white transition-colors" aria-label="Actions for Gaming Accessories">
+                    <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                  </button>
+                  <div id="menu-child-cat-5-3" class="dropdown-menu hidden absolute right-0 top-8 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                    <button type="button" onclick="openEditCategoryModal('cat-5-3', false, 'cat-5')" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px] text-slate-400">edit</span>
+                      <span class="">Edit Category</span>
+                    </button>
+                    <button type="button" onclick="promptDeleteCategory('cat-5-3', false, 'cat-5')" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px]">delete</span>
+                      <span class="">Delete Category</span>
+                    </button>
+                  </div>
+                </div>
+              
+            </div>
+          </div></div></div></div>
+<!-- Empty Search State -->
+<div class="hidden p-12 text-center flex-col items-center justify-center" id="empty-search-state">
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+<span class="material-symbols-outlined text-[26px]">search_off</span>
+</div>
+<h3 class="text-sm font-bold text-on-surface">No categories match your search</h3>
+<p class="text-xs text-on-surface-variant max-w-xs mt-1">Try searching with another keyword or reset the search to view all categories.</p>
+<button class="mt-4 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-on-surface text-xs font-semibold rounded-lg transition-colors" onclick="clearSearch()" type="button">
+          Reset Search
+        </button>
+</div>
+</div>
+<!-- Helper Guideline Banner -->
+<div class="mt-4 p-3.5 bg-blue-50/50 border border-blue-100 rounded-xl flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">info</span>
+<div class="text-xs text-slate-600 leading-relaxed">
+<span class="font-semibold text-primary">Hierarchy Rules:</span> 
+        Level 1 categories can contain Level 2 subcategories. 
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 mx-0.5">Default</span> categories are Kataloga system standards and protected from modification. 
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-primary border border-blue-200 mx-0.5">Custom</span> categories created by you can be renamed or deleted once assigned products are relocated.
+      </div>
+</div>
+</main>
+</div>
+<!-- FIXED BOTTOM NAVIGATION MOBILE -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200/80 h-16 px-3 flex md:hidden items-center justify-around shadow-lg">
+  <a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-slate-500 hover:text-primary transition-colors" data-path="dashboard" href="#" onclick="showToast('Navigasi ke Dashboard...', 'grid_view'); return false;">
+    <span class="material-symbols-outlined text-[22px]">grid_view</span>
+    <span class="text-[10px] font-medium leading-none mt-1">Dashboard</span>
+  </a>
+  <a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-slate-500 hover:text-primary transition-colors" data-path="products" href="#" onclick="showToast('Navigasi ke Products...', 'inventory_2'); return false;">
+    <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+    <span class="text-[10px] font-medium leading-none mt-1">Products</span>
+  </a>
+  <a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-slate-500 hover:text-primary transition-colors" data-path="customer-interest" href="#" onclick="showToast('Navigasi ke Customer Interest...', 'query_stats'); return false;">
+    <span class="material-symbols-outlined text-[22px]">query_stats</span>
+    <span class="text-[10px] font-medium leading-none mt-1">Interest</span>
+  </a>
+  <button class="flex flex-col items-center justify-center flex-1 h-full py-1 text-primary relative transition-colors focus:outline-none" onclick="toggleMobileMoreMenu(true)" type="button">
+    <div class="relative flex items-center justify-center">
+      <span class="material-symbols-outlined text-[22px]">more_horiz</span>
+      <span class="w-2 h-2 rounded-full bg-primary absolute -top-0.5 -right-1 ring-2 ring-white"></span>
+    </div>
+    <span class="text-[10px] font-bold leading-none mt-1">More</span>
+  </button>
+</nav>
+<!-- MOBILE 'MORE' POPUP MENU -->
+<div class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex md:hidden flex-col justify-end transition-opacity duration-200" id="mobile-more-popup" onclick="if(event.target === this) toggleMobileMoreMenu(false);">
+  <div class="bg-surface-container-lowest rounded-t-2xl px-5 pt-3 pb-6 shadow-xl border-t border-slate-200 animate-in slide-in-from-bottom duration-200" onclick="event.stopPropagation();">
+    <!-- Drag Handle Bar -->
+    <div class="w-10 h-1.5 bg-slate-300 rounded-full mx-auto mb-3.5"></div>
+    <!-- Header -->
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+      <div>
+        <h2 class="text-sm font-bold text-on-surface">Menu Lainnya</h2>
+        <p class="text-[11px] text-outline">Pilih modul tambahan untuk navigasi cepat</p>
+      </div>
+      <button aria-label="Tutup Menu" class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-on-surface hover:bg-slate-100 transition-colors" onclick="toggleMobileMoreMenu(false)" type="button">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <!-- Options List -->
+    <div class="flex flex-col gap-2">
+      <!-- Option 1: Categories (Active) -->
+      <a class="flex items-center gap-3.5 p-3 rounded-xl bg-blue-50/80 hover:bg-slate-50 border border-blue-200/80 text-primary transition-all" href="#" onclick="toggleMobileMoreMenu(false); showToast('Anda sedang berada di halaman Categories', 'folder'); return false;">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-xs shrink-0">
+          <span class="material-symbols-outlined text-[20px]">folder</span>
+        </div>
+        <div class="flex-1 text-left">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-on-surface leading-tight">Categories</span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white shadow-2xs">
+              <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+              Sedang Aktif
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Kelola hierarki &amp; kategori produk</p>
+        </div>
+        <span class="material-symbols-outlined text-primary text-[18px]">chevron_right</span>
+      </a>
+      <!-- Option 2: My Store -->
+      <a class="flex items-center gap-3.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/60 text-slate-700 transition-all" href="#" onclick="toggleMobileMoreMenu(false); showToast('Membuka My Store...', 'store'); return false;">
+        <div class="w-10 h-10 rounded-xl bg-slate-200/70 text-slate-600 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">store</span>
+        </div>
+        <div class="flex-1 text-left">
+          <span class="text-sm font-semibold text-slate-800 leading-tight block">My Store</span>
+          <p class="text-xs text-slate-500 mt-0.5">Profil toko, jam operasional &amp; preview katalog</p>
+        </div>
+        <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+      </a>
+      <!-- Option 3: Account -->
+      <a class="flex items-center gap-3.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/60 text-slate-700 transition-all" href="#" onclick="toggleMobileMoreMenu(false); showToast('Membuka Akun...', 'person'); return false;">
+        <div class="w-10 h-10 rounded-xl bg-slate-200/70 text-slate-600 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">person</span>
+        </div>
+        <div class="flex-1 text-left">
+          <span class="text-sm font-semibold text-slate-800 leading-tight block">Account</span>
+          <p class="text-xs text-slate-500 mt-0.5">Pengaturan akun, password &amp; keamanan</p>
+        </div>
+        <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+      </a>
+    </div>
+  </div>
+</div>
+<!-- MODAL 1: ADD CATEGORY MODAL -->
+<!-- MODAL 1: ADD CATEGORY MODAL -->
+<div class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden" id="modal-add-category">
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200/90 animate-in fade-in zoom-in-95 duration-150">
+<div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/70">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">create_new_folder</span>
+</div>
+<div>
+<h2 class="text-sm font-bold text-on-surface">Add Category</h2>
+<p class="text-[11px] text-outline">Creates a new custom category</p>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-lg" onclick="closeModal('modal-add-category')" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<form class="p-5 flex flex-col gap-4" id="form-add-category" onsubmit="handleAddCategorySubmit(event)">
+<!-- Category Name Input -->
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1.5" for="input-add-name">
+          Category Name <span class="text-error">*</span>
+</label>
+<input class="w-full px-3.5 py-2 bg-slate-50 hover:bg-slate-100/50 focus:bg-white text-on-surface placeholder:text-outline text-xs md:text-sm rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all" id="input-add-name" placeholder="e.g. Gaming Headset, Mechanical Keyboard" required="" type="text">
+<span class="hidden text-error text-[11px] mt-1 items-center gap-1" id="error-add-name">
+<span class="material-symbols-outlined text-[13px]">error</span>
+<span class="">Please enter a category name.</span>
+</span>
+</div>
+<!-- Parent Category Dropdown -->
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1.5" for="select-add-parent">
+          Parent Category (Level 1)
+        </label>
+<div class="relative">
+<select class="w-full px-3.5 py-2 bg-slate-50 hover:bg-slate-100/50 focus:bg-white text-on-surface text-xs md:text-sm rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all appearance-none cursor-pointer" id="select-add-parent"><option value="none">None (Create as Level 1 Parent Category)</option><option value="cat-1">Computer (Default)</option><option value="cat-2">Accessories (Default)</option><option value="cat-3">Networking (Default)</option><option value="cat-4">Mobile (Default)</option><option value="cat-5">Gaming (Custom)</option></select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+<p class="text-[11px] text-outline mt-1.5 leading-relaxed">
+          If you select a parent, this category will become a Level 2 category. Maximum hierarchy depth is 2 levels.
+        </p>
+</div>
+<!-- Action Buttons -->
+<div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 mt-2">
+<button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-on-surface text-xs font-semibold rounded-lg transition-colors" onclick="closeModal('modal-add-category')" type="button">
+          Cancel
+        </button>
+<button class="px-4 py-2 bg-primary hover:bg-primary-container text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1" type="submit">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add Category</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- MODAL 2: EDIT CATEGORY MODAL -->
+<div class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4" id="modal-edit-category">
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200/90 animate-in fade-in zoom-in-95 duration-150">
+<div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/70">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</div>
+<div>
+<h2 class="text-sm font-bold text-on-surface">Edit Category</h2>
+<p class="text-[11px] text-outline">Applies only to Custom categories</p>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-lg" onclick="closeModal('modal-edit-category')" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<form class="p-5 flex flex-col gap-4" id="form-edit-category" onsubmit="handleEditCategorySubmit(event)">
+<input id="edit-cat-id" type="hidden" value="">
+<input id="edit-cat-is-parent" type="hidden" value="false">
+<!-- Category Name Input -->
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1.5" for="input-edit-name">
+          Category Name <span class="text-error">*</span>
+</label>
+<input class="w-full px-3.5 py-2 bg-slate-50 hover:bg-slate-100/50 focus:bg-white text-on-surface placeholder:text-outline text-xs md:text-sm rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all" id="input-edit-name" required="" type="text">
+<span class="hidden text-error text-[11px] mt-1 items-center gap-1" id="error-edit-name">
+<span class="material-symbols-outlined text-[13px]">error</span>
+<span class="">Category name is required.</span>
+</span>
+</div>
+<!-- Parent Category Selector (Only editable if child) -->
+<div id="wrapper-edit-parent">
+<label class="block text-xs font-semibold text-on-surface mb-1.5" for="select-edit-parent">
+          Parent Category
+        </label>
+<div class="relative">
+<select class="w-full px-3.5 py-2 bg-slate-50 hover:bg-slate-100/50 focus:bg-white text-on-surface text-xs md:text-sm rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all appearance-none cursor-pointer" id="select-edit-parent">
+<!-- options inserted dynamically -->
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 mt-2">
+<button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-on-surface text-xs font-semibold rounded-lg transition-colors" onclick="closeModal('modal-edit-category')" type="button">
+          Cancel
+        </button>
+<button class="px-4 py-2 bg-primary hover:bg-primary-container text-white text-xs font-semibold rounded-lg shadow-sm transition-colors" type="submit">
+          Save Changes
+        </button>
+</div>
+</form>
+</div>
+</div>
+<!-- MODAL 3: DELETE CATEGORY - STATE 1 (0 PRODUCTS CONFIRM) -->
+<div class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4" id="modal-delete-confirm">
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-md overflow-hidden p-5 border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-error-container flex items-center justify-center text-error shrink-0">
+<span class="material-symbols-outlined text-[22px]">delete_forever</span>
+</div>
+<div class="flex-1">
+<h2 class="text-sm font-bold text-on-surface" id="title-delete-confirm">Delete Category?</h2>
+<p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed" id="desc-delete-confirm">
+          This category is not assigned to any products. Are you sure you want to delete this category?
+        </p>
+</div>
+</div>
+<div class="mt-5 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+<button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-on-surface text-xs font-semibold rounded-lg transition-colors" onclick="closeModal('modal-delete-confirm')" type="button">
+        Cancel
+      </button>
+<button class="px-4 py-2 bg-error hover:bg-on-error-container text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1" id="btn-confirm-delete" onclick="executeDeleteCategory()" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span class="">Delete Category</span>
+</button>
+</div>
+</div>
+</div>
+<!-- MODAL 4: DELETE CATEGORY - STATE 2 (>0 PRODUCTS WARNING) -->
+<div class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4" id="modal-delete-warning">
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-md overflow-hidden p-5 border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
+<span class="material-symbols-outlined text-[24px]">warning</span>
+</div>
+<div class="flex-1">
+<h2 class="text-sm font-bold text-on-surface">Cannot Delete Category</h2>
+<p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed" id="desc-delete-warning">
+          This category contains products. Move these products to another category before deleting it.
+        </p>
+<div class="mt-3 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600 flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">info</span>
+<span class="">Assigned products must be relocated to maintain store consistency.</span>
+</div>
+</div>
+</div>
+<div class="mt-5 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+<button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-on-surface text-xs font-semibold rounded-lg transition-colors" onclick="closeModal('modal-delete-warning')" type="button">
+        Cancel
+      </button>
+<button class="px-4 py-2 bg-primary hover:bg-primary-container text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1.5" onclick="manageProductsRedirect()" type="button">
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+<span class="">Manage Products</span>
+</button>
+</div>
+</div>
+</div>
+<!-- JAVASCRIPT LOGIC & STATE ENGINE -->
+<script>
+  // Initial 2-Level Data hierarchy matching required spec
+  let categoriesData = [
+    {
+      id: 'cat-1',
+      name: 'Computer',
+      isCustom: false,
+      expanded: true,
+      children: [
+        { id: 'cat-1-1', name: 'Laptop', productsCount: 12, isCustom: false },
+        { id: 'cat-1-2', name: 'Desktop', productsCount: 5, isCustom: false },
+        { id: 'cat-1-3', name: 'Mini PC', productsCount: 3, isCustom: true }
+      ]
+    },
+    {
+      id: 'cat-2',
+      name: 'Accessories',
+      isCustom: false,
+      expanded: true,
+      children: [
+        { id: 'cat-2-1', name: 'Keyboard', productsCount: 8, isCustom: false },
+        { id: 'cat-2-2', name: 'Mouse', productsCount: 6, isCustom: false }
+      ]
+    },
+    {
+      id: 'cat-3',
+      name: 'Networking',
+      isCustom: false,
+      expanded: true,
+      children: [
+        { id: 'cat-3-1', name: 'Router', productsCount: 4, isCustom: false },
+        { id: 'cat-3-2', name: 'Modem', productsCount: 3, isCustom: false }
+      ]
+    },
+    {
+      id: 'cat-4',
+      name: 'Mobile',
+      isCustom: false,
+      expanded: true,
+      children: [
+        { id: 'cat-4-1', name: 'Handphone', productsCount: 15, isCustom: false }
+      ]
+    },
+    {
+      id: 'cat-5',
+      name: 'Gaming',
+      isCustom: true,
+      expanded: true,
+      children: [
+        { id: 'cat-5-1', name: 'Gaming PC', productsCount: 4, isCustom: true },
+        { id: 'cat-5-2', name: 'Gaming Laptop', productsCount: 4, isCustom: true },
+        { id: 'cat-5-3', name: 'Gaming Accessories', productsCount: 0, isCustom: true }
+      ]
+    }
+  ];
+
+  let pendingDeleteTarget = null;
+  let allExpanded = true;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderHierarchy();
+    setupSearch();
+
+    // Close all open dropdown menus when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown-menu') && !e.target.closest('.btn-dropdown-trigger')) {
+        closeAllDropdowns();
+      }
+    });
+  });
+
+  // Calculate total products for a parent node
+  function getParentProductCount(parent) {
+    return parent.children.reduce((acc, c) => acc + c.productsCount, 0);
+  }
+
+  // Render Category Tree
+  function renderHierarchy() {
+    const listEl = document.getElementById('category-hierarchy-list');
+    const emptyState = document.getElementById('empty-search-state');
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    listEl.innerHTML = '';
+
+    // Update Top Overview Stats
+    updateStats();
+
+    let matchesCount = 0;
+
+    categoriesData.forEach(parent => {
+      const parentMatches = parent.name.toLowerCase().includes(searchTerm);
+      const matchingChildren = parent.children.filter(child => 
+        child.name.toLowerCase().includes(searchTerm)
+      );
+
+      // If search active: show parent if parent matches OR if any child matches
+      const shouldDisplayParent = !searchTerm || parentMatches || matchingChildren.length > 0;
+
+      if (!shouldDisplayParent) return;
+
+      matchesCount++;
+
+      const parentProductCount = getParentProductCount(parent);
+      const isExpanded = searchTerm ? true : parent.expanded; // auto-expand while searching
+
+      // Parent DOM Block
+      const parentWrapper = document.createElement('div');
+      parentWrapper.className = 'group/parent transition-colors';
+
+      // Level 1 Row
+      const parentRow = document.createElement('div');
+      parentRow.className = `px-4 md:px-5 py-3.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-50/70 transition-colors ${!isExpanded ? '' : 'border-b border-slate-100/60'}`;
+      
+      parentRow.innerHTML = `
+        <!-- Col 1: Hierarchy Tree / Name (Col 7) -->
+        <div class="col-span-7 flex items-center gap-2.5">
+          <button 
+            type="button" 
+            onclick="toggleExpand('${parent.id}')" 
+            class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-200/60 transition-transform ${isExpanded ? 'rotate-90' : ''}"
+            aria-label="Toggle Subcategories"
+          >
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+
+          <div class="w-8 h-8 rounded-lg ${parent.isCustom ? 'bg-blue-50 text-primary' : 'bg-slate-100 text-slate-600'} flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">${isExpanded ? 'folder_open' : 'folder'}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface">${escapeHtml(parent.name)}</span>
+            <span class="text-[11px] font-medium text-outline">(${parent.children.length} sub)</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Badge (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          ${renderBadge(parent.isCustom)}
+        </div>
+
+        <!-- Col 3: Products Count (Col 2) -->
+        <div class="col-span-2 flex items-center pl-9 md:pl-0">
+          <span class="text-xs font-semibold ${parentProductCount === 0 ? 'text-amber-600 bg-amber-50' : 'text-slate-700 bg-slate-100'} px-2.5 py-1 rounded-full">
+            ${parentProductCount} products total
+          </span>
+        </div>
+
+        <!-- Col 4: Action Menu (Col 1) -->
+        <div class="col-span-1 flex items-center justify-end relative pl-9 md:pl-0">
+          ${parent.isCustom ? `
+            <div class="relative">
+              <button 
+                type="button" 
+                onclick="toggleMenu(event, 'menu-parent-${parent.id}')"
+                class="btn-dropdown-trigger w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-slate-100 transition-colors"
+                aria-label="Actions for ${escapeHtml(parent.name)}"
+              >
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div id="menu-parent-${parent.id}" class="dropdown-menu hidden absolute right-0 top-9 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                <button type="button" onclick="openEditCategoryModal('${parent.id}', true)" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">edit</span>
+                  <span>Edit Category</span>
+                </button>
+                <button type="button" onclick="promptDeleteCategory('${parent.id}', true)" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">delete</span>
+                  <span>Delete Category</span>
+                </button>
+              </div>
+            </div>
+          ` : `
+            <span class="text-[11px] text-slate-400 italic hidden md:inline px-2">—</span>
+          `}
+        </div>
+      `;
+
+      parentWrapper.appendChild(parentRow);
+
+      // Level 2 Subcategories Container (Branch lines)
+      if (isExpanded && parent.children.length > 0) {
+        const childrenContainer = document.createElement('div');
+        childrenContainer.className = 'bg-slate-50/40 divide-y divide-slate-100/60 pl-4 md:pl-6';
+
+        parent.children.forEach((child, index) => {
+          // If searching, only render children that match or if parent matched
+          if (searchTerm && !parentMatches && !child.name.toLowerCase().includes(searchTerm)) {
+            return;
+          }
+
+          const isLastChild = index === parent.children.length - 1;
+          const childRow = document.createElement('div');
+          childRow.className = 'px-3 md:px-5 py-2.5 flex flex-col md:grid md:grid-cols-12 md:items-center gap-2 md:gap-0 hover:bg-slate-100/60 transition-colors relative';
+
+          childRow.innerHTML = `
+            <!-- Col 1: Hierarchy Tree Line + Child Name (Col 7) -->
+            <div class="col-span-7 flex items-center gap-2.5 pl-6 md:pl-7 relative">
+              <!-- Tree connector branch line -->
+              <span class="absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 text-slate-300 font-mono text-sm select-none">
+                ${isLastChild ? '└─' : '├─'}
+              </span>
+
+              <div class="w-6 h-6 rounded-md ${child.isCustom ? 'bg-blue-100/60 text-primary' : 'bg-slate-200/70 text-slate-500'} flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
+              </div>
+
+              <span class="text-xs md:text-sm font-semibold text-slate-800">${escapeHtml(child.name)}</span>
+            </div>
+
+            <!-- Col 2: Badge (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              ${renderBadge(child.isCustom)}
+            </div>
+
+            <!-- Col 3: Products Count (Col 2) -->
+            <div class="col-span-2 flex items-center pl-14 md:pl-0">
+              <span class="text-[11px] font-medium ${child.productsCount === 0 ? 'text-amber-600 bg-amber-50/80' : 'text-slate-600 bg-white'} border border-slate-200/60 px-2 py-0.5 rounded-md">
+                ${child.productsCount} ${child.productsCount === 1 ? 'product' : 'products'}
+              </span>
+            </div>
+
+            <!-- Col 4: Action Menu (Col 1) -->
+            <div class="col-span-1 flex items-center justify-end relative pl-14 md:pl-0">
+              ${child.isCustom ? `
+                <div class="relative">
+                  <button 
+                    type="button" 
+                    onclick="toggleMenu(event, 'menu-child-${child.id}')"
+                    class="btn-dropdown-trigger w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-white transition-colors"
+                    aria-label="Actions for ${escapeHtml(child.name)}"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                  </button>
+                  <div id="menu-child-${child.id}" class="dropdown-menu hidden absolute right-0 top-8 w-36 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                    <button type="button" onclick="openEditCategoryModal('${child.id}', false, '${parent.id}')" class="w-full px-3 py-2 text-left text-xs font-medium text-on-surface hover:bg-slate-50 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px] text-slate-400">edit</span>
+                      <span>Edit Category</span>
+                    </button>
+                    <button type="button" onclick="promptDeleteCategory('${child.id}', false, '${parent.id}')" class="w-full px-3 py-2 text-left text-xs font-medium text-error hover:bg-error-container/30 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[15px]">delete</span>
+                      <span>Delete Category</span>
+                    </button>
+                  </div>
+                </div>
+              ` : `
+                <span class="text-[11px] text-slate-300 select-none hidden md:inline px-2">—</span>
+              `}
+            </div>
+          `;
+
+          childrenContainer.appendChild(childRow);
+        });
+
+        parentWrapper.appendChild(childrenContainer);
+      }
+
+      listEl.appendChild(parentWrapper);
+    });
+
+    if (matchesCount === 0) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    } else {
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+    }
+  }
+
+  // Badge renderer
+  function renderBadge(isCustom) {
+    if (isCustom) {
+      return `
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-primary border border-blue-200/80 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Custom
+        </span>
+      `;
+    }
+    return `
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        Default
+      </span>
+    `;
+  }
+
+  // Update top stats summary
+  function updateStats() {
+    const parentCount = categoriesData.length;
+    const subCount = categoriesData.reduce((acc, p) => acc + p.children.length, 0);
+
+    let defaultCount = 0;
+    let customCount = 0;
+    let totalProducts = 0;
+    let emptyCatCount = 0;
+
+    categoriesData.forEach(p => {
+      if (p.isCustom) customCount++; else defaultCount++;
+      const pProducts = getParentProductCount(p);
+      totalProducts += pProducts;
+      if (pProducts === 0) emptyCatCount++;
+
+      p.children.forEach(c => {
+        if (c.isCustom) customCount++; else defaultCount++;
+        if (c.productsCount === 0) emptyCatCount++;
+      });
+    });
+
+    // Update Header Badges
+    const headerTotalBadge = document.getElementById('header-total-badge');
+    if (headerTotalBadge) headerTotalBadge.textContent = `${parentCount} Parent Categories`;
+
+    const mobileBadgeTotal = document.getElementById('mobile-badge-total');
+    if (mobileBadgeTotal) mobileBadgeTotal.textContent = `${parentCount} Parent`;
+
+    // Overview Stats
+    const statHierarchy = document.getElementById('stat-hierarchy');
+    if (statHierarchy) {
+      statHierarchy.innerHTML = `${parentCount} <span class="text-xs font-medium text-outline">Parent</span> / ${subCount} <span class="text-xs font-medium text-outline">Sub</span>`;
+    }
+
+    const statTypes = document.getElementById('stat-types');
+    if (statTypes) {
+      statTypes.innerHTML = `${defaultCount} <span class="text-xs font-medium text-slate-500">Def</span> · ${customCount} <span class="text-xs font-medium text-primary">Cust</span>`;
+    }
+
+    const statProducts = document.getElementById('stat-products');
+    if (statProducts) statProducts.textContent = totalProducts;
+
+    const statEmpty = document.getElementById('stat-empty');
+    if (statEmpty) statEmpty.textContent = emptyCatCount;
+  }
+
+  // Expand / Collapse Single Node
+  function toggleExpand(parentId) {
+    const parent = categoriesData.find(p => p.id === parentId);
+    if (parent) {
+      parent.expanded = !parent.expanded;
+      renderHierarchy();
+    }
+  }
+
+  // Expand / Collapse All
+  function toggleExpandAll() {
+    allExpanded = !allExpanded;
+    categoriesData.forEach(p => p.expanded = allExpanded);
+    const icon = document.getElementById('icon-expand-all');
+    const text = document.getElementById('text-expand-all');
+    if (icon) icon.textContent = allExpanded ? 'unfold_less' : 'unfold_more';
+    if (text) text.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+    renderHierarchy();
+  }
+
+  // Dropdown Menu handler
+  function toggleMenu(e, menuId) {
+    e.stopPropagation();
+    const menu = document.getElementById(menuId);
+    if (!menu) return;
+    const isVisible = !menu.classList.contains('hidden');
+    closeAllDropdowns();
+    if (!isVisible) {
+      menu.classList.remove('hidden');
+    }
+  }
+
+  function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+  }
+
+  // Live Interactive Search
+  function setupSearch() {
+    const searchInput = document.getElementById('search-input');
+    const clearBtn = document.getElementById('btn-clear-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      if (val.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderHierarchy();
+    });
+  }
+
+  function clearSearch() {
+    const searchInput = document.getElementById('search-input');
+    const clearBtn = document.getElementById('btn-clear-search');
+    if (searchInput) searchInput.value = '';
+    if (clearBtn) clearBtn.classList.add('hidden');
+    renderHierarchy();
+  }
+
+  // ================= MODAL CONTROLS =================
+
+  function openAddCategoryModal() {
+    closeAllDropdowns();
+    const form = document.getElementById('form-add-category');
+    if (form) form.reset();
+
+    const parentSelect = document.getElementById('select-add-parent');
+    parentSelect.innerHTML = `<option value="none">None (Create as Level 1 Parent Category)</option>`;
+
+    // Populate Parent Options (Level 1 only)
+    categoriesData.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} ${p.isCustom ? '(Custom)' : '(Default)'}`;
+      parentSelect.appendChild(opt);
+    });
+
+    document.getElementById('error-add-name').classList.add('hidden');
+    openModal('modal-add-category');
+    setTimeout(() => document.getElementById('input-add-name').focus(), 50);
+  }
+
+  function handleAddCategorySubmit(e) {
+    e.preventDefault();
+    const nameInput = document.getElementById('input-add-name');
+    const parentSelect = document.getElementById('select-add-parent');
+    const nameVal = nameInput.value.trim();
+
+    if (!nameVal) {
+      document.getElementById('error-add-name').classList.remove('hidden');
+      return;
+    }
+
+    const parentId = parentSelect.value;
+    const newId = 'cat-' + Date.now();
+
+    if (parentId === 'none') {
+      // Create new Custom Parent (Level 1)
+      categoriesData.push({
+        id: newId,
+        name: nameVal,
+        isCustom: true,
+        expanded: true,
+        children: []
+      });
+    } else {
+      // Add as Child (Level 2)
+      const targetParent = categoriesData.find(p => p.id === parentId);
+      if (targetParent) {
+        targetParent.children.push({
+          id: newId,
+          name: nameVal,
+          productsCount: 0,
+          isCustom: true
+        });
+        targetParent.expanded = true;
+      }
+    }
+
+    closeModal('modal-add-category');
+    renderHierarchy();
+    showToast('Category created successfully.', 'check_circle');
+  }
+
+  function openEditCategoryModal(catId, isParent, parentId = null) {
+    closeAllDropdowns();
+    document.getElementById('form-edit-category').reset();
+    document.getElementById('edit-cat-id').value = catId;
+    document.getElementById('edit-cat-is-parent').value = isParent ? 'true' : 'false';
+
+    const selectParent = document.getElementById('select-edit-parent');
+    const wrapperParent = document.getElementById('wrapper-edit-parent');
+    const nameInput = document.getElementById('input-edit-name');
+
+    if (isParent) {
+      // If editing a Level 1 parent, parent cannot be chosen (stays Level 1)
+      wrapperParent.classList.add('hidden');
+      const parent = categoriesData.find(p => p.id === catId);
+      if (parent) nameInput.value = parent.name;
+    } else {
+      // Editing a Level 2 child: can move between Level 1 parents
+      wrapperParent.classList.remove('hidden');
+      selectParent.innerHTML = '';
+      categoriesData.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        if (p.id === parentId) opt.selected = true;
+        selectParent.appendChild(opt);
+      });
+
+      const parentObj = categoriesData.find(p => p.id === parentId);
+      const childObj = parentObj ? parentObj.children.find(c => c.id === catId) : null;
+      if (childObj) nameInput.value = childObj.name;
+    }
+
+    document.getElementById('error-edit-name').classList.add('hidden');
+    openModal('modal-edit-category');
+    setTimeout(() => nameInput.focus(), 50);
+  }
+
+  function handleEditCategorySubmit(e) {
+    e.preventDefault();
+    const catId = document.getElementById('edit-cat-id').value;
+    const isParent = document.getElementById('edit-cat-is-parent').value === 'true';
+    const newName = document.getElementById('input-edit-name').value.trim();
+
+    if (!newName) {
+      document.getElementById('error-edit-name').classList.remove('hidden');
+      return;
+    }
+
+    if (isParent) {
+      const parent = categoriesData.find(p => p.id === catId);
+      if (parent) parent.name = newName;
+    } else {
+      const newParentId = document.getElementById('select-edit-parent').value;
+      // Find current parent & child
+      let currentChild = null;
+      categoriesData.forEach(p => {
+        const idx = p.children.findIndex(c => c.id === catId);
+        if (idx !== -1) {
+          currentChild = p.children[idx];
+          p.children.splice(idx, 1);
+        }
+      });
+
+      if (currentChild) {
+        currentChild.name = newName;
+        const targetParent = categoriesData.find(p => p.id === newParentId);
+        if (targetParent) {
+          targetParent.children.push(currentChild);
+          targetParent.expanded = true;
+        }
+      }
+    }
+
+    closeModal('modal-edit-category');
+    renderHierarchy();
+    showToast('Category updated successfully.', 'check_circle');
+  }
+
+  // Prompt Deletion Rule Validation
+  function promptDeleteCategory(catId, isParent, parentId = null) {
+    closeAllDropdowns();
+
+    let productCount = 0;
+    let categoryName = '';
+
+    if (isParent) {
+      const parent = categoriesData.find(p => p.id === catId);
+      if (!parent) return;
+      categoryName = parent.name;
+      productCount = getParentProductCount(parent);
+    } else {
+      const parent = categoriesData.find(p => p.id === parentId);
+      if (!parent) return;
+      const child = parent.children.find(c => c.id === catId);
+      if (!child) return;
+      categoryName = child.name;
+      productCount = child.productsCount;
+    }
+
+    pendingDeleteTarget = { catId, isParent, parentId, categoryName, productCount };
+
+    if (productCount > 0) {
+      // State 2: >0 products Warning Modal
+      document.getElementById('desc-delete-warning').textContent = 
+        `Cannot Delete Category: This category "${categoryName}" contains ${productCount} ${productCount === 1 ? 'product' : 'products'}. Move these products to another category before deleting it.`;
+      openModal('modal-delete-warning');
+    } else {
+      // State 1: 0 products Confirmation Modal
+      document.getElementById('title-delete-confirm').textContent = `Delete "${categoryName}"?`;
+      document.getElementById('desc-delete-confirm').textContent = 
+        `This category is not assigned to any products. Are you sure you want to delete this category?`;
+      openModal('modal-delete-confirm');
+    }
+  }
+
+  function executeDeleteCategory() {
+    if (!pendingDeleteTarget) return;
+
+    const { catId, isParent, parentId } = pendingDeleteTarget;
+
+    if (isParent) {
+      categoriesData = categoriesData.filter(p => p.id !== catId);
+    } else {
+      const parent = categoriesData.find(p => p.id === parentId);
+      if (parent) {
+        parent.children = parent.children.filter(c => c.id !== catId);
+      }
+    }
+
+    pendingDeleteTarget = null;
+    closeModal('modal-delete-confirm');
+    renderHierarchy();
+    showToast('Category deleted successfully.', 'delete');
+  }
+
+  function manageProductsRedirect() {
+    closeModal('modal-delete-warning');
+    showToast('Navigating to Products Management to reassign...', 'info');
+  }
+
+  // Utility helpers for modals
+  function openModal(modalId) {
+    const m = document.getElementById(modalId);
+    if (m) {
+      m.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
+  }
+
+  function closeModal(modalId) {
+    const m = document.getElementById(modalId);
+    if (m) {
+      m.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+  }
+
+  function toggleMobileMoreMenu(open) {
+    const popup = document.getElementById('mobile-more-popup');
+    if (!popup) return;
+    if (open) {
+      popup.classList.remove('hidden');
+    } else {
+      popup.classList.add('hidden');
+    }
+  }
+
+  function showToast(message, icon = 'check_circle') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'pointer-events-auto bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 transform transition-all duration-300 translate-y-4 opacity-0 border border-slate-700/40 text-xs md:text-sm font-medium';
+    toast.innerHTML = `
+      <span class="material-symbols-outlined text-[18px] text-tertiary-container">${icon}</span>
+      <span>${escapeHtml(message)}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-4', 'opacity-0');
+    }, 10);
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-4', 'opacity-0');
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>
+
+
+
+
+
+
+</body></html>

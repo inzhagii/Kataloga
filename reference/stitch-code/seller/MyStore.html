@@ -1,0 +1,919 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>My Store / Store Management - Kataloga</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base { 
+      html, body { margin: 0; padding: 0; } 
+      body { overscroll-behavior: none; } 
+    } 
+    ::-webkit-scrollbar { display: none; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#2563eb",
+            "primary-dark": "#1d4ed8",
+            "primary-light": "#eff6ff",
+            "primary-focus": "#3b82f6",
+            "background": "#f8fafd",
+            "surface": "#ffffff",
+            "surface-subtle": "#f1f5f9",
+            "border-subtle": "#e2e8f0",
+            "border-focus": "#bfdbfe",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "error": "#ef4444",
+            "error-subtle": "#fef2f2",
+            "success": "#10b981",
+            "success-subtle": "#ecfdf5"
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            body: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          boxShadow: {
+            'card': '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)',
+            'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03)',
+            'toast': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05)'
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#f8fafd] font-sans text-slate-900 antialiased min-h-screen">
+<!-- Toast Notification Container (Top Right) -->
+<div class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none transition-all" id="toast-container"></div>
+<!-- Layout Container -->
+<div class="flex min-h-screen">
+<!-- 1. DESKTOP SIDEBAR -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-white border-r border-slate-200/80 z-40 flex-col justify-between py-6">
+<div class="flex flex-col">
+<!-- Logo -->
+<div class="h-10 px-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm font-bold text-sm tracking-tight">
+            K
+          </div>
+<span class="font-bold text-lg text-slate-900 tracking-tight">KATALOGA</span>
+</div>
+<!-- Sidebar Navigation -->
+<nav class="flex flex-col gap-1.5 px-3 mt-8">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-medium text-sm hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-medium text-sm hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">inventory_2</span>
+<span class="">Products</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-medium text-sm hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">insights</span>
+<span class="">Customer Interest</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-medium text-sm hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">folder_open</span>
+<span class="">Categories</span>
+</a>
+<!-- Active Item: My Store -->
+<a aria-current="page" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-50/80 text-blue-600 font-semibold text-sm border border-blue-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-blue-600">storefront</span>
+<span class="">My Store</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Account Link -->
+<div class="px-3">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-medium text-sm hover:bg-slate-50 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">manage_accounts</span>
+<span class="">Account</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="w-full lg:pl-64 flex flex-col min-h-screen">
+<!-- TOPBAR -->
+<header class="h-16 bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-8">
+<!-- Brand on Mobile / Search on Desktop -->
+<div class="flex items-center gap-3">
+<div class="lg:hidden flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+              K
+            </div>
+<span class="font-bold text-slate-900 tracking-tight text-base">KATALOGA</span>
+</div>
+<div class="hidden sm:flex items-center gap-2 text-slate-400 text-sm bg-slate-50 px-3.5 py-1.5 rounded-lg border border-slate-200">
+<span class="material-symbols-outlined text-[18px]">search</span>
+<input class="bg-transparent border-0 p-0 text-xs sm:text-sm focus:ring-0 text-slate-700 w-48 lg:w-64 placeholder-slate-400" placeholder="Cari pengaturan, bantuan..." type="text">
+</div>
+</div>
+<!-- Right: Seller Profile -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-3 cursor-pointer py-1.5 px-2 rounded-xl hover:bg-slate-50 transition-colors">
+<div class="relative">
+<img alt="Sarah Anindita" class="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&amp;auto=format&amp;fit=crop&amp;q=80'" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&amp;auto=format&amp;fit=crop&amp;q=80">
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+</div>
+<div class="hidden sm:flex flex-col text-left">
+<span class="text-xs font-bold text-slate-900 leading-tight">Sarah Anindita</span>
+<span class="text-[11px] text-slate-500 font-medium">Toko Komputer Jaya</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-slate-400 hidden sm:inline">keyboard_arrow_down</span>
+</div>
+</div>
+</header>
+<!-- MAIN PAGE CONTENT (1-Column, Spacing 8px grid) -->
+<main class="w-full flex-1 px-4 sm:px-8 py-6 sm:py-8 max-w-4xl mx-auto pb-28 sm:pb-20">
+<!-- PAGE HEADER -->
+<div class="mb-6 sm:mb-8">
+<div class="flex items-center gap-2 mb-1">
+<h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">My Store</h1>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+              Store Management
+            </span>
+</div>
+<p class="text-sm text-slate-500">Kelola informasi dan pengaturan toko kamu.</p>
+</div>
+<!-- 6 VERTICAL CARDS CONTAINER -->
+<div class="flex flex-col gap-5 sm:gap-6" id="cards-container">
+<!-- ========================================== -->
+<!-- CARD 1: STORE IDENTITY -->
+<!-- ========================================== -->
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-card transition-all overflow-hidden accordion-item" data-accordion="identity">
+<!-- Accordion Header (Mobile Touchable) -->
+<button class="w-full text-left p-5 sm:p-6 flex items-center justify-between transition-colors accordion-trigger lg:cursor-default" onclick="toggleAccordion('identity')" type="button">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div>
+<h2 class="text-base sm:text-lg font-bold text-slate-900">Store Identity</h2>
+<p class="text-xs text-slate-500 hidden sm:block">Logo, nama identitas toko, dan Store ID publik.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 accordion-icon lg:hidden">expand_more</span>
+</button>
+<!-- Card Content Body -->
+<div class="accordion-content px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 sm:border-t-0">
+<!-- Store Logo Row -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b border-slate-100">
+<div class="relative group">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shadow-sm overflow-hidden ring-1 ring-slate-200/80" id="store-logo-display">
+<img alt="Store Logo" class="w-full h-full object-cover hidden" id="store-logo-img" onerror="this.classList.add('hidden'); document.getElementById('store-logo-text').classList.remove('hidden');" src="https://lh3.googleusercontent.com/aida/AEtjO1WhZme7ok6qWVZfifo4OTPlzqw5EQXpZ7XPrIwNiDd3Dgk3aYjvF_yU6V9L2g5lmkOBztuAz5_GkT7e3Nddtc_KeriuII0AhPqKOJiBc1rd4oJupTtK8ngef0mByv_tHUSpn7L_EzXD_4Bw-6dqx7WWCBF7w3i2NQZhztzhepZO1vigZfSkgzj9x0k2i8QlWHtx-odiycrA4UPaQgCQaJSC2_PS0AbEaUcXb3KHlAhubgkxD8eecIu1pi4">
+<span id="store-logo-text" class="">TKJ</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs font-semibold text-slate-900">Store Logo</span>
+<p class="text-xs text-slate-500">Format PNG, JPG, atau SVG (Rasio 1:1, min. 400x400 px).</p>
+<div class="mt-2 flex items-center gap-2">
+<input accept="image/*" class="hidden" id="logo-file-input" onchange="handleLogoChange(event)" type="file">
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 active:scale-95 transition-all shadow-sm" onclick="document.getElementById('logo-file-input').click()" type="button">
+<span class="material-symbols-outlined text-[16px]">upload</span>
+                      Ganti Logo
+                    </button>
+<button class="text-xs text-slate-500 hover:text-slate-700 font-medium px-2 py-1" onclick="resetToMonogram()" type="button">
+                      Reset Monogram
+                    </button>
+</div>
+</div>
+</div>
+<!-- Form Fields -->
+<div class="mt-5 grid grid-cols-1 gap-5">
+<!-- Store Name -->
+<div>
+<label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5" for="input-store-name">
+                    Store Name
+                  </label>
+<input class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all font-medium" id="input-store-name" placeholder="Masukkan nama toko" type="text" value="Toko Komputer Jaya">
+</div>
+<!-- Store ID with Validation & Cooldown Simulator -->
+<div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
+<label class="block text-xs font-bold text-slate-800 uppercase tracking-wider" for="input-store-id">
+                      Store ID
+                    </label>
+<!-- Cooldown Simulator Toggle -->
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-slate-500 font-medium">Simulasi Cooldown 30 Hari:</span>
+<button aria-checked="false" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-200 transition-colors duration-200 ease-in-out focus:outline-none" id="btn-toggle-cooldown" onclick="toggleCooldown()" role="switch" type="button">
+<span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0" id="cooldown-knob"></span>
+</button>
+</div>
+</div>
+<div class="relative">
+<input class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all font-mono" id="input-store-id" oninput="handleStoreIdInput(this.value)" placeholder="contoh: toko-komputer-jaya" type="text" value="toko-komputer-jaya">
+<span class="material-symbols-outlined text-[18px] text-slate-400 absolute right-3.5 top-3 hidden" id="lock-icon">lock</span>
+</div>
+<!-- Error message -->
+<p class="hidden text-xs text-red-600 font-medium mt-1.5 flex items-center gap-1" id="store-id-error">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                    Hanya boleh huruf kecil (a-z), angka (0-9), dan tanda hubung (-).
+                  </p>
+<!-- Helper Text -->
+<p class="text-xs text-slate-500 mt-1.5" id="store-id-helper">
+                    Gunakan huruf kecil, angka, dan tanda "-". Store ID digunakan sebagai alamat toko kamu.
+                  </p>
+<!-- Cooldown Banner info -->
+<div class="hidden mt-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2 font-medium" id="cooldown-banner">
+<span class="material-symbols-outlined text-[16px] text-amber-600">lock_clock</span>
+<span class="">Store ID baru dapat diubah kembali setelah 30 hari. Terakhir diubah: 14 hari lalu.</span>
+</div>
+</div>
+<!-- Store URL Preview & Copy Button -->
+<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-[18px] text-blue-600 shrink-0">link</span>
+<div class="flex flex-col truncate">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Store URL Publik</span>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 font-mono truncate" id="display-store-url">kataloga.com/toko-komputer-jaya</span>
+</div>
+</div>
+<button class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 shadow-sm active:scale-95 transition-all shrink-0" onclick="copyStoreUrl()" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span class="">Salin</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- CARD 2: STORE INFORMATION -->
+<!-- ========================================== -->
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-card transition-all overflow-hidden accordion-item" data-accordion="info">
+<button class="w-full text-left p-5 sm:p-6 flex items-center justify-between transition-colors accordion-trigger lg:cursor-default" onclick="toggleAccordion('info')" type="button">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">info</span>
+</div>
+<div>
+<h2 class="text-base sm:text-lg font-bold text-slate-900">Store Information</h2>
+<p class="text-xs text-slate-500 hidden sm:block">Bio toko dan asal kota pengiriman barang.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 accordion-icon lg:hidden rotate-180">expand_more</span>
+</button>
+<div class="accordion-content px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 sm:border-t-0 hidden">
+<div class="grid grid-cols-1 gap-5">
+<!-- Bio Textarea -->
+<div>
+<label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5" for="input-store-bio">
+                    Bio
+                  </label>
+<textarea class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all resize-y font-normal leading-relaxed" id="input-store-bio" placeholder="Ceritakan sedikit tentang toko kamu..." rows="3">Menjual berbagai kebutuhan komputer dan networking terpercaya sejak 2021. Spesialis laptop bisnis, PC rakitan, dan aksesori original bergaransi resmi.</textarea>
+</div>
+<!-- City / Shipping Origin -->
+<div>
+<label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5" for="input-store-city">
+                    City / Shipping Origin
+                  </label>
+<div class="relative">
+<span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3.5 top-3">location_on</span>
+<input class="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all font-medium" id="input-store-city" placeholder="Kota atau lokasi pengiriman" type="text" value="Bandung">
+</div>
+<p class="text-xs text-slate-500 mt-1.5">
+                    Informasi ini akan ditampilkan kepada customer pada landing page toko.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- CARD 3: OPERATING HOURS -->
+<!-- ========================================== -->
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-card transition-all overflow-hidden accordion-item" data-accordion="hours">
+<button class="w-full text-left p-5 sm:p-6 flex items-center justify-between transition-colors accordion-trigger lg:cursor-default" onclick="toggleAccordion('hours')" type="button">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<div>
+<h2 class="text-base sm:text-lg font-bold text-slate-900">Operating Hours</h2>
+<p class="text-xs text-slate-500 hidden sm:block">Atur jadwal operasional dan jam layanan pelanggan tiap harinya.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 accordion-icon lg:hidden rotate-180">expand_more</span>
+</button>
+<div class="accordion-content px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 sm:border-t-0 hidden"><div class="flex flex-col gap-4 pt-3"><!-- 1. Hari Operasional --><div><h3 class="text-sm font-semibold text-slate-700 mb-2">Hari Operasional</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="block text-xs text-slate-500 font-medium mb-1.5" for="opt-start-day">Buka dari</label><select id="opt-start-day" onchange="updateOperatingHoursSummary()" class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"><option value="Senin" selected="">Senin</option><option value="Selasa">Selasa</option><option value="Rabu">Rabu</option><option value="Kamis">Kamis</option><option value="Jumat">Jumat</option><option value="Sabtu">Sabtu</option><option value="Minggu">Minggu</option></select></div><div><label class="block text-xs text-slate-500 font-medium mb-1.5" for="opt-end-day">Sampai</label><select id="opt-end-day" onchange="updateOperatingHoursSummary()" class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"><option value="Senin">Senin</option><option value="Selasa">Selasa</option><option value="Rabu">Rabu</option><option value="Kamis">Kamis</option><option value="Jumat">Jumat</option><option value="Sabtu" selected="">Sabtu</option><option value="Minggu">Minggu</option></select></div></div></div><!-- 2. Jam Operasional --><div><h3 class="text-sm font-semibold text-slate-700 mt-4 mb-2">Jam Operasional</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="block text-xs text-slate-500 font-medium mb-1.5" for="opt-start-time">Dari</label><input type="time" id="opt-start-time" value="09:00" onchange="updateOperatingHoursSummary()" class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"></div><div><label class="block text-xs text-slate-500 font-medium mb-1.5" for="opt-end-time">Sampai</label><input type="time" id="opt-end-time" value="21:00" onchange="updateOperatingHoursSummary()" class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"></div></div></div><!-- 3. Divider line --><div class="border-t border-slate-200 my-4"></div><!-- 4. Tampilan Ringkasan --><div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-col"><span class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Jam Operasional</span><span id="opt-summary-text" class="text-base font-semibold text-slate-800">Senin – Sabtu • 09:00 – 21:00</span></div></div><div class="hidden"><img src="data:image/svg+xml;utf8,&lt;svg&gt;&lt;/svg&gt;" class="hidden" onerror="window.updateOperatingHoursSummary = function() { const sDay = document.getElementById('opt-start-day')?.value || 'Senin'; const eDay = document.getElementById('opt-end-day')?.value || 'Sabtu'; const sTime = document.getElementById('opt-start-time')?.value || '09:00'; const eTime = document.getElementById('opt-end-time')?.value || '21:00'; const summaryEl = document.getElementById('opt-summary-text'); if (summaryEl) { summaryEl.textContent = `${sDay} – ${eDay} • ${sTime} – ${eTime}`; } }; updateOperatingHoursSummary();"></div></div>
+</div>
+<!-- ========================================== -->
+<!-- CARD 4: STORE ANNOUNCEMENT -->
+<!-- ========================================== -->
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-card transition-all overflow-hidden accordion-item" data-accordion="announcement">
+<button class="w-full text-left p-5 sm:p-6 flex items-center justify-between transition-colors accordion-trigger lg:cursor-default" onclick="toggleAccordion('announcement')" type="button">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div>
+<h2 class="text-base sm:text-lg font-bold text-slate-900">Store Announcement</h2>
+<p class="text-xs text-slate-500 hidden sm:block">Pesan banner penting untuk pelanggan (jadwal libur, info stok, dll).</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 accordion-icon lg:hidden rotate-180">expand_more</span>
+</button>
+<div class="accordion-content px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 sm:border-t-0 hidden">
+<div class="flex flex-col gap-4">
+<!-- Toggle Checkbox -->
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300" id="checkbox-announcement" onchange="handleAnnouncementToggle(this.checked)" type="checkbox">
+<span class="text-sm font-semibold text-slate-800">Tampilkan pengumuman di landing page toko</span>
+</label>
+<!-- Announcement Textarea -->
+<div>
+<textarea class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all resize-none font-normal" id="textarea-announcement" placeholder="Tuliskan pengumuman penting..." rows="3">Libur tanggal 10–12 September. Pesanan akan diproses kembali tanggal 13 September.</textarea>
+<p class="text-xs text-slate-500 mt-1.5">
+                    Pengumuman ini akan ditampilkan pada banner halaman toko kamu.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- CARD 5: WHATSAPP -->
+<!-- ========================================== -->
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-card transition-all overflow-hidden accordion-item" data-accordion="whatsapp">
+<button class="w-full text-left p-5 sm:p-6 flex items-center justify-between transition-colors accordion-trigger lg:cursor-default" onclick="toggleAccordion('whatsapp')" type="button">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<div>
+<h2 class="text-base sm:text-lg font-bold text-slate-900">WhatsApp</h2>
+<p class="text-xs text-slate-500 hidden sm:block">Kontak langsung untuk menerima pesanan dan pertanyaan pembeli.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 accordion-icon lg:hidden rotate-180">expand_more</span>
+</button>
+<div class="accordion-content px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 sm:border-t-0 hidden">
+<div>
+<label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5" for="input-store-wa">
+                  WhatsApp Number
+                </label>
+<div class="relative">
+<span class="material-symbols-outlined text-[18px] text-emerald-600 absolute left-3.5 top-3">chat</span>
+<input class="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all font-medium" id="input-store-wa" placeholder="+62 812 xxxx xxxx" type="text" value="+62 812 3456 7890">
+</div>
+<p class="text-xs text-slate-500 mt-1.5">
+                  Customer akan diarahkan ke WhatsApp saat memilih 'Hubungi via WhatsApp'. Kataloga tidak menyediakan chat internal.
+                </p>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- CARD 6: EXTERNAL STORES -->
+<!-- ========================================== -->
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-card transition-all overflow-hidden accordion-item" data-accordion="external">
+<button class="w-full text-left p-5 sm:p-6 flex items-center justify-between transition-colors accordion-trigger lg:cursor-default" onclick="toggleAccordion('external')" type="button">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">store</span>
+</div>
+<div>
+<h2 class="text-base sm:text-lg font-bold text-slate-900">External Stores</h2>
+<p class="text-xs text-slate-500 hidden sm:block">Tautkan akun marketplace atau website resmi tokomu.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 accordion-icon lg:hidden rotate-180">expand_more</span>
+</button>
+<div class="accordion-content px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 sm:border-t-0 hidden">
+<!-- Store Rows Container -->
+<div class="flex flex-col gap-3" id="external-stores-container"><div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 p-3 sm:p-0 rounded-xl bg-slate-50 sm:bg-transparent border border-slate-200/80 sm:border-0">
+          <!-- Dropdown Platform -->
+          <div class="w-full sm:w-44 shrink-0">
+            <select onchange="updateExternalStore(0, 'platform', this.value)" class="w-full px-3 py-2 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+              <option value="Shopee" selected="">Shopee</option>
+              <option value="Tokopedia">Tokopedia</option>
+              <option value="TikTok Shop">TikTok Shop</option>
+              <option value="Lazada">Lazada</option>
+              <option value="Blibli">Blibli</option>
+              <option value="Website">Website</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <!-- URL Input -->
+          <div class="flex-1 relative">
+            <input type="url" value="https://shopee.co.id/tokokomputerjaya" oninput="updateExternalStore(0, 'url', this.value)" placeholder="https://..." class="w-full px-3.5 py-2 text-xs sm:text-sm font-mono rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+          </div>
+
+          <!-- Remove Button -->
+          <button type="button" onclick="removeExternalStoreRow(0)" class="self-end sm:self-center px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 active:scale-95 transition-all inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+            <span class="">Remove</span>
+          </button>
+        </div><div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 p-3 sm:p-0 rounded-xl bg-slate-50 sm:bg-transparent border border-slate-200/80 sm:border-0">
+          <!-- Dropdown Platform -->
+          <div class="w-full sm:w-44 shrink-0">
+            <select onchange="updateExternalStore(1, 'platform', this.value)" class="w-full px-3 py-2 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+              <option value="Shopee">Shopee</option>
+              <option value="Tokopedia" selected="">Tokopedia</option>
+              <option value="TikTok Shop">TikTok Shop</option>
+              <option value="Lazada">Lazada</option>
+              <option value="Blibli">Blibli</option>
+              <option value="Website">Website</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <!-- URL Input -->
+          <div class="flex-1 relative">
+            <input type="url" value="https://tokopedia.com/tokocomputer" oninput="updateExternalStore(1, 'url', this.value)" placeholder="https://..." class="w-full px-3.5 py-2 text-xs sm:text-sm font-mono rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+          </div>
+
+          <!-- Remove Button -->
+          <button type="button" onclick="removeExternalStoreRow(1)" class="self-end sm:self-center px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 active:scale-95 transition-all inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+            <span class="">Remove</span>
+          </button>
+        </div><div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 p-3 sm:p-0 rounded-xl bg-slate-50 sm:bg-transparent border border-slate-200/80 sm:border-0">
+          <!-- Dropdown Platform -->
+          <div class="w-full sm:w-44 shrink-0">
+            <select onchange="updateExternalStore(2, 'platform', this.value)" class="w-full px-3 py-2 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+              <option value="Shopee">Shopee</option>
+              <option value="Tokopedia">Tokopedia</option>
+              <option value="TikTok Shop">TikTok Shop</option>
+              <option value="Lazada">Lazada</option>
+              <option value="Blibli">Blibli</option>
+              <option value="Website" selected="">Website</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <!-- URL Input -->
+          <div class="flex-1 relative">
+            <input type="url" value="https://tokokomputerjaya.com" oninput="updateExternalStore(2, 'url', this.value)" placeholder="https://..." class="w-full px-3.5 py-2 text-xs sm:text-sm font-mono rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+          </div>
+
+          <!-- Remove Button -->
+          <button type="button" onclick="removeExternalStoreRow(2)" class="self-end sm:self-center px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 active:scale-95 transition-all inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+            <span class="">Remove</span>
+          </button>
+        </div></div>
+<!-- Add Row Button -->
+<div class="mt-4 pt-3 border-t border-slate-100">
+<button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-300 text-blue-600 bg-blue-50/50 hover:bg-blue-50 font-semibold text-xs sm:text-sm active:scale-95 transition-all" onclick="addExternalStoreRow()" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="">Add External Store</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- GLOBAL ACTIONS (Bottom of Page) -->
+<div class="mt-8 pt-5 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+<button class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-all shadow-sm active:scale-95 text-center" onclick="resetFormChanges()" type="button">
+            Batal
+          </button>
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all shadow-sm hover:shadow active:scale-95 text-center" onclick="saveStoreChanges()" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span class="">Simpan Perubahan</span>
+</button>
+</div>
+</main>
+<!-- FIXED MOBILE BOTTOM NAVIGATION -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200/80 z-40 px-2 h-16 flex justify-around items-center shadow-lg">
+  <a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-slate-500 hover:text-blue-600 transition-colors" href="#">
+    <span class="material-symbols-outlined text-[22px]">dashboard</span>
+    <span class="text-[11px] font-medium mt-0.5">Dashboard</span>
+  </a>
+  <a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-slate-500 hover:text-blue-600 transition-colors" href="#">
+    <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+    <span class="text-[11px] font-medium mt-0.5">Products</span>
+  </a>
+  <a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-slate-500 hover:text-blue-600 transition-colors" href="#">
+    <span class="material-symbols-outlined text-[22px]">insights</span>
+    <span class="text-[11px] font-medium mt-0.5">Interest</span>
+  </a>
+  <button type="button" id="btn-open-more-sheet" onclick="toggleMoreSheet(true)" class="relative flex flex-col items-center justify-center flex-1 h-full py-1 text-blue-600 font-semibold focus:outline-none">
+    <div class="relative flex items-center justify-center">
+      <span class="material-symbols-outlined text-[22px]">more_horiz</span>
+      <span class="absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white"></span>
+    </div>
+    <span class="text-[11px] font-bold mt-0.5">More</span>
+  </button>
+</nav>
+</div>
+</div>
+<!-- JAVASCRIPT LOGIC -->
+<script>
+    // State Store Management
+    const initialStoreState = {
+      name: "Toko Komputer Jaya",
+      storeId: "toko-komputer-jaya",
+      cooldown: false,
+      bio: "Menjual berbagai kebutuhan komputer dan networking terpercaya sejak 2021. Spesialis laptop bisnis, PC rakitan, dan aksesori original bergaransi resmi.",
+      city: "Bandung",
+      announcementEnabled: true,
+      announcement: "Libur tanggal 10–12 September. Pesanan akan diproses kembali tanggal 13 September.",
+      whatsapp: "+62 812 3456 7890",
+      operatingHours: [
+        { day: "Monday", open: true, from: "09:00", to: "17:00" },
+        { day: "Tuesday", open: true, from: "09:00", to: "17:00" },
+        { day: "Wednesday", open: true, from: "09:00", to: "17:00" },
+        { day: "Thursday", open: true, from: "09:00", to: "17:00" },
+        { day: "Friday", open: true, from: "09:00", to: "17:00" },
+        { day: "Saturday", open: true, from: "09:00", to: "15:00" },
+        { day: "Sunday", open: false, from: "09:00", to: "17:00" }
+      ],
+      externalStores: [
+        { platform: "Shopee", url: "https://shopee.co.id/tokokomputerjaya" },
+        { platform: "Tokopedia", url: "https://tokopedia.com/tokocomputer" },
+        { platform: "Website", url: "https://tokokomputerjaya.com" }
+      ]
+    };
+
+    let currentState = JSON.parse(JSON.stringify(initialStoreState));
+
+    // Toast Function
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "pointer-events-auto flex items-center gap-2.5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-toast text-sm font-medium transform -translate-y-2 opacity-0 transition-all duration-300 border border-slate-800";
+      
+      const icon = type === "success" ? "check_circle" : "info";
+      const iconColor = type === "success" ? "text-emerald-400" : "text-blue-400";
+
+      toast.innerHTML = `
+        <span class="material-symbols-outlined text-[18px] ${iconColor}">${icon}</span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("-translate-y-2", "opacity-0");
+      });
+
+      setTimeout(() => {
+        toast.classList.add("-translate-y-2", "opacity-0");
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Operating Hours Render
+    function renderOperatingHours() {
+      const container = document.getElementById("hours-list-container");
+      container.innerHTML = "";
+
+      currentState.operatingHours.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+        
+        row.innerHTML = `
+          <div class="flex items-center justify-between sm:justify-start sm:w-36">
+            <span class="text-sm font-semibold ${item.open ? 'text-slate-800' : 'text-slate-400'}">${item.day}</span>
+            <button type="button" onclick="toggleDayOpen(${index})" class="sm:hidden px-2.5 py-1 rounded-md text-xs font-semibold ${item.open ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
+              ${item.open ? 'Open' : 'Closed'}
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3 justify-between sm:justify-end flex-1">
+            <!-- Desktop Open/Closed Toggle Button -->
+            <button type="button" onclick="toggleDayOpen(${index})" class="hidden sm:inline-flex items-center justify-center w-20 py-1.5 rounded-lg text-xs font-semibold transition-all ${item.open ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200'}">
+              ${item.open ? 'Open' : 'Closed'}
+            </button>
+
+            <!-- Time Inputs -->
+            <div class="flex items-center gap-2 ${!item.open ? 'opacity-40 pointer-events-none' : ''}">
+              <input type="time" value="${item.from}" onchange="updateHourTime(${index}, 'from', this.value)" class="px-2.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-slate-300 bg-white text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500" ${!item.open ? 'disabled' : ''} />
+              <span class="text-slate-400 font-medium text-xs">—</span>
+              <input type="time" value="${item.to}" onchange="updateHourTime(${index}, 'to', this.value)" class="px-2.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg border border-slate-300 bg-white text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500" ${!item.open ? 'disabled' : ''} />
+            </div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function toggleDayOpen(index) {
+      currentState.operatingHours[index].open = !currentState.operatingHours[index].open;
+      renderOperatingHours();
+    }
+
+    function updateHourTime(index, key, val) {
+      currentState.operatingHours[index][key] = val;
+    }
+
+    // External Stores Render
+    function renderExternalStores() {
+      const container = document.getElementById("external-stores-container");
+      container.innerHTML = "";
+
+      currentState.externalStores.forEach((store, index) => {
+        const row = document.createElement("div");
+        row.className = "flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 p-3 sm:p-0 rounded-xl bg-slate-50 sm:bg-transparent border border-slate-200/80 sm:border-0";
+        row.innerHTML = `
+          <!-- Dropdown Platform -->
+          <div class="w-full sm:w-44 shrink-0">
+            <select onchange="updateExternalStore(${index}, 'platform', this.value)" class="w-full px-3 py-2 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all">
+              <option value="Shopee" ${store.platform === 'Shopee' ? 'selected' : ''}>Shopee</option>
+              <option value="Tokopedia" ${store.platform === 'Tokopedia' ? 'selected' : ''}>Tokopedia</option>
+              <option value="TikTok Shop" ${store.platform === 'TikTok Shop' ? 'selected' : ''}>TikTok Shop</option>
+              <option value="Lazada" ${store.platform === 'Lazada' ? 'selected' : ''}>Lazada</option>
+              <option value="Blibli" ${store.platform === 'Blibli' ? 'selected' : ''}>Blibli</option>
+              <option value="Website" ${store.platform === 'Website' ? 'selected' : ''}>Website</option>
+              <option value="Lainnya" ${store.platform === 'Lainnya' ? 'selected' : ''}>Lainnya</option>
+            </select>
+          </div>
+
+          <!-- URL Input -->
+          <div class="flex-1 relative">
+            <input type="url" value="${store.url}" oninput="updateExternalStore(${index}, 'url', this.value)" placeholder="https://..." class="w-full px-3.5 py-2 text-xs sm:text-sm font-mono rounded-xl border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all" />
+          </div>
+
+          <!-- Remove Button -->
+          <button type="button" onclick="removeExternalStoreRow(${index})" class="self-end sm:self-center px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 active:scale-95 transition-all inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+            <span>Remove</span>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addExternalStoreRow() {
+      currentState.externalStores.push({ platform: "Shopee", url: "https://" });
+      renderExternalStores();
+    }
+
+    function removeExternalStoreRow(index) {
+      currentState.externalStores.splice(index, 1);
+      renderExternalStores();
+    }
+
+    function updateExternalStore(index, field, value) {
+      currentState.externalStores[index][field] = value;
+    }
+
+    // Store ID Validation & Live Update
+    const storeIdRegex = /^[a-z0-9-]+$/;
+
+    function handleStoreIdInput(val) {
+      const input = document.getElementById("input-store-id");
+      const errorMsg = document.getElementById("store-id-error");
+      const helperMsg = document.getElementById("store-id-helper");
+      const urlDisplay = document.getElementById("display-store-url");
+
+      if (!val) {
+        errorMsg.classList.remove("hidden");
+        errorMsg.innerHTML = '<span class="material-symbols-outlined text-[14px]">error</span> Store ID tidak boleh kosong.';
+        input.classList.add("border-red-500", "focus:border-red-500", "focus:ring-red-100");
+        input.classList.remove("border-slate-300");
+        return;
+      }
+
+      if (!storeIdRegex.test(val)) {
+        errorMsg.classList.remove("hidden");
+        errorMsg.innerHTML = '<span class="material-symbols-outlined text-[14px]">error</span> Hanya boleh huruf kecil (a-z), angka (0-9), dan tanda hubung (-).';
+        input.classList.add("border-red-500", "focus:border-red-500", "focus:ring-red-100");
+        input.classList.remove("border-slate-300");
+      } else {
+        errorMsg.classList.add("hidden");
+        input.classList.remove("border-red-500", "focus:border-red-500", "focus:ring-red-100");
+        input.classList.add("border-slate-300");
+        urlDisplay.textContent = `kataloga.com/${val}`;
+        currentState.storeId = val;
+      }
+    }
+
+    // Cooldown Toggle Simulator
+    function toggleCooldown() {
+      currentState.cooldown = !currentState.cooldown;
+      const btn = document.getElementById("btn-toggle-cooldown");
+      const knob = document.getElementById("cooldown-knob");
+      const input = document.getElementById("input-store-id");
+      const lockIcon = document.getElementById("lock-icon");
+      const banner = document.getElementById("cooldown-banner");
+
+      if (currentState.cooldown) {
+        btn.classList.remove("bg-slate-200");
+        btn.classList.add("bg-blue-600");
+        knob.classList.remove("translate-x-0");
+        knob.classList.add("translate-x-4");
+        input.disabled = true;
+        input.classList.add("bg-slate-100", "text-slate-500", "cursor-not-allowed");
+        lockIcon.classList.remove("hidden");
+        banner.classList.remove("hidden");
+      } else {
+        btn.classList.add("bg-slate-200");
+        btn.classList.remove("bg-blue-600");
+        knob.classList.add("translate-x-0");
+        knob.classList.remove("translate-x-4");
+        input.disabled = false;
+        input.classList.remove("bg-slate-100", "text-slate-500", "cursor-not-allowed");
+        lockIcon.classList.add("hidden");
+        banner.classList.add("hidden");
+      }
+    }
+
+    // Copy URL
+    function copyStoreUrl() {
+      const url = document.getElementById("display-store-url").textContent;
+      navigator.clipboard?.writeText("https://" + url).catch(() => {});
+      showToast("URL toko berhasil disalin.");
+    }
+
+    // Announcement Toggle
+    function handleAnnouncementToggle(checked) {
+      const textarea = document.getElementById("textarea-announcement");
+      currentState.announcementEnabled = checked;
+      if (checked) {
+        textarea.disabled = false;
+        textarea.classList.remove("bg-slate-100", "text-slate-400", "cursor-not-allowed");
+      } else {
+        textarea.disabled = true;
+        textarea.classList.add("bg-slate-100", "text-slate-400", "cursor-not-allowed");
+      }
+    }
+
+    // Logo Handlers
+    function handleLogoChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById("store-logo-img");
+          const text = document.getElementById("store-logo-text");
+          img.src = e.target.result;
+          img.classList.remove("hidden");
+          text.classList.add("hidden");
+          showToast("Logo berhasil diunggah.");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function resetToMonogram() {
+      const img = document.getElementById("store-logo-img");
+      const text = document.getElementById("store-logo-text");
+      img.classList.add("hidden");
+      text.classList.remove("hidden");
+      showToast("Logo dikembalikan ke monogram default.");
+    }
+
+    // Mobile Accordion Toggle
+    function toggleAccordion(key) {
+      if (window.innerWidth >= 1024) return; // Only accordion on mobile/tablet view
+
+      const items = document.querySelectorAll(".accordion-item");
+      items.forEach(item => {
+        if (item.dataset.accordion === key) {
+          const content = item.querySelector(".accordion-content");
+          const icon = item.querySelector(".accordion-icon");
+          const isHidden = content.classList.contains("hidden");
+
+          if (isHidden) {
+            content.classList.remove("hidden");
+            icon.classList.remove("rotate-180");
+          } else {
+            content.classList.add("hidden");
+            icon.classList.add("rotate-180");
+          }
+        }
+      });
+    }
+
+    function initAccordionsForScreenSize() {
+      const isMobile = window.innerWidth < 1024;
+      const items = document.querySelectorAll(".accordion-item");
+
+      items.forEach((item) => {
+        const content = item.querySelector(".accordion-content");
+        const icon = item.querySelector(".accordion-icon");
+        const key = item.dataset.accordion;
+
+        if (isMobile) {
+          // Default mobile: Store Identity open, others collapsed
+          if (key === "identity") {
+            content.classList.remove("hidden");
+            if (icon) icon.classList.remove("rotate-180");
+          } else {
+            content.classList.add("hidden");
+            if (icon) icon.classList.add("rotate-180");
+          }
+        } else {
+          // Desktop: all open, non-accordion
+          content.classList.remove("hidden");
+        }
+      });
+    }
+
+    // Global Actions: Save & Reset
+    function saveStoreChanges() {
+      // Collect values
+      currentState.name = document.getElementById("input-store-name").value;
+      currentState.bio = document.getElementById("input-store-bio").value;
+      currentState.city = document.getElementById("input-store-city").value;
+      currentState.announcement = document.getElementById("textarea-announcement").value;
+      currentState.whatsapp = document.getElementById("input-store-wa").value;
+
+      showToast("Informasi toko berhasil diperbarui.", "success");
+    }
+
+    function resetFormChanges() {
+      currentState = JSON.parse(JSON.stringify(initialStoreState));
+      
+      document.getElementById("input-store-name").value = currentState.name;
+      document.getElementById("input-store-id").value = currentState.storeId;
+      document.getElementById("display-store-url").textContent = `kataloga.com/${currentState.storeId}`;
+      document.getElementById("input-store-bio").value = currentState.bio;
+      document.getElementById("input-store-city").value = currentState.city;
+      document.getElementById("checkbox-announcement").checked = currentState.announcementEnabled;
+      handleAnnouncementToggle(currentState.announcementEnabled);
+      document.getElementById("textarea-announcement").value = currentState.announcement;
+      document.getElementById("input-store-wa").value = currentState.whatsapp;
+
+      if (currentState.cooldown) toggleCooldown();
+
+      handleStoreIdInput(currentState.storeId);
+      renderOperatingHours();
+      renderExternalStores();
+      resetToMonogram();
+
+      showToast("Perubahan telah dibatalkan.");
+    }
+
+    // Window Resize handler for Accordions
+    window.addEventListener("resize", () => {
+      initAccordionsForScreenSize();
+    });
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+      renderOperatingHours();
+      renderExternalStores();
+      initAccordionsForScreenSize();
+    });
+  </script>
+
+
+
+
+<div id="more-bottom-sheet" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300">
+  <div id="sheet-backdrop" onclick="toggleMoreSheet(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+  <div id="sheet-panel" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl border-t border-slate-200 p-5 transform translate-y-full transition-transform duration-300 max-w-lg mx-auto z-10">
+    <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+      <h3 class="text-base font-bold text-slate-900">Menu Lainnya</h3>
+      <button type="button" onclick="toggleMoreSheet(false)" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup menu">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-2">
+      <button type="button" onclick="handleSheetOption('Categories')" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors text-left group">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-blue-50 text-slate-600 group-hover:text-blue-600 flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-[22px]">folder_open</span>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-slate-900">Categories</div>
+            <div class="text-xs text-slate-500">Kelola hierarki &amp; kategori produk</div>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-slate-600">chevron_right</span>
+      </button>
+      <button type="button" onclick="handleSheetOption('My Store')" class="w-full flex items-center justify-between p-3 rounded-xl bg-blue-50/80 border border-blue-100 text-left group">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">storefront</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-blue-700">My Store</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700">Aktif</span>
+            </div>
+            <div class="text-xs text-slate-600">Profil toko, jam operasional &amp; preview katalog</div>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-[20px] text-blue-600">chevron_right</span>
+      </button>
+      <button type="button" onclick="handleSheetOption('Account')" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors text-left group">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-blue-50 text-slate-600 group-hover:text-blue-600 flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-[22px]">manage_accounts</span>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-slate-900">Account</div>
+            <div class="text-xs text-slate-500">Pengaturan akun, password &amp; keamanan</div>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-slate-600">chevron_right</span>
+      </button>
+    </div>
+  </div>
+  <img src="data:image/svg+xml;utf8,&lt;svg&gt;&lt;/svg&gt;" class="hidden" onerror="window.toggleMoreSheet = function(open) { const wrap = document.getElementById('more-bottom-sheet'); const backdrop = document.getElementById('sheet-backdrop'); const panel = document.getElementById('sheet-panel'); if (!wrap || !backdrop || !panel) return; if (open) { wrap.classList.remove('pointer-events-none'); backdrop.classList.remove('opacity-0'); backdrop.classList.add('opacity-100'); panel.classList.remove('translate-y-full'); panel.classList.add('translate-y-0'); } else { backdrop.classList.remove('opacity-100'); backdrop.classList.add('opacity-0'); panel.classList.remove('translate-y-0'); panel.classList.add('translate-y-full'); setTimeout(() =&gt; { wrap.classList.add('pointer-events-none'); }, 300); } }; window.handleSheetOption = function(title) { window.toggleMoreSheet(false); if (typeof showToast === 'function') { showToast('Membuka halaman ' + title + '...'); } }; document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { window.toggleMoreSheet(false); } });">
+</div>
+
+</body></html>

@@ -1,0 +1,1158 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }
+@keyframes slideUpModal { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.animate-slide-up { animation: slideUpModal 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#dbe1ff", "secondary": "#565e74", "outline-variant": "#c3c6d7", "on-error": "#ffffff", "background": "#f8f9ff", "inverse-on-surface": "#eaf1ff", "on-primary-container": "#eeefff", "on-secondary": "#ffffff", "on-secondary-container": "#5c647a", "tertiary-fixed-dim": "#4edea3", "on-error-container": "#93000a", "surface-container-low": "#eff4ff", "secondary-fixed": "#dae2fd", "surface-bright": "#f8f9ff", "inverse-primary": "#b4c5ff", "surface-tint": "#0053db", "surface": "#f8f9ff", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#005236", "error-container": "#ffdad6", "tertiary": "#006242", "tertiary-fixed": "#6ffbbe", "on-tertiary-fixed": "#002113", "on-primary": "#ffffff", "on-secondary-fixed": "#131b2e", "surface-container": "#e5eeff", "on-primary-fixed": "#00174b", "surface-variant": "#d3e4fe", "surface-container-high": "#dce9ff", "primary-fixed-dim": "#b4c5ff", "on-tertiary-container": "#bdffdb", "error": "#ba1a1a", "tertiary-container": "#007d55", "primary-container": "#2563eb", "on-background": "#0b1c30", "on-surface": "#0b1c30", "primary": "#004ac6", "on-primary-fixed-variant": "#003ea8", "secondary-container": "#dae2fd", "on-tertiary": "#ffffff", "surface-dim": "#cbdbf5", "on-secondary-fixed-variant": "#3f465c", "surface-container-highest": "#d3e4fe", "on-surface-variant": "#434655", "secondary-fixed-dim": "#bec6e0", "inverse-surface": "#213145", "outline": "#737686" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xs": "0.5rem", "space-2xs": "0.25rem", "sidebar-width": "16rem", "space-lg": "1.5rem", "content-max-width": "80rem", "grid-gutter": "1.5rem", "space-sm": "0.75rem", "space-md": "1rem", "space-3xl": "3rem", "space-2xl": "2.5rem", "space-xl": "2rem" }, "fontFamily": { "caption": [ "Plus Jakarta Sans" ], "card-title": [ "Plus Jakarta Sans" ], "section-heading": [ "Plus Jakarta Sans" ], "page-title": [ "Plus Jakarta Sans" ], "form-label": [ "Plus Jakarta Sans" ], "body-compact": [ "Plus Jakarta Sans" ], "page-title-mobile": [ "Plus Jakarta Sans" ], "metric-large": [ "Plus Jakarta Sans" ], "body-default": [ "Plus Jakarta Sans" ], "button-text": [ "Plus Jakarta Sans" ] }, "fontSize": { "caption": [ "12px", { "lineHeight": "16px", "fontWeight": "500" } ], "card-title": [ "16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "section-heading": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "page-title": [ "30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "form-label": [ "13px", { "lineHeight": "18px", "fontWeight": "600" } ], "body-compact": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "page-title-mobile": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "metric-large": [ "28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "body-default": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "button-text": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.005em", "fontWeight": "600" } ] } } } };</script></head><body class="bg-background font-body-default text-on-surface antialiased min-h-screen"><aside class="fixed left-0 top-0 h-full w-sidebar-width bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex-col justify-between p-space-md hidden md:flex"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-xs shrink-0"><span class="material-symbols-outlined text-[20px]">grid_view</span></div><span class="font-section-heading text-[18px] text-on-surface tracking-tight font-bold uppercase">KATALOGA</span></div><nav class="flex flex-col gap-1 mt-space-md"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-secondary font-button-text text-button-text hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="">Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-secondary font-button-text text-button-text hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="products" href="#"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="">Products</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg bg-surface-container-low text-primary font-button-text text-button-text font-semibold transition-colors" data-path="customer-interest" href="#"><span class="material-symbols-outlined text-[20px]">insights</span><span class="">Customer Interest</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-secondary font-button-text text-button-text hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="categories" href="#"><span class="material-symbols-outlined text-[20px]">folder_open</span><span class="">Categories</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-secondary font-button-text text-button-text hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="my-store" href="#"><span class="material-symbols-outlined text-[20px]">storefront</span><span class="">My Store</span></a></nav></div><div class="px-space-xs"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-secondary font-button-text text-button-text hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="account" href="#"><span class="material-symbols-outlined text-[20px]">manage_accounts</span><span class="">Account</span></a></div></aside><div class="min-h-screen flex flex-col pl-0 md:pl-sidebar-width"><div class="fixed top-0 left-0 right-0 h-14 bg-surface-container-lowest/95 backdrop-blur-md shadow-[0_1px_4px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-4 md:hidden"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-xs shrink-0"><span class="material-symbols-outlined text-[18px]">grid_view</span></div><span class="font-section-heading text-[16px] text-on-surface tracking-tight font-bold uppercase">KATALOGA</span></div><div class="flex items-center gap-2"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-xs" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0"></div></div><header class="fixed top-0 left-sidebar-width right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 items-center justify-end px-space-xl hidden md:flex"><div class="flex items-center gap-space-sm cursor-pointer"><img alt="Profile" class="w-9 h-9 rounded-full object-cover shadow-[0_1px_3px_rgba(15,23,42,0.08)]" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0"><div class="text-left hidden sm:flex sm:flex-col"><span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Sarah Anindita</span><span class="font-caption text-caption text-secondary">Kataloga Store</span></div><span class="material-symbols-outlined text-[18px] text-secondary ml-1 hidden sm:inline">expand_more</span></div></header><main class="w-full pt-14 md:pt-16 flex-1 px-4 md:px-space-xl py-4 md:py-space-lg pb-24 md:pb-space-lg max-w-content-max-width mx-auto"><div class="flex flex-col w-full mt-2 md:mt-space-2xl"><!-- PAGE HEADER --><div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pb-3 md:pb-space-lg pt-2 md:pt-space-lg"><div><div class="flex items-center gap-space-2xs text-primary font-caption text-caption uppercase tracking-wider mb-1"></div><h1 class="font-page-title text-[22px] md:text-page-title text-on-surface font-bold">Customer Interest</h1><p class="font-body-compact text-[13px] md:text-body-compact text-on-surface-variant mt-0.5 md:mt-1">Lihat aktivitas dan minat customer terhadap produk kamu secara real-time.</p></div><!-- Top Meta pill showing sync status --><div class="flex items-center justify-between md:justify-end gap-2 md:gap-space-sm mt-1 md:mt-0"><div class="flex items-center gap-space-xs px-space-sm py-1 md:py-1.5 rounded-full bg-surface-container-lowest shadow-sm text-on-surface-variant text-[11px] md:text-caption font-caption"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="">Live capture aktif</span><span class="text-outline text-[11px] font-mono">04 Sep 2026</span></div><button class="h-8 md:h-9 px-2.5 md:px-3 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-sm text-caption font-button-text" onclick="refreshData()" title="Refresh records"><span class="material-symbols-outlined text-[16px] md:text-[18px]" id="refreshIcon">sync</span><span class="inline">Perbarui</span></button></div></div><!-- MOBILE COMPACT STATS GRID (grid-cols-2 on mobile, hidden on desktop) --><div class="grid grid-cols-2 md:hidden gap-2.5 mb-4"><div class="bg-surface-container-lowest p-3 rounded-xl shadow-sm flex flex-col justify-between"><div class="flex items-center justify-between"><span class="text-[11px] font-medium text-on-surface-variant">Total Interest</span><div class="w-7 h-7 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined text-[16px]">insights</span></div></div><div class="mt-1.5"><div class="flex items-baseline gap-1.5"><span class="text-[22px] font-bold text-primary">28</span><span class="inline-flex items-center text-[10px] font-semibold text-tertiary bg-tertiary-fixed/40 px-1.5 py-0.5 rounded-full"><span class="material-symbols-outlined text-[11px]">arrow_upward</span> +14.2%</span></div><p class="text-[10px] text-on-surface-variant mt-0.5">total aktivitas minat</p></div></div><div class="bg-surface-container-lowest p-3 rounded-xl shadow-sm flex flex-col justify-between"><div class="flex items-center justify-between"><span class="text-[11px] font-medium text-on-surface-variant">WhatsApp Clicks</span><div class="w-7 h-7 rounded-lg bg-tertiary-fixed/30 text-tertiary flex items-center justify-center"><span class="material-symbols-outlined text-[16px]">chat</span></div></div><div class="mt-1.5"><div class="flex items-baseline gap-1"><span class="text-[22px] font-bold text-primary">18</span><span class="text-[11px] text-on-surface-variant">/ 28 total</span></div><p class="text-[10px] text-on-surface-variant mt-0.5">chat langsung</p></div></div><div class="col-span-2 bg-surface-container-lowest p-3 rounded-xl shadow-sm flex items-center justify-between"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-secondary-container/40 text-secondary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[18px]">shopping_bag</span></div><div><span class="text-[11px] font-medium text-on-surface-variant block">Marketplace Clicks</span><div class="flex items-baseline gap-1.5"><span class="text-[20px] font-bold text-primary">10</span><span class="text-[11px] text-on-surface-variant">/ 28 total</span></div></div></div><p class="text-[10px] text-on-surface-variant text-right">Shopee &amp; Tokopedia</p></div></div><!-- DESKTOP OVERVIEW STATS (hidden on mobile, visible md:grid) --><div class="hidden md:grid md:grid-cols-3 gap-space-md mb-space-lg"><div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"><div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary-container/5 rounded-full blur-xl group-hover:scale-125 transition-transform"></div><div class="flex items-center justify-between"><span class="font-form-label text-form-label text-on-surface-variant">Total Interest</span><div class="w-10 h-10 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">insights</span></div></div><div class="mt-space-md"><div class="flex items-baseline gap-space-xs"><span class="font-metric-large text-metric-large text-primary" id="metricTotal">28</span><span class="inline-flex items-center text-caption font-caption text-tertiary bg-tertiary-fixed/40 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> +14.2%</span></div><p class="font-caption text-caption text-on-surface-variant mt-1">total aktivitas minat di katalog</p></div></div><div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"><div class="absolute -right-6 -bottom-6 w-24 h-24 bg-tertiary-fixed-dim/10 rounded-full blur-xl group-hover:scale-125 transition-transform"></div><div class="flex items-center justify-between"><span class="font-form-label text-form-label text-on-surface-variant">WhatsApp Clicks</span><div class="w-10 h-10 rounded-lg bg-tertiary-fixed/30 text-tertiary flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">chat</span></div></div><div class="mt-space-md"><div class="flex items-baseline gap-space-xs"><span class="font-metric-large text-metric-large text-primary" id="metricWhatsapp">18</span><span class="font-caption text-caption text-on-surface-variant">/ 28 total</span></div><p class="font-caption text-caption text-on-surface-variant mt-1">klik WhatsApp untuk chat langsung</p></div></div><div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between transition-all hover:shadow-md relative overflow-hidden group"><div class="absolute -right-6 -bottom-6 w-24 h-24 bg-secondary-container/20 rounded-full blur-xl group-hover:scale-125 transition-transform"></div><div class="flex items-center justify-between"><span class="font-form-label text-form-label text-on-surface-variant">Marketplace Clicks</span><div class="w-10 h-10 rounded-lg bg-secondary-container/40 text-secondary flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">shopping_bag</span></div></div><div class="mt-space-md"><div class="flex items-baseline gap-space-xs"><span class="font-metric-large text-metric-large text-primary" id="metricMarketplace">10</span><span class="font-caption text-caption text-on-surface-variant">/ 28 total</span></div><p class="font-caption text-caption text-on-surface-variant mt-1">klik tautan eksternal (Shopee &amp; Tokopedia)</p></div></div></div><!-- TOOLBAR (SEARCH & FILTER) --><div class="bg-surface-container-lowest p-3 md:p-space-md rounded-xl shadow-sm mb-4 md:mb-space-md flex flex-col lg:flex-row gap-2.5 md:gap-space-sm justify-between items-stretch lg:items-center"><div class="flex flex-col sm:flex-row gap-2.5 md:gap-space-sm flex-1"><!-- Search Input --><div class="relative flex-1 w-full min-w-0 md:min-w-[240px]"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-outline pointer-events-none">search</span><input class="w-full h-11 md:h-10 pl-9 pr-9 bg-surface text-on-surface rounded-xl md:rounded-lg font-body-compact text-[14px] placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all border border-outline-variant/50" id="searchInput" placeholder="Cari customer / produk..." type="text"><button class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center text-[14px]" id="clearSearchBtn" onclick="clearSearch()" title="Clear search"><span class="material-symbols-outlined text-[14px]">close</span></button></div><!-- Activity Filter dropdown (Product View removed) --><div class="relative w-full sm:w-auto min-w-0 sm:min-w-[180px]"><select class="w-full h-11 md:h-10 px-3 pr-8 bg-surface text-on-surface rounded-xl md:rounded-lg font-body-compact text-[14px] appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer border border-outline-variant/50" id="activityFilter" onchange="applyFilters()"><option value="ALL">Semua Aktivitas</option><option value="WhatsApp Click">WhatsApp Click</option><option value="Marketplace Click">Marketplace Click</option></select><span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-[18px] text-outline pointer-events-none">expand_more</span></div><!-- Quick Action: Reset Filter button (hidden by default) --><button class="hidden h-10 px-space-md rounded-lg bg-surface-container text-on-surface-variant hover:text-error hover:bg-error-container/40 transition-colors items-center gap-1.5 text-button-text font-button-text self-start sm:self-auto" id="resetFilterBtn" onclick="resetAllFilters()"><span class="material-symbols-outlined text-[16px]">restart_alt</span><span class="">Reset</span></button></div><!-- Right count badge & demo helper --><div class="flex items-center justify-between sm:justify-end gap-space-sm pt-1 md:pt-0"><span class="font-caption text-[12px] md:text-caption text-on-surface-variant">Menampilkan <span class="font-button-text text-on-surface font-semibold" id="visibleCount">9</span> aktivitas</span><button class="text-caption text-[12px] md:text-caption font-caption text-primary hover:underline px-2 py-1 rounded hover:bg-primary-fixed/20" id="toggleEmptyBtn" onclick="toggleSimulateEmpty()">Simulasi Kosong</button></div></div><!-- MAIN INTEREST LIST: DESKTOP TABLE & MOBILE CARDS --><div class="bg-surface-container-lowest md:bg-surface-container-lowest rounded-xl md:shadow-sm overflow-hidden mb-space-2xl"><!-- Desktop Table View (hidden on small screens) --><div class="hidden md:block overflow-x-auto"><table class="w-full text-left"><thead><tr class="bg-surface-container-low text-on-surface-variant font-caption text-caption uppercase tracking-wider"><th class="py-3.5 px-space-lg">Customer</th><th class="py-3.5 px-space-lg">Produk Dituju</th><th class="py-3.5 px-space-lg">Aktivitas</th><th class="py-3.5 px-space-lg">Waktu Aktivitas</th><th class="py-3.5 px-space-lg text-right">Aksi</th></tr></thead><tbody class="divide-y divide-surface-container-high/40 text-on-surface font-body-compact text-body-compact" id="tableBody">
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Andi</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">3x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">laptop_chromebook</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">ASUS Vivobook 14</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          04 Sep 2026 · 09:42
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8491')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Budi</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">2x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">smartphone</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">iPhone 15 128GB</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          04 Sep 2026 · 09:25
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8490')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Budi</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">2x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">smartphone</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">iPhone 15 128GB</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Tokopedia</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          04 Sep 2026 · 09:20
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8489')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Citra</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">1x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">laptop_mac</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">MacBook Air M3</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          03 Sep 2026 · 17:40
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8488')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Dimas</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">1x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">smartphone</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">Samsung Galaxy S24</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Shopee</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          03 Sep 2026 · 15:12
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8487')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Andi</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">3x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">laptop_mac</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">MacBook Air M3</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Shopee</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          03 Sep 2026 · 14:15
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8486')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Raka</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">1x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">smartphone</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">iPhone 15 128GB</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Tokopedia</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          03 Sep 2026 · 13:25
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8485')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Sinta</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">1x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">mouse</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">Logitech MX Master 3S</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          03 Sep 2026 · 11:18
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8484')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">Andi</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">3x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">mouse</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">Logitech MX Master 3S</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          02 Sep 2026 · 18:32
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('INT-8483')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span class="">Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    </tbody></table></div><!-- Mobile Card View (hidden on desktop screens, block on mobile) --><div class="block md:hidden space-y-3.5 p-0" id="mobileCardsContainer">
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Andi</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(3x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">04 Sep 2026 · 09:42</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8491')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">laptop_chromebook</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">ASUS Vivobook 14</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8491</span>
+          <button onclick="openDetailModal('INT-8491')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Budi</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(2x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">04 Sep 2026 · 09:25</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8490')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">smartphone</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">iPhone 15 128GB</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8490</span>
+          <button onclick="openDetailModal('INT-8490')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Budi</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(2x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">04 Sep 2026 · 09:20</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8489')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">smartphone</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">iPhone 15 128GB</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Tokopedia</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8489</span>
+          <button onclick="openDetailModal('INT-8489')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Citra</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(1x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">03 Sep 2026 · 17:40</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8488')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">laptop_mac</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">MacBook Air M3</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8488</span>
+          <button onclick="openDetailModal('INT-8488')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Dimas</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(1x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">03 Sep 2026 · 15:12</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8487')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">smartphone</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">Samsung Galaxy S24</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Shopee</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8487</span>
+          <button onclick="openDetailModal('INT-8487')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Andi</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(3x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">03 Sep 2026 · 14:15</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8486')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">laptop_mac</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">MacBook Air M3</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Shopee</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8486</span>
+          <button onclick="openDetailModal('INT-8486')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Raka</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(1x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">03 Sep 2026 · 13:25</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8485')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">smartphone</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">iPhone 15 128GB</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Tokopedia</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8485</span>
+          <button onclick="openDetailModal('INT-8485')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Sinta</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(1x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">03 Sep 2026 · 11:18</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8484')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">mouse</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">Logitech MX Master 3S</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8484</span>
+          <button onclick="openDetailModal('INT-8484')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            
+    <div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">Andi</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(3x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">02 Sep 2026 · 18:32</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('INT-8483')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">mouse</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">Logitech MX Master 3S</span>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: INT-8483</span>
+          <button onclick="openDetailModal('INT-8483')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span class="">Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- EMPTY / NO RESULTS STATE --><div class="hidden flex-col items-center justify-center text-center py-space-3xl px-space-lg bg-surface-container-lowest rounded-xl" id="emptyState"><div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-outline mb-space-md"><span class="material-symbols-outlined text-[32px]">filter_list_off</span></div><h3 class="font-card-title text-card-title text-on-surface">Tidak ada aktivitas yang cocok</h3><p class="font-body-compact text-body-compact text-on-surface-variant max-w-sm mt-1 mb-space-lg">Coba gunakan kata kunci lain atau ubah filter aktivitas untuk menemukan log customer.</p><button class="px-space-lg h-10 rounded-lg bg-primary-container text-on-primary font-button-text text-button-text hover:bg-primary transition-all inline-flex items-center gap-2" onclick="resetAllFilters()"><span class="material-symbols-outlined text-[18px]">restart_alt</span><span class="">Reset Filter / Cari Ulang</span></button></div></div><!-- INTEREST DETAIL MODAL / MOBILE BOTTOM SHEET --><div class="fixed inset-0 z-50 items-end md:items-center justify-center p-0 md:p-4 flex" id="interestModal"><!-- Backdrop --><div class="fixed inset-0 bg-on-background/40 backdrop-blur-xs transition-opacity" onclick="closeModal()"></div><!-- Modal Window / Bottom Sheet Container --><div class="relative bg-surface-container-lowest w-full max-w-lg rounded-t-2xl md:rounded-2xl shadow-xl overflow-hidden z-10 max-h-[88vh] md:max-h-none overflow-y-auto animate-[scaleIn_0.15s_ease-out]"><!-- Mobile drag handle indicator --><div class="flex md:hidden justify-center pt-2.5 pb-1 bg-surface-container-low"><div class="w-10 h-1 bg-outline-variant rounded-full"></div></div><!-- Modal Header --><div class="flex items-center justify-between px-space-lg py-3 md:py-space-md bg-surface-container-low border-b border-outline-variant/30"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[20px]">feed</span></div><div><h3 class="font-card-title text-[15px] md:text-card-title text-on-surface font-semibold">Customer Interest Detail</h3><p class="font-caption text-[11px] md:text-caption text-on-surface-variant" id="modalActivityId">INT-8491 · Log Minat</p></div></div><button class="w-8 h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface flex items-center justify-center transition-colors" onclick="closeModal()"><span class="material-symbols-outlined text-[20px]">close</span></button></div><!-- Modal Body --><div class="p-4 md:p-space-lg space-y-3 md:space-y-space-md"><!-- Customer Info Box --><div class="p-3 md:p-space-md rounded-xl bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-2.5 md:gap-space-sm"><div class="w-10 h-10 md:w-11 md:h-11 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0" id="modalCustomerAvatar"><svg class="w-5 h-5 text-on-surface-variant" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path></svg></div><div><h4 class="font-button-text text-button-text text-on-surface font-semibold leading-tight" id="modalCustomerName">Andi</h4><p class="font-caption text-[11px] md:text-caption text-primary" id="modalCustomerTotal">3x aktivitas minat di katalog toko kamu</p></div></div><span class="text-[11px] md:text-caption font-caption px-2 md:px-2.5 py-0.5 md:py-1 rounded-full bg-surface-container text-on-surface-variant">Verified Prospect</span></div><!-- Product Preview Box --><div class="p-3 md:p-space-md rounded-xl bg-surface flex flex-col gap-2 md:gap-space-sm border border-outline-variant/40"><span class="font-caption text-[11px] md:text-caption text-outline uppercase tracking-wider">Produk Terkait</span><div class="flex items-start gap-3"><div class="w-12 h-12 md:w-14 md:h-14 rounded-lg bg-surface-container-high flex items-center justify-center text-outline overflow-hidden shrink-0"><span class="material-symbols-outlined text-[24px] md:text-[28px] text-primary" id="modalProductIcon">laptop_chromebook</span></div><div class="flex-1 min-w-0"><h5 class="font-button-text text-[14px] md:text-button-text text-on-surface font-semibold truncate" id="modalProductName">ASUS Vivobook 14</h5><p class="font-card-title text-[15px] md:text-card-title text-primary font-bold mt-0.5" id="modalProductPrice">Rp8.999.000</p><p class="font-caption text-[11px] md:text-caption text-on-surface-variant mt-0.5">Status stok: Tersedia (Ready Stock)</p></div></div></div><!-- Activity Timeline / Log Spec --><div class="grid grid-cols-2 gap-2 md:gap-space-sm"><div class="p-2.5 md:p-space-sm rounded-lg bg-surface-container-low"><span class="font-caption text-[11px] md:text-caption text-on-surface-variant block">Jenis Aksi</span><div class="mt-1" id="modalActivityBadge"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span></div></div><div class="p-2.5 md:p-space-sm rounded-lg bg-surface-container-low"><span class="font-caption text-[11px] md:text-caption text-on-surface-variant block">Waktu Sinyal</span><span class="font-button-text text-[13px] md:text-button-text text-on-surface mt-1 block font-medium" id="modalActivityDate">04 Sep 2026 · 09:42</span></div></div><!-- Direct Channel Action Box --><!-- Complete Customer Activity History --><div class="p-3 rounded-xl bg-surface border border-outline-variant/30"><div class="flex items-center justify-between mb-2"><span class="font-caption text-[11px] md:text-caption text-outline uppercase tracking-wider font-semibold">Riwayat Interaksi Customer Ini</span><span class="font-caption text-[11px] text-primary font-medium" id="modalHistoryCount">3 aktivitas terdata</span></div><div class="space-y-2" id="modalHistoryList">
+      <div class="p-2 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 min-w-0 pr-2">
+          <span class="material-symbols-outlined text-[16px] text-outline">laptop_chromebook</span>
+          <span class="font-medium text-on-surface truncate">ASUS Vivobook 14</span>
+          <span class="text-[10px] px-1 py-0.2 bg-primary text-on-primary rounded font-semibold shrink-0">Aktif</span>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </div>
+      </div>
+    
+      <div class="p-2 rounded-lg bg-surface-container-low/70 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 min-w-0 pr-2">
+          <span class="material-symbols-outlined text-[16px] text-outline">laptop_mac</span>
+          <span class="font-medium text-on-surface truncate">MacBook Air M3</span>
+          
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span class="">Shopee</span></span>
+        </div>
+      </div>
+    
+      <div class="p-2 rounded-lg bg-surface-container-low/70 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 min-w-0 pr-2">
+          <span class="material-symbols-outlined text-[16px] text-outline">mouse</span>
+          <span class="font-medium text-on-surface truncate">Logitech MX Master 3S</span>
+          
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span class="">WhatsApp Click</span></span>
+        </div>
+      </div>
+    </div></div><!-- Interaction Note if exists --></div><!-- Modal Footer --><div class="px-4 md:px-space-lg py-3 md:py-space-md bg-surface-container-low flex items-center justify-end gap-2 border-t border-outline-variant/30"><button class="px-3 md:px-space-md h-10 rounded-lg text-on-surface-variant hover:bg-surface-container font-button-text text-[13px] md:text-button-text transition-colors border border-outline-variant/50" onclick="closeModal()">Tutup</button><button class="px-4 md:px-space-lg h-10 rounded-lg bg-primary-container text-on-primary hover:bg-primary font-button-text text-[13px] md:text-button-text transition-colors flex items-center gap-1.5 shadow-sm" onclick="triggerProductPreview()"><span class="material-symbols-outlined text-[16px] md:text-[18px]">open_in_new</span><span class="">View Product</span></button></div></div></div><!-- MORE MENU BOTTOM SHEET (MOBILE) --><div class="fixed inset-0 z-50 items-end justify-center md:hidden flex hidden" id="moreMenuSheet"><!-- Backdrop --><div class="fixed inset-0 bg-on-background/40 backdrop-blur-xs transition-opacity duration-200" onclick="closeMoreMenu()"></div><!-- Bottom Sheet Window --><div class="relative bg-surface-container-lowest w-full max-w-lg rounded-t-3xl shadow-2xl overflow-hidden z-10 animate-slide-up border-t border-outline-variant/40 pb-5"><!-- Drag handle bar --><div class="flex justify-center pt-3 pb-1.5 bg-surface-container-low cursor-grab" onclick="closeMoreMenu()"><div class="w-12 h-1.5 bg-outline-variant/70 rounded-full"></div></div><!-- Header with Title & Close --><div class="flex items-center justify-between px-5 py-3.5 bg-surface-container-low border-b border-outline-variant/30"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[20px]">more_horiz</span></div><div><h3 class="font-card-title text-[16px] text-on-surface font-bold leading-tight">Menu Lainnya</h3><p class="font-caption text-[11px] text-on-surface-variant">Pintasan navigasi &amp; konfigurasi toko</p></div></div><button class="w-8 h-8 rounded-full bg-surface hover:bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors shadow-xs" onclick="closeMoreMenu()" title="Tutup Menu" type="button"><span class="material-symbols-outlined text-[18px]">close</span></button></div><!-- Interactive Menu Options (Min Height >= 48px, padded touch targets) --><div class="p-4 space-y-2.5"><!-- Option 1: Categories --><button class="w-full min-h-[56px] flex items-center justify-between p-3.5 rounded-2xl bg-surface-container-low/60 hover:bg-surface-container border border-outline-variant/30 hover:border-primary/40 active:scale-[0.99] transition-all text-left group" onclick="selectMoreOption('Categories', 'folder_open')" type="button"><div class="flex items-center gap-3.5 min-w-0"><div class="w-11 h-11 rounded-xl bg-primary-fixed/60 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-colors shadow-xs"><span class="material-symbols-outlined text-[22px]">folder_open</span></div><div class="min-w-0 flex-1"><div class="flex items-center gap-2"><span class="font-button-text text-[15px] text-on-surface font-semibold leading-tight">Categories</span><span class="text-[10px] font-caption px-1.5 py-0.5 rounded-md bg-surface-container-highest text-on-surface-variant font-medium">Kategori</span></div><p class="font-caption text-[12px] text-on-surface-variant mt-0.5 leading-snug">Kelola hierarki &amp; kategori produk</p></div></div><div class="flex items-center gap-1 shrink-0 ml-2"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></div></button><!-- Option 2: My Store --><button class="w-full min-h-[56px] flex items-center justify-between p-3.5 rounded-2xl bg-surface-container-low/60 hover:bg-surface-container border border-outline-variant/30 hover:border-primary/40 active:scale-[0.99] transition-all text-left group" onclick="selectMoreOption('My Store', 'storefront')" type="button"><div class="flex items-center gap-3.5 min-w-0"><div class="w-11 h-11 rounded-xl bg-tertiary-fixed/60 text-tertiary flex items-center justify-center shrink-0 group-hover:bg-tertiary group-hover:text-on-tertiary transition-colors shadow-xs"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div class="min-w-0 flex-1"><div class="flex items-center gap-2"><span class="font-button-text text-[15px] text-on-surface font-semibold leading-tight">My Store</span><span class="text-[10px] font-caption px-1.5 py-0.5 rounded-md bg-tertiary-fixed/40 text-tertiary font-medium">Toko Saya</span></div><p class="font-caption text-[12px] text-on-surface-variant mt-0.5 leading-snug">Profil toko, jam operasional &amp; preview katalog</p></div></div><div class="flex items-center gap-1 shrink-0 ml-2"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></div></button><!-- Option 3: Account --><button class="w-full min-h-[56px] flex items-center justify-between p-3.5 rounded-2xl bg-surface-container-low/60 hover:bg-surface-container border border-outline-variant/30 hover:border-primary/40 active:scale-[0.99] transition-all text-left group" onclick="selectMoreOption('Account', 'manage_accounts')" type="button"><div class="flex items-center gap-3.5 min-w-0"><div class="w-11 h-11 rounded-xl bg-secondary-container text-secondary flex items-center justify-center shrink-0 group-hover:bg-secondary group-hover:text-on-secondary transition-colors shadow-xs"><span class="material-symbols-outlined text-[22px]">manage_accounts</span></div><div class="min-w-0 flex-1"><div class="flex items-center gap-2"><span class="font-button-text text-[15px] text-on-surface font-semibold leading-tight">Account</span><span class="text-[10px] font-caption px-1.5 py-0.5 rounded-md bg-surface-container-highest text-on-surface-variant font-medium">Akun</span></div><p class="font-caption text-[12px] text-on-surface-variant mt-0.5 leading-snug">Pengaturan akun, password &amp; keamanan</p></div></div><div class="flex items-center gap-1 shrink-0 ml-2"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></div></button></div></div></div><!-- TOAST NOTIFICATION CONTAINER --><div class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 transform transition-all duration-300 pointer-events-none translate-y-20 opacity-0" id="toastNotification"><div class="bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm rounded-xl shadow-xl flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-tertiary-fixed">check_circle</span><span class="font-body-compact text-body-compact" id="toastMessage">Membuka link produk di Shopee...</span></div></div></div><!-- MOBILE BOTTOM NAVIGATION (fixed bottom on mobile, md:hidden) --><nav class="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest border-t border-outline-variant/40 h-16 px-2 flex items-center justify-around md:hidden shadow-lg"><a class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-secondary hover:text-primary transition-colors gap-0.5" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="text-[11px] font-medium leading-none">Dashboard</span></a><a class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-secondary hover:text-primary transition-colors gap-0.5" data-path="products" href="#"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="text-[11px] font-medium leading-none">Products</span></a><a aria-current="page" class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-primary font-semibold transition-colors gap-0.5 relative" data-path="customer-interest" href="#"><span class="material-symbols-outlined text-[20px]">insights</span><span class="text-[11px] font-semibold leading-none">Interest</span><span class="absolute bottom-1 w-1 h-1 rounded-full bg-primary"></span></a><button class="flex-1 flex flex-col items-center justify-center min-h-[48px] py-1 text-secondary hover:text-primary transition-colors gap-0.5 focus:outline-none" id="moreNavBtn" onclick="toggleMoreMenu()" type="button"><span class="material-symbols-outlined text-[20px]">more_horiz</span><span class="text-[11px] font-medium leading-none">More</span></button></nav><script>
+// Mock Data strictly containing WhatsApp Click & Marketplace Click only (Product View eliminated)
+const records = [
+  { id: 'INT-8491', customer: 'Andi', product: 'ASUS Vivobook 14', icon: 'laptop_chromebook', activity: 'WhatsApp Click', channel: 'WhatsApp', date: '04 Sep 2026 · 09:42', price: 'Rp8.999.000', note: 'Customer menanyakan ketersediaan RAM 16GB via WhatsApp langsung.' },
+  { id: 'INT-8490', customer: 'Budi', product: 'iPhone 15 128GB', icon: 'smartphone', activity: 'WhatsApp Click', channel: 'WhatsApp', date: '04 Sep 2026 · 09:25', price: 'Rp12.999.000', note: 'Customer menanyakan promo cashback transfer via WhatsApp.' },
+  { id: 'INT-8489', customer: 'Budi', product: 'iPhone 15 128GB', icon: 'smartphone', activity: 'Marketplace Click', channel: 'Tokopedia', date: '04 Sep 2026 · 09:20', price: 'Rp12.999.000', note: 'Customer mengklik tautan toko Tokopedia Official untuk varian Blue Titanium.' },
+  { id: 'INT-8488', customer: 'Citra', product: 'MacBook Air M3', icon: 'laptop_mac', activity: 'WhatsApp Click', channel: 'WhatsApp', date: '03 Sep 2026 · 17:40', price: 'Rp18.999.000', note: 'Customer mengklik tombol WhatsApp untuk konfirmasi garansi resmi iBox.' },
+  { id: 'INT-8487', customer: 'Dimas', product: 'Samsung Galaxy S24', icon: 'smartphone', activity: 'Marketplace Click', channel: 'Shopee', date: '03 Sep 2026 · 15:12', price: 'Rp11.999.000', note: 'Customer mengklik tautan Shopee Mall untuk varian Onyx Black.' },
+  { id: 'INT-8486', customer: 'Andi', product: 'MacBook Air M3', icon: 'laptop_mac', activity: 'Marketplace Click', channel: 'Shopee', date: '03 Sep 2026 · 14:15', price: 'Rp18.999.000', note: 'Customer mengklik link checkout Shopee Mall dari profil katalog.' },
+  { id: 'INT-8485', customer: 'Raka', product: 'iPhone 15 128GB', icon: 'smartphone', activity: 'Marketplace Click', channel: 'Tokopedia', date: '03 Sep 2026 · 13:25', price: 'Rp12.999.000', note: 'Customer mengklik link toko Tokopedia untuk opsi Bebas Ongkir.' },
+  { id: 'INT-8484', customer: 'Sinta', product: 'Logitech MX Master 3S', icon: 'mouse', activity: 'WhatsApp Click', channel: 'WhatsApp', date: '03 Sep 2026 · 11:18', price: 'Rp1.499.000', note: 'Customer chat via WhatsApp menanyakan ketersediaan varian warna Pale Gray.' },
+  { id: 'INT-8483', customer: 'Andi', product: 'Logitech MX Master 3S', icon: 'mouse', activity: 'WhatsApp Click', channel: 'WhatsApp', date: '02 Sep 2026 · 18:32', price: 'Rp1.499.000', note: 'Interaksi pertama customer menanyakan bundel mouse dengan laptop.' }
+];
+
+// Helper to render customer outline avatar SVG
+function getCustomerAvatarHtml(sizeClass = 'w-10 h-10', svgClass = 'w-5 h-5') {
+  return `
+    <div class="${sizeClass} rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0">
+      <svg class="${svgClass} text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path>
+      </svg>
+    </div>
+  `;
+}
+
+let currentSelectedRecord = null;
+let isSimulateEmpty = false;
+
+function renderBadge(activity, channel) {
+  if (activity === 'WhatsApp Click') {
+    return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">chat</span><span>WhatsApp Click</span></span>`;
+  } else {
+    // Marketplace click with configured channel name
+    const channelName = channel || 'Marketplace';
+    let brandBadgeColor = 'bg-orange-100 text-orange-800 border border-orange-200';
+    if (channelName === 'Tokopedia') {
+      brandBadgeColor = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+    } else if (channelName === 'Shopee') {
+      brandBadgeColor = 'bg-orange-100 text-orange-700 border border-orange-200';
+    } else if (channelName === 'Blibli') {
+      brandBadgeColor = 'bg-sky-100 text-sky-800 border border-sky-200';
+    }
+    return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${brandBadgeColor} font-caption text-[11px] md:text-caption font-semibold"><span class="material-symbols-outlined text-[14px]">shopping_bag</span><span>${channelName}</span></span>`;
+  }
+}
+
+function getCustomerActivityCount(customerName) {
+  return records.filter(r => r.customer.toLowerCase() === customerName.toLowerCase()).length;
+}
+
+function getCustomerAllActivities(customerName) {
+  return records.filter(r => r.customer.toLowerCase() === customerName.toLowerCase());
+}
+
+function renderList() {
+  const searchInput = document.getElementById('searchInput');
+  const filterSelect = document.getElementById('activityFilter');
+  if (!searchInput || !filterSelect) return;
+
+  const searchVal = searchInput.value.trim().toLowerCase();
+  const filterVal = filterSelect.value;
+  const tableBody = document.getElementById('tableBody');
+  const mobileCardsContainer = document.getElementById('mobileCardsContainer');
+  const emptyState = document.getElementById('emptyState');
+  const visibleCountEl = document.getElementById('visibleCount');
+  const resetBtn = document.getElementById('resetFilterBtn');
+  const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+  if (clearSearchBtn) {
+    if (searchVal.length > 0) clearSearchBtn.classList.remove('hidden');
+    else clearSearchBtn.classList.add('hidden');
+  }
+
+  if (resetBtn) {
+    if (searchVal.length > 0 || filterVal !== 'ALL' || isSimulateEmpty) {
+      resetBtn.classList.remove('hidden');
+      resetBtn.classList.add('inline-flex');
+    } else {
+      resetBtn.classList.add('hidden');
+      resetBtn.classList.remove('inline-flex');
+    }
+  }
+
+  let filtered = records.filter(item => {
+    if (isSimulateEmpty) return false;
+    const matchesSearch = item.customer.toLowerCase().includes(searchVal) || item.product.toLowerCase().includes(searchVal) || (item.channel && item.channel.toLowerCase().includes(searchVal));
+    const matchesActivity = (filterVal === 'ALL') || (item.activity === filterVal);
+    return matchesSearch && matchesActivity;
+  });
+
+  if (visibleCountEl) visibleCountEl.innerText = filtered.length;
+
+  if (filtered.length === 0) {
+    if (tableBody) tableBody.innerHTML = '';
+    if (mobileCardsContainer) mobileCardsContainer.innerHTML = '';
+    if (emptyState) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    }
+    return;
+  }
+
+  if (emptyState) {
+    emptyState.classList.add('hidden');
+    emptyState.classList.remove('flex');
+  }
+
+  if (tableBody) {
+    tableBody.innerHTML = filtered.map(item => `
+      <tr class="hover:bg-surface-container-low/60 transition-colors group">
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-sm">
+            ${getCustomerAvatarHtml('w-9 h-9', 'w-4 h-4')}
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-button-text text-button-text text-on-surface leading-tight font-semibold">${item.customer}</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">${getCustomerActivityCount(item.customer)}x interaksi</span>
+              </div>
+              <span class="font-caption text-[11px] text-outline">Entitas Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-[18px] text-outline">${item.icon}</span>
+            <span class="font-button-text text-button-text text-on-surface font-medium">${item.product}</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-space-lg">
+          ${renderBadge(item.activity, item.channel)}
+        </td>
+        <td class="py-3.5 px-space-lg text-on-surface-variant font-caption text-caption">
+          ${item.date}
+        </td>
+        <td class="py-3.5 px-space-lg text-right">
+          <button onclick="openDetailModal('${item.id}')" class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all inline-flex items-center gap-1 text-button-text font-button-text">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span>Lihat Detail</span>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  if (mobileCardsContainer) {
+    mobileCardsContainer.innerHTML = filtered.map(item => `
+      <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 shadow-sm flex flex-col gap-3 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            ${getCustomerAvatarHtml('w-9 h-9', 'w-4 h-4')}
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-button-text text-[14px] text-on-surface font-semibold leading-tight">${item.customer}</h4>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">(${getCustomerActivityCount(item.customer)}x interaksi)</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant block mt-0.5">${item.date}</span>
+            </div>
+          </div>
+          <button class="w-7 h-7 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center" onclick="openDetailModal('${item.id}')" title="Aksi">
+            <span class="material-symbols-outlined text-[18px]">more_vert</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0">${item.icon}</span>
+            <span class="font-button-text text-[13px] text-on-surface font-medium truncate">${item.product}</span>
+          </div>
+          <div class="shrink-0">
+            ${renderBadge(item.activity, item.channel)}
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs">
+          <span class="text-[11px] text-outline">ID: ${item.id}</span>
+          <button onclick="openDetailModal('${item.id}')" class="text-primary hover:text-on-primary-fixed-variant font-semibold text-[13px] inline-flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-primary/5 transition-colors">
+            <span>Lihat Detail</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function applyFilters() {
+  renderList();
+}
+
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    input.value = '';
+    applyFilters();
+  }
+}
+
+function resetAllFilters() {
+  isSimulateEmpty = false;
+  const input = document.getElementById('searchInput');
+  const filter = document.getElementById('activityFilter');
+  if (input) input.value = '';
+  if (filter) filter.value = 'ALL';
+  const toggleEmptyBtn = document.getElementById('toggleEmptyBtn');
+  if (toggleEmptyBtn) toggleEmptyBtn.innerText = 'Simulasi Kosong';
+  applyFilters();
+  showToast('Filter dikembalikan ke pengaturan default');
+}
+
+function toggleSimulateEmpty() {
+  isSimulateEmpty = !isSimulateEmpty;
+  const btn = document.getElementById('toggleEmptyBtn');
+  if (btn) {
+    if (isSimulateEmpty) {
+      btn.innerText = 'Batalkan Simulasi';
+      showToast('Mensimulasikan data kosong');
+    } else {
+      btn.innerText = 'Simulasi Kosong';
+      showToast('Data dipulihkan');
+    }
+  }
+  renderList();
+}
+
+function refreshData() {
+  const icon = document.getElementById('refreshIcon');
+  if (icon) icon.classList.add('animate-spin');
+  setTimeout(() => {
+    if (icon) icon.classList.remove('animate-spin');
+    showToast('Data interest terbaru berhasil disinkronkan');
+  }, 600);
+}
+
+function openDetailModal(recordId) {
+  const item = records.find(r => r.id === recordId);
+  if (!item) return;
+  currentSelectedRecord = item;
+
+  const customerCount = getCustomerActivityCount(item.customer);
+  const actId = document.getElementById('modalActivityId');
+  if (actId) actId.innerText = item.id + ' · Log Minat';
+  const custName = document.getElementById('modalCustomerName');
+  if (custName) custName.innerText = item.customer;
+  const custTotal = document.getElementById('modalCustomerTotal');
+  if (custTotal) custTotal.innerText = `${customerCount}x aktivitas minat di katalog toko kamu`;
+  
+  const prodName = document.getElementById('modalProductName');
+  if (prodName) prodName.innerText = item.product;
+  const prodPrice = document.getElementById('modalProductPrice');
+  if (prodPrice) prodPrice.innerText = item.price;
+  const prodIcon = document.getElementById('modalProductIcon');
+  if (prodIcon) prodIcon.innerText = item.icon;
+  const actBadge = document.getElementById('modalActivityBadge');
+  if (actBadge) actBadge.innerHTML = renderBadge(item.activity, item.channel);
+  const actDate = document.getElementById('modalActivityDate');
+  if (actDate) actDate.innerText = item.date;
+
+  // Direct channel action config
+  const actionLabel = document.getElementById('modalActionLabel');
+  const actionBtnText = document.getElementById('modalActionBtnText');
+  const actionIcon = document.getElementById('modalActionIcon');
+  if (item.activity === 'WhatsApp Click') {
+    if (actionLabel) actionLabel.innerText = 'Hubungi prospek via WhatsApp';
+    if (actionBtnText) actionBtnText.innerText = 'Buka WhatsApp';
+    if (actionIcon) actionIcon.innerText = 'chat';
+  } else {
+    if (actionLabel) actionLabel.innerText = `Tinjau etalase ${item.channel}`;
+    if (actionBtnText) actionBtnText.innerText = `Buka ${item.channel}`;
+    if (actionIcon) actionIcon.innerText = 'shopping_bag';
+  }
+
+  // Customer activity history list
+  const historyList = document.getElementById('modalHistoryList');
+  const historyCount = document.getElementById('modalHistoryCount');
+  const customerRecords = getCustomerAllActivities(item.customer);
+  if (historyCount) historyCount.innerText = `${customerRecords.length} aktivitas terdata`;
+  if (historyList) {
+    historyList.innerHTML = customerRecords.map(act => `
+      <div class="p-2 rounded-lg ${act.id === item.id ? 'bg-primary/10 border border-primary/20' : 'bg-surface-container-low/70'} flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 min-w-0 pr-2">
+          <span class="material-symbols-outlined text-[16px] text-outline">${act.icon}</span>
+          <span class="font-medium text-on-surface truncate">${act.product}</span>
+          ${act.id === item.id ? '<span class="text-[10px] px-1 py-0.2 bg-primary text-on-primary rounded font-semibold shrink-0">Aktif</span>' : ''}
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          ${renderBadge(act.activity, act.channel)}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const noteContainer = document.getElementById('modalNoteContainer');
+  const noteText = document.getElementById('modalNoteText');
+  if (item.note && noteText && noteContainer) {
+    noteText.innerText = item.note;
+    noteContainer.classList.remove('hidden');
+  } else if (noteContainer) {
+    noteContainer.classList.add('hidden');
+  }
+
+  const modal = document.getElementById('interestModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('interestModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function triggerChannelAction() {
+  if (!currentSelectedRecord) return;
+  if (currentSelectedRecord.activity === 'WhatsApp Click') {
+    showToast(`Membuka kontak WhatsApp dengan customer ${currentSelectedRecord.customer}...`);
+  } else {
+    showToast(`Membuka link produk di ${currentSelectedRecord.channel}...`);
+  }
+}
+
+function triggerProductPreview() {
+  if (!currentSelectedRecord) return;
+  closeModal();
+  showToast(`Membuka detail produk "${currentSelectedRecord.product}"`);
+}
+
+let toastTimer;
+function showToast(message) {
+  const toast = document.getElementById('toastNotification');
+  const toastMsg = document.getElementById('toastMessage');
+  if (!toast || !toastMsg) return;
+  toastMsg.innerText = message;
+  toast.classList.remove('translate-y-20', 'opacity-0');
+  toast.classList.add('translate-y-0', 'opacity-100');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('translate-y-0', 'opacity-100');
+    toast.classList.add('translate-y-20', 'opacity-0');
+  }, 3200);
+}
+
+/* More Menu Bottom Sheet Interactions */
+function toggleMoreMenu() {
+  const menu = document.getElementById('moreMenuSheet');
+  if (!menu) return;
+  if (menu.classList.contains('hidden')) {
+    openMoreMenu();
+  } else {
+    closeMoreMenu();
+  }
+}
+
+function openMoreMenu() {
+  const menu = document.getElementById('moreMenuSheet');
+  if (!menu) return;
+  menu.classList.remove('hidden');
+  menu.classList.add('flex');
+}
+
+function closeMoreMenu() {
+  const menu = document.getElementById('moreMenuSheet');
+  if (!menu) return;
+  menu.classList.add('hidden');
+  menu.classList.remove('flex');
+}
+
+function selectMoreOption(title, icon) {
+  closeMoreMenu();
+  showToast(`Membuka halaman ${title}...`);
+}
+
+const searchInputEl = document.getElementById('searchInput');
+if (searchInputEl) {
+  searchInputEl.addEventListener('input', () => {
+    applyFilters();
+  });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeMoreMenu();
+  }
+});
+
+renderList();
+</script></main></div>
+
+</body></html>

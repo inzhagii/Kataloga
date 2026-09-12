@@ -1,0 +1,1758 @@
+<!DOCTYPE html><html lang="id" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Products - Kataloga Seller Management</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: "#2563EB",
+              50: "#eff6ff",
+              100: "#dbeafe",
+              500: "#3b82f6",
+              600: "#2563eb",
+              700: "#1d4ed8"
+            }
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+</script>
+</head>
+<body class="bg-[#f8faff] text-slate-800 font-sans antialiased min-h-screen">
+<!-- SIDEBAR (DESKTOP) -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 flex-col justify-between z-40">
+<div class="flex flex-col">
+<!-- LOGO -->
+<div class="h-16 flex items-center px-6 border-b border-slate-100">
+<a class="flex items-center gap-2.5" href="#">
+<div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/30">
+<span class="material-symbols-outlined text-[20px]">view_quilt</span>
+</div>
+<span class="font-extrabold text-[17px] tracking-wide text-slate-900">KATALOGA</span>
+</a>
+</div>
+<!-- NAVIGATION -->
+<nav class="p-3 flex flex-col gap-1.5 mt-2">
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">grid_view</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-[#eff6ff] text-blue-600 font-semibold text-sm transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] text-blue-600">inventory_2</span>
+<span class="">Products</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm transition-colors" href="javascript:void(0)" onclick="handleNavClick('Customer Interest', 'Data prospek dan minat pelanggan')">
+<span class="material-symbols-outlined text-[20px] text-slate-400">favorite_border</span>
+<span class="">Customer Interest</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm transition-colors" href="javascript:void(0)" onclick="handleNavClick('Categories', 'Manajemen kategori produk')">
+<span class="material-symbols-outlined text-[20px] text-slate-400">category</span>
+<span class="">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm transition-colors" href="javascript:void(0)" onclick="openStorePreviewModal()">
+<span class="material-symbols-outlined text-[20px] text-slate-400">storefront</span>
+<span class="">My Store</span>
+</a>
+</nav>
+</div>
+<!-- BOTTOM ACCOUNT -->
+<div class="p-3 border-t border-slate-100">
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm transition-colors" href="javascript:void(0)" onclick="handleNavClick('Account', 'Pengaturan akun toko')">
+<span class="material-symbols-outlined text-[20px] text-slate-400">person_outline</span>
+<span class="">Account</span>
+</a>
+</div>
+</aside>
+<!-- MAIN WRAPPER -->
+<div class="lg:pl-64 flex flex-col min-h-screen">
+<!-- TOPBAR -->
+<header class="fixed top-0 right-0 left-0 lg:left-64 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/80 z-30 flex items-center justify-between px-4 sm:px-8">
+<!-- Mobile Brand / Breadcrumb -->
+<div class="flex items-center gap-3">
+<div class="lg:hidden flex items-center gap-2 mr-2">
+<div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[16px]">view_quilt</span>
+</div>
+<span class="font-extrabold text-base tracking-wide text-slate-900">KATALOGA</span>
+</div>
+<div class="hidden sm:flex items-center gap-2 text-sm text-slate-500 font-medium">
+<span class="">Seller Management</span>
+<span class="text-slate-300">/</span>
+<span class="text-slate-900 font-semibold">Products</span>
+</div>
+</div>
+<!-- Profile dropdown -->
+<div class="flex items-center gap-3">
+<div class="relative">
+<button class="flex items-center gap-2.5 p-1 rounded-lg hover:bg-slate-50 transition-colors text-left" onclick="toggleProfileDropdown()" type="button">
+<img alt="Sarah Anindita" class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0">
+<div class="hidden sm:flex flex-col">
+<span class="text-xs font-bold text-slate-900 leading-tight">Sarah Anindita</span>
+<span class="text-[11px] text-slate-500 leading-tight">Kataloga Store</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">keyboard_arrow_down</span>
+</button>
+<div class="absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1 overflow-hidden hidden" id="profile-dropdown">
+<div class="px-4 py-2 border-b border-slate-100 sm:hidden">
+<p class="text-xs font-bold text-slate-900">Sarah Anindita</p>
+<p class="text-[11px] text-slate-500">Kataloga Store</p>
+</div>
+<a class="flex items-center gap-2.5 px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-medium transition-colors" href="javascript:void(0)" onclick="handleNavClick('Account', 'Halaman profil dan info toko'); toggleProfileDropdown();">
+<span class="material-symbols-outlined text-[17px] text-slate-400">person</span>
+<span class="">Account</span>
+</a>
+<a class="flex items-center gap-2.5 px-4 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-medium transition-colors" href="javascript:void(0)" onclick="handleNavClick('Settings', 'Pengaturan katalog'); toggleProfileDropdown();">
+<span class="material-symbols-outlined text-[17px] text-slate-400">settings</span>
+<span class="">Settings</span>
+</a>
+<div class="my-1 border-t border-slate-100"></div>
+<a class="flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors" href="javascript:void(0)" onclick="showToast('Sesi dashboard telah selesai', 'info'); toggleProfileDropdown();">
+<span class="material-symbols-outlined text-[17px]">logout</span>
+<span class="">Logout</span>
+</a>
+</div>
+</div>
+</div>
+</header>
+<!-- CONTENT BODY -->
+<main class="flex-1 p-4 sm:p-8 pt-20 sm:pt-24 pb-24 lg:pb-12 max-w-7xl w-full mx-auto">
+<!-- Header Title & Primary Action -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div>
+<h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Products</h1>
+<p class="text-sm text-slate-500 mt-1">Manage your products and catalog.</p>
+</div>
+<div>
+<button class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow-sm shadow-blue-500/20 active:scale-[0.99] transition-all cursor-pointer" onclick="showToast('+ Add Product modal will open here', 'info')">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span class="">+ Add Product</span>
+</button>
+</div>
+</div>
+<!-- Controls: Search & Filter & Sort -->
+<div class="flex flex-col md:flex-row gap-3 mb-5 items-stretch md:items-center justify-between">
+<!-- Search Input -->
+<div class="flex-1 max-w-xl relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all shadow-sm" id="product-search" oninput="onSearchInput(this.value)" placeholder="Search products (name, brand, category, description)..." type="text">
+<button class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" id="clear-search-btn" onclick="clearSearch()">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+<!-- Filter & Sort Buttons -->
+<div class="flex items-center gap-2.5 flex-wrap relative">
+<!-- Filter Button -->
+<div class="relative">
+<button class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-sm font-semibold text-slate-700 shadow-sm transition-all" id="filter-popover-btn" onclick="toggleFilterPopover(event)">
+<span class="material-symbols-outlined text-[18px] text-slate-500">tune</span>
+<span class="">Filter</span>
+<span class="hidden px-1.5 py-0.2 rounded-full bg-blue-600 text-white text-[10px] font-bold" id="active-filter-badge">1</span>
+</button>
+<!-- Filter Popover Panel -->
+<div class="hidden absolute right-0 sm:right-auto sm:left-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-4" id="filter-popover">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-500">Filter Products</span>
+<button class="text-xs text-blue-600 hover:text-blue-700 font-semibold" onclick="resetAllFilters()">Reset</button>
+</div>
+<!-- Category Filter -->
+<div class="mb-3.5">
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Category</label>
+<select class="w-full text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600" id="filter-category-select" onchange="applyFilters()">
+<option value="All">All Categories</option>
+<option value="Laptop">Laptop</option>
+<option value="Smartphone">Smartphone</option>
+<option value="Keyboard">Keyboard</option>
+<option value="Router">Router</option>
+<option value="Tablet">Tablet</option>
+<option value="Audio">Audio</option>
+<option value="Mouse">Mouse</option>
+</select>
+</div>
+<!-- Condition Filter -->
+<div class="mb-3.5">
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Condition</label>
+<select class="w-full text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600" id="filter-condition-select" onchange="applyFilters()">
+<option value="All">All Conditions</option>
+<option value="New">New</option>
+<option value="Second">Second</option>
+</select>
+</div>
+<!-- Status Filter -->
+<div class="mb-2">
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Product Status</label>
+<select class="w-full text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600" id="filter-status-select" onchange="applyFilters()">
+<option value="All">All Statuses</option>
+<option value="Active">Active</option>
+<option value="Draft">Draft</option>
+<option value="Archived">Archived</option>
+</select>
+</div>
+<div class="mt-3 pt-3 border-t border-slate-100 flex justify-end">
+<button class="w-full py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-colors" onclick="toggleFilterPopover(event)">
+                Apply Filters
+              </button>
+</div>
+</div>
+</div>
+<!-- Sort Dropdown -->
+<div class="relative">
+<div class="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
+<span class="text-xs font-medium text-slate-500">Sort:</span>
+<select class="text-xs font-semibold text-slate-800 bg-transparent border-none p-0 pr-6 focus:ring-0 cursor-pointer appearance-none" id="sort-select" onchange="onSortChange(this.value)">
+<option value="Newest">Newest</option>
+<option value="Relevance">Relevance</option>
+<option value="PriceLowHigh">Price: Low to High</option>
+<option value="PriceHighLow">Price: High to Low</option>
+<option value="Availability">Availability</option>
+</select>
+<span class="material-symbols-outlined text-[16px] text-slate-400 -ml-5 pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Active Filter Clear Shortcut -->
+<button class="hidden px-2.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors" id="btn-reset-filter" onclick="resetAllFilters()">
+<span class="material-symbols-outlined text-[16px] align-middle mr-0.5">refresh</span>Reset
+        </button>
+</div>
+</div>
+<!-- PRODUCT STATUS TABS (Interactive Segmented Tabs) -->
+<div class="border-b border-slate-200 mb-6 flex items-center justify-between">
+<div class="flex gap-6">
+<button class="relative pb-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600 transition-all" id="tab-btn-active" onclick="switchTab('Active')">
+<span class="flex items-center gap-2">
+<span class="">Active</span>
+<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700" id="tab-count-active">24</span>
+</span>
+</button>
+<button class="relative pb-3 text-sm font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all" id="tab-btn-draft" onclick="switchTab('Draft')">
+<span class="flex items-center gap-2">
+<span class="">Draft</span>
+<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800" id="tab-count-draft">3</span>
+</span>
+</button>
+<button class="relative pb-3 text-sm font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all" id="tab-btn-archived" onclick="switchTab('Archived')">
+<span class="flex items-center gap-2">
+<span class="">Archived</span>
+<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600" id="tab-count-archived">8</span>
+</span>
+</button>
+</div>
+</div>
+<!-- PRODUCT LIST / ADMIN TABLE -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+<!-- Desktop / Tablet Table -->
+<div class="hidden md:block overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-slate-50/70 border-b border-slate-200 text-xs font-semibold uppercase text-slate-500 tracking-wider">
+<tr>
+<th class="py-3.5 px-4 w-12 text-center">
+<input class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" onchange="toggleSelectAll(this.checked)" type="checkbox">
+</th>
+<th class="py-3.5 px-4 font-semibold">Product</th>
+<th class="py-3.5 px-4 font-semibold">Category</th>
+<th class="py-3.5 px-4 font-semibold">Status &amp; Availability</th>
+<th class="py-3.5 px-5 text-right font-semibold">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-sm" id="product-table-body">
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(1, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="iPhone 15 Pro Max" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(1)">iPhone 15 Pro Max</span>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-0.5">★ Featured</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 21.999.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Smartphone
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 1)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(2, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="MacBook Air M3 15-inch" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(2)">MacBook Air M3 15-inch</span>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-0.5">★ Featured</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 21.499.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Laptop
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 2)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(3, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="Samsung Galaxy S24 Ultra" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(3)">Samsung Galaxy S24 Ultra</span>
+                  
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 21.999.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Smartphone
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 3)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(4, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="ASUS ROG Zephyrus G16" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(4)">ASUS ROG Zephyrus G16</span>
+                  
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 32.999.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Laptop
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 4)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(5, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="iPad Pro 11 M4 OLED" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(5)">iPad Pro 11 M4 OLED</span>
+                  
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 17.499.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Tablet
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 5)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(6, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="Logitech MX Master 3S" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(6)">Logitech MX Master 3S</span>
+                  
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 1.499.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Mouse
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 6)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(7, this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="Keychron Q1 Pro Wireless" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(7)">Keychron Q1 Pro Wireless</span>
+                  
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">Rp 2.899.000</span>
+                  <span class="text-[11px] text-slate-400">• New</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              Keyboard
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, 7)" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+</table>
+</div>
+<!-- Mobile Cards View -->
+<div class="md:hidden p-3.5 space-y-3 bg-slate-50/40" id="product-card-container">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="iPhone 15 Pro Max" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(1)">iPhone 15 Pro Max</h4>
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">★ Featured</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Smartphone</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 1)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 21.999.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="MacBook Air M3 15-inch" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(2)">MacBook Air M3 15-inch</h4>
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">★ Featured</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Laptop</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 2)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 21.499.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="Samsung Galaxy S24 Ultra" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(3)">Samsung Galaxy S24 Ultra</h4>
+                
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Smartphone</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 3)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 21.999.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="ASUS ROG Zephyrus G16" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(4)">ASUS ROG Zephyrus G16</h4>
+                
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Laptop</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 4)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 32.999.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="iPad Pro 11 M4 OLED" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(5)">iPad Pro 11 M4 OLED</h4>
+                
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Tablet</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 5)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 17.499.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="Logitech MX Master 3S" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(6)">Logitech MX Master 3S</h4>
+                
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Mouse</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 6)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 1.499.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200&amp;auto=format&amp;fit=crop&amp;q=80" alt="Keychron Q1 Pro Wireless" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(7)">Keychron Q1 Pro Wireless</h4>
+                
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">Keyboard</span>
+                <span class="text-[11px] text-slate-400">• New</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, 7)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">Rp 2.899.000</span>
+          
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      
+        </div>
+      </div>
+    </div>
+<!-- Empty State Container -->
+<div class="p-12 text-center flex-col items-center justify-center hidden" id="empty-state">
+<div class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3 mx-auto">
+<span class="material-symbols-outlined text-[28px]">search_off</span>
+</div>
+<h4 class="text-sm font-bold text-slate-800" id="empty-state-title">No products found</h4>
+<p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto" id="empty-state-desc">Try clearing filters or search queries to view your catalog items.</p>
+<button class="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors" onclick="resetAllFilters()">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span class="">Reset Filters</span>
+</button>
+</div>
+<!-- Pagination Bar -->
+<div class="px-5 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600" id="pagination-wrapper">
+<span id="pagination-info" class="">Showing 1–7 of 24 products</span>
+<div class="flex items-center gap-1" id="pagination-controls">
+      <button onclick="goToPage(0)" disabled="" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 cursor-not-allowed">
+        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+      </button>
+    <button class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold bg-blue-600 text-white shadow-sm">1</button><button onclick="goToPage(2)" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold text-slate-600 hover:bg-slate-100">2</button><button onclick="goToPage(3)" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold text-slate-600 hover:bg-slate-100">3</button><button onclick="goToPage(4)" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold text-slate-600 hover:bg-slate-100">4</button>
+      <button onclick="goToPage(2)" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100">
+        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+      </button>
+    </div>
+</div>
+</div>
+</main>
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200/80 flex items-center justify-around z-40 px-2 shadow-lg">
+<a class="flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-900 flex-1 min-h-[48px] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-[10px] mt-0.5 font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 text-blue-600 font-semibold flex-1 min-h-[48px] transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="text-[10px] mt-0.5 font-semibold">Products</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-900 flex-1 min-h-[48px] transition-colors" href="javascript:void(0)" onclick="handleNavClick('Customer Interest', 'Minat Pelanggan')">
+<span class="material-symbols-outlined text-[20px]">favorite_border</span>
+<span class="text-[10px] mt-0.5 font-medium">Interest</span>
+</a>
+<button type="button" class="flex flex-col items-center justify-center py-1 text-slate-500 hover:text-slate-900 flex-1 min-h-[48px] cursor-pointer transition-colors" onclick="openMoreMenuSheet()">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+<span class="text-[10px] mt-0.5 font-medium">More</span>
+</button>
+</nav>
+</div>
+<!-- SELLER PRODUCT DETAIL MODAL (VIEW PRODUCT) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm hidden" id="view-product-modal">
+<div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+<div class="px-6 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/70">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">visibility</span>
+<h3 class="font-bold text-slate-900 text-base">Product Details</h3>
+</div>
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors" onclick="closeModal('view-product-modal')" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+<div class="flex items-start gap-4">
+<div class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+<img alt="" class="w-full h-full object-cover" id="view-img" src="">
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap" id="view-badges-container">
+<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600" id="view-category">Laptop</span>
+<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600" id="view-condition">New</span>
+<span id="view-status-badge"></span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 mt-1 truncate" id="view-name">Product Name</h4>
+<p class="text-xs text-slate-500 font-medium" id="view-brand">Brand: Apple</p>
+<p class="text-base font-extrabold text-blue-600 mt-0.5" id="view-price">Rp 0</p>
+</div>
+</div>
+<!-- Quick Featured Toggle in Admin view -->
+<div class="p-3 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500 text-[20px]">star</span>
+<div>
+<span class="text-xs font-bold text-slate-800 block">Featured Catalog Showcase</span>
+<span class="text-[11px] text-slate-500">Highlight this item on your public storefront banner</span>
+</div>
+</div>
+<button class="px-3 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-700 shadow-sm hover:bg-slate-50" id="view-featured-btn" onclick="toggleFeaturedFromModal()">
+          Set Featured
+        </button>
+</div>
+<div class="border-t border-slate-100 pt-3">
+<span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Description</span>
+<p class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100" id="view-desc">No description available.</p>
+</div>
+<!-- Kataloga Catalog Platform Notice -->
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-blue-600 text-[18px] shrink-0 mt-0.5">info</span>
+<p class="text-[11px] text-slate-500 leading-relaxed">
+<strong>Kataloga is a digital catalog platform.</strong> Orders and inquiries are handled directly via WhatsApp and configured seller links without cart or payment checkout.
+        </p>
+</div>
+</div>
+<div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold shadow-sm transition-colors" id="btn-view-quick-edit" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span class="">Edit Product</span>
+</button>
+<button class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="closeModal('view-product-modal')" type="button">
+        Close
+      </button>
+</div>
+</div>
+</div>
+<!-- MODAL: MY STORE PREVIEW -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm hidden" id="store-preview-modal">
+<div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+<div class="px-6 py-4 flex items-center justify-between border-b border-slate-100 bg-blue-600 text-white">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<h3 class="font-bold text-base">Store Preview: Kataloga Store</h3>
+</div>
+<button class="text-white/80 hover:text-white p-1 rounded-lg" onclick="closeModal('store-preview-modal')" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6 space-y-4 overflow-y-auto bg-slate-50">
+<div class="p-4 bg-white rounded-xl border border-slate-200 flex items-center gap-4">
+<img alt="Sarah Anindita" class="w-14 h-14 rounded-full object-cover border-2 border-blue-600" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0">
+<div>
+<h4 class="font-bold text-slate-900 text-base">Kataloga Store</h4>
+<p class="text-xs text-slate-500">Jakarta • Verified Seller • Respon Cepat</p>
+<span class="inline-flex items-center gap-1 mt-1 text-[11px] font-semibold text-emerald-600">
+            ● Toko Buka Sekarang
+          </span>
+</div>
+</div>
+<div>
+<span class="text-xs font-bold text-slate-700 block mb-2">Public Catalog Items Preview</span>
+<div class="grid grid-cols-2 gap-3" id="store-preview-cards">
+<!-- Simple preview items -->
+</div>
+</div>
+</div>
+<div class="px-6 py-3 bg-white border-t border-slate-100 flex items-center justify-between">
+<span class="text-xs text-slate-500">Link: <strong class="text-slate-800">kataloga.com/katalogastore</strong></span>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50" onclick="navigator.clipboard &amp; navigator.clipboard.writeText('https://kataloga.com/katalogastore'); showToast('Store link copied to clipboard!');">
+          Copy Link
+        </button>
+<button class="px-4 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onclick="closeModal('store-preview-modal')">
+          Done
+        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- TOAST CONTAINER -->
+<!-- MOBILE MORE BOTTOM SHEET MODAL --><div id="more-menu-sheet-backdrop" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden transition-opacity duration-300" onclick="closeMoreMenuSheet()">
+<div class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl border-t border-slate-200 overflow-hidden transform transition-transform duration-300 translate-y-full" id="more-menu-sheet" onclick="event.stopPropagation()">
+<div class="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-2"></div>
+<div class="px-6 py-3 flex items-center justify-between border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[20px]">menu_open</span>
+<h3 class="font-bold text-slate-900 text-base">Menu Lainnya</h3>
+</div>
+<button type="button" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition-colors" onclick="closeMoreMenuSheet()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-4 space-y-2 pb-8">
+<button type="button" onclick="handleMoreMenuAction('Categories', 'Kelola hierarki &amp; kategori produk')" class="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all text-left group cursor-pointer">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[22px]">folder</span>
+</div>
+<div>
+<div class="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition-colors">Categories</div>
+<div class="text-xs text-slate-500 mt-0.5">Kelola hierarki &amp; kategori produk</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 text-[20px]">chevron_right</span>
+</button>
+<button type="button" onclick="handleMoreMenuAction('My Store', 'Profil toko, jam operasional &amp; preview katalog', openStorePreviewModal)" class="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all text-left group cursor-pointer">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[22px]">storefront</span>
+</div>
+<div>
+<div class="font-bold text-sm text-slate-900 group-hover:text-emerald-600 transition-colors">My Store</div>
+<div class="text-xs text-slate-500 mt-0.5">Profil toko, jam operasional &amp; preview katalog</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-600 text-[20px]">chevron_right</span>
+</button>
+<button type="button" onclick="handleMoreMenuAction('Account', 'Pengaturan akun, password &amp; keamanan')" class="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all text-left group cursor-pointer">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-slate-800 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[22px]">person</span>
+</div>
+<div>
+<div class="font-bold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">Account</div>
+<div class="text-xs text-slate-500 mt-0.5">Pengaturan akun, password &amp; keamanan</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-slate-800 text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div><div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" id="toast-container"></div><script>
+function openMoreMenuSheet() {
+  const backdrop = document.getElementById('more-menu-sheet-backdrop');
+  const sheet = document.getElementById('more-menu-sheet');
+  if (!backdrop || !sheet) return;
+  backdrop.classList.remove('hidden');
+  setTimeout(() => {
+    sheet.classList.remove('translate-y-full');
+  }, 10);
+}
+
+function closeMoreMenuSheet() {
+  const backdrop = document.getElementById('more-menu-sheet-backdrop');
+  const sheet = document.getElementById('more-menu-sheet');
+  if (!backdrop || !sheet) return;
+  sheet.classList.add('translate-y-full');
+  setTimeout(() => {
+    backdrop.classList.add('hidden');
+  }, 250);
+}
+
+function handleMoreMenuAction(title, desc, callback) {
+  closeMoreMenuSheet();
+  showToast(`Membuka halaman ${title}...`, 'info');
+  if (typeof callback === 'function') {
+    setTimeout(callback, 280);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeMoreMenuSheet();
+  }
+});
+</script>
+<!-- JAVASCRIPT CONTROLLER SCRIPT -->
+<script>
+// INITIAL DATASET: 24 Active, 3 Draft, 8 Archived (strictly electronics/gadgets, flat categories, no SKU, no cart/checkout)
+const sampleImages = [
+  'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200&auto=format&fit=crop&q=80'
+];
+
+let products = [
+  // 24 Active Products
+  { id: 1, name: 'iPhone 15 Pro Max', brand: 'Apple', category: 'Smartphone', price: 21999000, condition: 'New', status: 'Active', availability: 'Available', featured: true, desc: 'Titanium design with A17 Pro chip, customizable Action button, 48MP main camera.', img: sampleImages[0], createdAt: 1710000000 },
+  { id: 2, name: 'MacBook Air M3 15-inch', brand: 'Apple', category: 'Laptop', price: 21499000, condition: 'New', status: 'Active', availability: 'Available', featured: true, desc: 'Liquid Retina display, up to 18 hours battery life, MagSafe charging port.', img: sampleImages[2], createdAt: 1709900000 },
+  { id: 3, name: 'Samsung Galaxy S24 Ultra', brand: 'Samsung', category: 'Smartphone', price: 21999000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Titanium exterior, Galaxy AI photo editing, 200MP camera system, S Pen embedded.', img: sampleImages[1], createdAt: 1709800000 },
+  { id: 4, name: 'ASUS ROG Zephyrus G16', brand: 'ASUS', category: 'Laptop', price: 32999000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'OLED 240Hz Nebula display with Intel Core Ultra 9 and RTX 4080 graphics.', img: sampleImages[3], createdAt: 1709700000 },
+  { id: 5, name: 'iPad Pro 11 M4 OLED', brand: 'Apple', category: 'Tablet', price: 17499000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Ultra Retina XDR Tandem OLED, pencil pro support in a shockingly thin form factor.', img: sampleImages[5], createdAt: 1709600000 },
+  { id: 6, name: 'Logitech MX Master 3S', brand: 'Logitech', category: 'Mouse', price: 1499000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Quiet click electromagnetic scroll mouse with 8K DPI glass sensor and Bluetooth.', img: sampleImages[4], createdAt: 1709500000 },
+  { id: 7, name: 'Keychron Q1 Pro Wireless', brand: 'Keychron', category: 'Keyboard', price: 2899000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Custom CNC aluminum mechanical keyboard with hot-swappable switches and QMK/VIA.', img: sampleImages[6], createdAt: 1709400000 },
+  { id: 8, name: 'Sony WH-1000XM5', brand: 'Sony', category: 'Audio', price: 4999000, condition: 'New', status: 'Active', availability: 'Available', featured: true, desc: 'Industry leading active noise cancellation with 8 microphones and LDAC audio.', img: sampleImages[7], createdAt: 1709300000 },
+  { id: 9, name: 'Dell XPS 13 Plus', brand: 'Dell', category: 'Laptop', price: 23999000, condition: 'Second', status: 'Active', availability: 'Available', featured: false, desc: 'Second mulus 98% like new, fullset box garansi distributor resmi.', img: sampleImages[3], createdAt: 1709200000 },
+  { id: 10, name: 'Samsung Galaxy Tab S9', brand: 'Samsung', category: 'Tablet', price: 12999000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Water resistant IP68 dynamic AMOLED 2X tablet with included S Pen.', img: sampleImages[5], createdAt: 1709100000 },
+  { id: 11, name: 'TP-Link Archer AX73 WiFi 6', brand: 'TP-Link', category: 'Router', price: 1699000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Dual band Gigabit AX5400 WiFi 6 router with 6 high gain antennas.', img: sampleImages[6], createdAt: 1709000000 },
+  { id: 12, name: 'Google Pixel 8 Pro', brand: 'Google', category: 'Smartphone', price: 15499000, condition: 'Second', status: 'Active', availability: 'Sold Out', featured: false, desc: 'Unit second mulus pemakaian pribadi, Google Tensor G3, kamera jernih.', img: sampleImages[1], createdAt: 1708900000 },
+  { id: 13, name: 'Logitech G Pro X Superlight 2', brand: 'Logitech', category: 'Mouse', price: 2199000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Lightweight 60g esports wireless mouse with Hero 2 sensor and 4K polling.', img: sampleImages[4], createdAt: 1708800000 },
+  { id: 14, name: 'Apple AirPods Pro 2 USB-C', brand: 'Apple', category: 'Audio', price: 3699000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Active noise cancellation with adaptive audio and MagSafe case USB-C.', img: sampleImages[7], createdAt: 1708700000 },
+  { id: 15, name: 'Lenovo ThinkPad X1 Carbon Gen 11', brand: 'Lenovo', category: 'Laptop', price: 25999000, condition: 'Second', status: 'Active', availability: 'Sold Out', featured: false, desc: 'Kondisi 95% pemakaian kantor, garansi resmi Lenovo Premier On-Site.', img: sampleImages[2], createdAt: 1708600000 },
+  { id: 16, name: 'NuPhy Air75 V2', brand: 'NuPhy', category: 'Keyboard', price: 1999000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Ultra-thin wireless mechanical keyboard with low profile Gateron switches.', img: sampleImages[6], createdAt: 1708500000 },
+  { id: 17, name: 'ASUS RT-AX88U Pro', brand: 'ASUS', category: 'Router', price: 4299000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Dual-band WiFi 6 gaming router with dual 2.5G ports and AiMesh support.', img: sampleImages[6], createdAt: 1708400000 },
+  { id: 18, name: 'Xiaomi 14 Ultra', brand: 'Xiaomi', category: 'Smartphone', price: 16999000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Leica Summilux quad camera system with 1-inch variable aperture sensor.', img: sampleImages[0], createdAt: 1708300000 },
+  { id: 19, name: 'Bose QuietComfort Ultra', brand: 'Bose', category: 'Audio', price: 5499000, condition: 'New', status: 'Active', availability: 'Sold Out', featured: false, desc: 'Spatial audio immersion with custom acoustic architecture noise cancelling.', img: sampleImages[7], createdAt: 1708200000 },
+  { id: 20, name: 'Razer DeathAdder V3 Pro', brand: 'Razer', category: 'Mouse', price: 2149000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Ergonomic 63g wireless mouse with Focus Pro 30K optical sensor.', img: sampleImages[4], createdAt: 1708100000 },
+  { id: 21, name: 'iPad mini 6 WiFi 64GB', brand: 'Apple', category: 'Tablet', price: 7999000, condition: 'Second', status: 'Active', availability: 'Available', featured: false, desc: 'Ukuran compact 8.3 inci Liquid Retina, unit second istimewa battery health 94%.', img: sampleImages[5], createdAt: 1708000000 },
+  { id: 22, name: 'MikroTik hEX S Router Gigabit', brand: 'MikroTik', category: 'Router', price: 1150000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: '5 port Gigabit ethernet router dengan SFP port dan PoE output.', img: sampleImages[6], createdAt: 1707900000 },
+  { id: 23, name: 'Ducky One 3 TKL Fuji', brand: 'Ducky', category: 'Keyboard', price: 1750000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Quack Mechanics design with true PBT double shot keycaps Cherry MX.', img: sampleImages[6], createdAt: 1707800000 },
+  { id: 24, name: 'Sennheiser Momentum 4', brand: 'Sennheiser', category: 'Audio', price: 4699000, condition: 'New', status: 'Active', availability: 'Available', featured: false, desc: 'Audiophile grade acoustic transducers with 60 hour battery life.', img: sampleImages[7], createdAt: 1707700000 },
+
+  // 3 Draft Products
+  { id: 25, name: 'HP Spectre x360 14', brand: 'HP', category: 'Laptop', price: 22499000, condition: 'New', status: 'Draft', availability: 'Draft', featured: false, desc: '2-in-1 convertible laptop OLED touch display with 9MP AI camera.', img: sampleImages[2], createdAt: 1707600000 },
+  { id: 26, name: 'Nothing Phone (2a)', brand: 'Nothing', category: 'Smartphone', price: 5499000, condition: 'New', status: 'Draft', availability: 'Draft', featured: false, desc: 'Glyph interface transparent aesthetic with MediaTek Dimensity 7200 Pro.', img: sampleImages[1], createdAt: 1707500000 },
+  { id: 27, name: 'Glorious GMMK 2 Compact', brand: 'Glorious', category: 'Keyboard', price: 1450000, condition: 'New', status: 'Draft', availability: 'Draft', featured: false, desc: 'Custom mechanical keyboard aluminum top frame hot swap PCB.', img: sampleImages[6], createdAt: 1707400000 },
+
+  // 8 Archived Products
+  { id: 28, name: 'iPhone 13 128GB', brand: 'Apple', category: 'Smartphone', price: 9999000, condition: 'Second', status: 'Archived', availability: 'Available', featured: false, desc: 'Kondisi ex ibox 93% mulus, baterai 88%. Diarsipkan dari katalog aktif.', img: sampleImages[0], createdAt: 1707300000 },
+  { id: 29, name: 'MacBook Air M1 2020', brand: 'Apple', category: 'Laptop', price: 11200000, condition: 'Second', status: 'Archived', availability: 'Available', featured: false, desc: 'Chip M1 legendaris, unit telah laku melalui penawaran direct seller.', img: sampleImages[2], createdAt: 1707200000 },
+  { id: 30, name: 'Logitech G304 Lightspeed', brand: 'Logitech', category: 'Mouse', price: 520000, condition: 'New', status: 'Archived', availability: 'Available', featured: false, desc: 'Mouse wireless terlaris sensor Hero 12K diarsipkan untuk update promo.', img: sampleImages[4], createdAt: 1707100000 },
+  { id: 31, name: 'Samsung Galaxy A54 5G', brand: 'Samsung', category: 'Smartphone', price: 5199000, condition: 'New', status: 'Archived', availability: 'Available', featured: false, desc: 'Seri lama diarsipkan untuk digantikan dengan katalog tipe terbaru.', img: sampleImages[1], createdAt: 1707000000 },
+  { id: 32, name: 'TP-Link TL-WR840N', brand: 'TP-Link', category: 'Router', price: 165000, condition: 'New', status: 'Archived', availability: 'Available', featured: false, desc: 'Router standar 300Mbps N, stok discontinued diarsipkan.', img: sampleImages[6], createdAt: 1706900000 },
+  { id: 33, name: 'Sony WH-1000XM4', brand: 'Sony', category: 'Audio', price: 3499000, condition: 'Second', status: 'Archived', availability: 'Sold Out', featured: false, desc: 'Unit second garansi habis, diarsipkan dari display publik.', img: sampleImages[7], createdAt: 1706800000 },
+  { id: 34, name: 'iPad 9th Gen 10.2', brand: 'Apple', category: 'Tablet', price: 4699000, condition: 'Second', status: 'Archived', availability: 'Available', featured: false, desc: 'Diarsipkan sementara dari katalog.', img: sampleImages[5], createdAt: 1706700000 },
+  { id: 35, name: 'Keychron K2 V2 Wireless', brand: 'Keychron', category: 'Keyboard', price: 1250000, condition: 'Second', status: 'Archived', availability: 'Sold Out', featured: false, desc: 'Keyboard mekanikal compact layout 75%. Diarsipkan.', img: sampleImages[6], createdAt: 1706600000 }
+];
+
+let currentTab = 'Active'; // 'Active' | 'Draft' | 'Archived'
+let searchQuery = '';
+let filterCategory = 'All';
+let filterCondition = 'All';
+let filterStatus = 'All';
+let currentSort = 'Newest';
+let currentPage = 1;
+const pageSize = 7;
+let selectedIds = new Set();
+let viewingProductId = null;
+
+// Currency Formatter
+function formatRupiah(num) {
+  return 'Rp ' + Number(num).toLocaleString('id-ID');
+}
+
+// Render Tab Badges & Status
+function updateTabCounts() {
+  const activeCount = products.filter(p => p.status === 'Active').length;
+  const draftCount = products.filter(p => p.status === 'Draft').length;
+  const archivedCount = products.filter(p => p.status === 'Archived').length;
+
+  const elA = document.getElementById('tab-count-active');
+  const elD = document.getElementById('tab-count-draft');
+  const elAr = document.getElementById('tab-count-archived');
+
+  if (elA) elA.innerText = activeCount;
+  if (elD) elD.innerText = draftCount;
+  if (elAr) elAr.innerText = archivedCount;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  currentPage = 1;
+
+  const tabs = ['Active', 'Draft', 'Archived'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tab-btn-${t.toLowerCase()}`);
+    if (!btn) return;
+    if (t === tab) {
+      btn.className = 'relative pb-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600 transition-all';
+    } else {
+      btn.className = 'relative pb-3 text-sm font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all';
+    }
+  });
+
+  renderProductList();
+}
+
+function onSearchInput(val) {
+  searchQuery = val;
+  currentPage = 1;
+  const clearBtn = document.getElementById('clear-search-btn');
+  if (clearBtn) {
+    if (val.trim()) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+  renderProductList();
+}
+
+function clearSearch() {
+  searchQuery = '';
+  const input = document.getElementById('product-search');
+  if (input) input.value = '';
+  const clearBtn = document.getElementById('clear-search-btn');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderProductList();
+}
+
+function toggleFilterPopover(e) {
+  e.stopPropagation();
+  const popover = document.getElementById('filter-popover');
+  if (popover) {
+    popover.classList.toggle('hidden');
+  }
+}
+
+function applyFilters() {
+  filterCategory = document.getElementById('filter-category-select').value;
+  filterCondition = document.getElementById('filter-condition-select').value;
+  filterStatus = document.getElementById('filter-status-select').value;
+  currentPage = 1;
+
+  updateActiveFilterIndicator();
+  renderProductList();
+}
+
+function updateActiveFilterIndicator() {
+  let count = 0;
+  if (filterCategory !== 'All') count++;
+  if (filterCondition !== 'All') count++;
+  if (filterStatus !== 'All') count++;
+
+  const badge = document.getElementById('active-filter-badge');
+  const resetBtn = document.getElementById('btn-reset-filter');
+
+  if (badge) {
+    if (count > 0) {
+      badge.innerText = count;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  if (resetBtn) {
+    if (count > 0 || searchQuery.trim() !== '') {
+      resetBtn.classList.remove('hidden');
+    } else {
+      resetBtn.classList.add('hidden');
+    }
+  }
+}
+
+function resetAllFilters() {
+  filterCategory = 'All';
+  filterCondition = 'All';
+  filterStatus = 'All';
+  searchQuery = '';
+  currentSort = 'Newest';
+
+  const input = document.getElementById('product-search');
+  if (input) input.value = '';
+  const clearBtn = document.getElementById('clear-search-btn');
+  if (clearBtn) clearBtn.classList.add('hidden');
+
+  const catSelect = document.getElementById('filter-category-select');
+  if (catSelect) catSelect.value = 'All';
+  const condSelect = document.getElementById('filter-condition-select');
+  if (condSelect) condSelect.value = 'All';
+  const statSelect = document.getElementById('filter-status-select');
+  if (statSelect) statSelect.value = 'All';
+  const sortSelect = document.getElementById('sort-select');
+  if (sortSelect) sortSelect.value = 'Newest';
+
+  const popover = document.getElementById('filter-popover');
+  if (popover) popover.classList.add('hidden');
+
+  updateActiveFilterIndicator();
+  renderProductList();
+  showToast('Filters reset to default', 'info');
+}
+
+function onSortChange(sortVal) {
+  currentSort = sortVal;
+  currentPage = 1;
+  renderProductList();
+}
+
+// FILTER & SORT ENGINE
+function getFilteredAndSortedProducts() {
+  let list = products.filter(p => {
+    // Tab filtering (unless overridden by explicit Status filter dropdown)
+    if (filterStatus !== 'All') {
+      if (p.status !== filterStatus) return false;
+    } else {
+      if (p.status !== currentTab) return false;
+    }
+
+    // Category filter
+    if (filterCategory !== 'All' && p.category !== filterCategory) return false;
+
+    // Condition filter
+    if (filterCondition !== 'All' && p.condition !== filterCondition) return false;
+
+    // Multi-field search
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase().trim();
+      const matchName = (p.name || '').toLowerCase().includes(q);
+      const matchBrand = (p.brand || '').toLowerCase().includes(q);
+      const matchCat = (p.category || '').toLowerCase().includes(q);
+      const matchDesc = (p.desc || '').toLowerCase().includes(q);
+      if (!matchName && !matchBrand && !matchCat && !matchDesc) return false;
+    }
+
+    return true;
+  });
+
+  // Sorting
+  list.sort((a, b) => {
+    if (currentSort === 'Relevance') {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const aExact = a.name.toLowerCase().startsWith(q) ? 2 : 1;
+        const bExact = b.name.toLowerCase().startsWith(q) ? 2 : 1;
+        return bExact - aExact;
+      }
+      return b.createdAt - a.createdAt;
+    }
+    if (currentSort === 'Newest') {
+      return b.createdAt - a.createdAt;
+    }
+    if (currentSort === 'PriceLowHigh') {
+      return a.price - b.price;
+    }
+    if (currentSort === 'PriceHighLow') {
+      return b.price - a.price;
+    }
+    if (currentSort === 'Availability') {
+      const aAvail = a.availability === 'Available' ? 1 : 0;
+      const bAvail = b.availability === 'Available' ? 1 : 0;
+      if (aAvail !== bAvail) return bAvail - aAvail;
+      return b.createdAt - a.createdAt;
+    }
+    return 0;
+  });
+
+  return list;
+}
+
+// RENDER TABLE & MOBILE CARDS
+function renderProductList() {
+  updateTabCounts();
+  updateActiveFilterIndicator();
+  const allFiltered = getFilteredAndSortedProducts();
+  const totalCount = allFiltered.length;
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const currentBatch = allFiltered.slice(startIndex, startIndex + pageSize);
+
+  const tbody = document.getElementById('product-table-body');
+  const cardContainer = document.getElementById('product-card-container');
+  const emptyState = document.getElementById('empty-state');
+  const emptyTitle = document.getElementById('empty-state-title');
+  const emptyDesc = document.getElementById('empty-state-desc');
+  const paginationWrapper = document.getElementById('pagination-wrapper');
+
+  if (totalCount === 0) {
+    if (tbody) tbody.innerHTML = '';
+    if (cardContainer) cardContainer.innerHTML = '';
+    if (emptyState) emptyState.classList.remove('hidden');
+    if (paginationWrapper) paginationWrapper.classList.add('hidden');
+
+    if (currentTab === 'Archived' && products.filter(p => p.status === 'Archived').length === 0) {
+      emptyTitle.innerText = 'No archived products';
+      emptyDesc.innerText = 'Archived products will be safely stored here.';
+    } else if (currentTab === 'Draft' && products.filter(p => p.status === 'Draft').length === 0) {
+      emptyTitle.innerText = 'No draft products';
+      emptyDesc.innerText = 'Save unpublished items to Draft to polish them later.';
+    } else {
+      emptyTitle.innerText = 'No matching products found';
+      emptyDesc.innerText = 'Try clearing search keywords or changing category and condition filters.';
+    }
+    return;
+  }
+
+  if (emptyState) emptyState.classList.add('hidden');
+  if (paginationWrapper) paginationWrapper.classList.remove('hidden');
+
+  // Desktop Table Rows
+  if (tbody) {
+    tbody.innerHTML = currentBatch.map(p => {
+      const isChecked = selectedIds.has(p.id);
+      return `
+        <tr class="hover:bg-slate-50/70 transition-colors group">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleSelectId(${p.id}, this.checked)" ${isChecked ? 'checked' : ''} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"/>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-3">
+              <img src="${p.img}" alt="${p.name}" class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer truncate max-w-[240px] block" onclick="openViewModal(${p.id})">${p.name}</span>
+                  ${p.featured ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-0.5">★ Featured</span>' : ''}
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-blue-600">${formatRupiah(p.price)}</span>
+                  <span class="text-[11px] text-slate-400">• ${p.condition}</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs inline-block">
+              ${p.category}
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            ${renderStatusAndAvailabilityBadge(p)}
+          </td>
+          <td class="py-3.5 px-5 text-right relative">
+            <div class="inline-block text-left">
+              <button onclick="toggleActionMenu(event, ${p.id})" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Mobile Cards
+  if (cardContainer) {
+    cardContainer.innerHTML = currentBatch.map(p => `
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm relative">
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${p.img}" alt="${p.name}" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h4 class="font-bold text-slate-900 text-sm truncate" onclick="openViewModal(${p.id})">${p.name}</h4>
+                ${p.featured ? '<span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">★ Featured</span>' : ''}
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold">${p.category}</span>
+                <span class="text-[11px] text-slate-400">• ${p.condition}</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleActionMenu(event, ${p.id})" class="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <span class="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="font-bold text-sm text-blue-600">${formatRupiah(p.price)}</span>
+          ${renderStatusAndAvailabilityBadge(p)}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Update Pagination Info & Buttons
+  const startItem = startIndex + 1;
+  const endItem = Math.min(startIndex + pageSize, totalCount);
+  document.getElementById('pagination-info').innerText = `Showing ${startItem}–${endItem} of ${totalCount} products`;
+
+  const ctrl = document.getElementById('pagination-controls');
+  if (ctrl) {
+    let html = `
+      <button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 cursor-not-allowed"' : 'class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100"'}>
+        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+      </button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === currentPage) {
+        html += `<button class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold bg-blue-600 text-white shadow-sm">${i}</button>`;
+      } else {
+        html += `<button onclick="goToPage(${i})" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold text-slate-600 hover:bg-slate-100">${i}</button>`;
+      }
+    }
+
+    html += `
+      <button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 cursor-not-allowed"' : 'class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100"'}>
+        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+      </button>
+    `;
+    ctrl.innerHTML = html;
+  }
+}
+
+function goToPage(p) {
+  const totalPages = Math.ceil(getFilteredAndSortedProducts().length / pageSize);
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  renderProductList();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// STATUS BADGE RENDERER
+function renderStatusAndAvailabilityBadge(p) {
+  if (p.status === 'Active') {
+    if (p.availability === 'Available') {
+      return `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Available
+        </span>
+      `;
+    } else {
+      return `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Sold Out
+        </span>
+      `;
+    }
+  } else if (p.status === 'Draft') {
+    return `
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-200">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Draft
+      </span>
+    `;
+  } else {
+    return `
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Archived
+      </span>
+    `;
+  }
+}
+
+// SELECTION
+function toggleSelectAll(checked) {
+  const allFiltered = getFilteredAndSortedProducts();
+  if (checked) {
+    allFiltered.forEach(p => selectedIds.add(p.id));
+  } else {
+    selectedIds.clear();
+  }
+  renderProductList();
+}
+
+function toggleSelectId(id, checked) {
+  if (checked) selectedIds.add(id);
+  else selectedIds.delete(id);
+}
+
+// THREE-DOT CONTEXTUAL ACTION MENU
+let activeDropdownEl = null;
+
+function toggleActionMenu(e, id) {
+  e.stopPropagation();
+  closeActionMenu();
+
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+
+  const dd = document.createElement('div');
+  dd.id = 'floating-action-menu';
+  dd.className = 'fixed w-52 bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 z-50 text-left';
+
+  let menuItemsHtml = '';
+
+  if (p.status === 'Active') {
+    menuItemsHtml += `
+      <button onclick="openViewModal(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">visibility</span> View Product
+      </button>
+      <button onclick="handleEditProduct(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">edit</span> Edit Product
+      </button>
+    `;
+
+    if (p.availability === 'Available') {
+      menuItemsHtml += `
+        <button onclick="setAvailability(${p.id}, 'Sold Out'); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-amber-700 hover:bg-amber-50">
+          <span class="material-symbols-outlined text-[17px] text-amber-500">remove_shopping_cart</span> Mark as Sold Out
+        </button>
+      `;
+    } else {
+      menuItemsHtml += `
+        <button onclick="setAvailability(${p.id}, 'Available'); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-emerald-700 hover:bg-emerald-50">
+          <span class="material-symbols-outlined text-[17px] text-emerald-500">check_circle</span> Mark as Available
+        </button>
+      `;
+    }
+
+    menuItemsHtml += `
+      <button onclick="toggleFeatured(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
+        <span class="material-symbols-outlined text-[17px] text-amber-500">${p.featured ? 'star_half' : 'star'}</span>
+        ${p.featured ? 'Remove from Featured' : 'Set as Featured'}
+      </button>
+      <div class="my-1 border-t border-slate-100"></div>
+      <button onclick="archiveProduct(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">archive</span> Archive Product
+      </button>
+    `;
+  } else if (p.status === 'Draft') {
+    menuItemsHtml += `
+      <button onclick="handleEditProduct(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">edit</span> Edit Product
+      </button>
+      <button onclick="publishDraft(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-emerald-600 hover:bg-emerald-50">
+        <span class="material-symbols-outlined text-[17px] text-emerald-500">publish</span> Publish Product
+      </button>
+      <div class="my-1 border-t border-slate-100"></div>
+      <button onclick="archiveProduct(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">archive</span> Archive Product
+      </button>
+    `;
+  } else if (p.status === 'Archived') {
+    menuItemsHtml += `
+      <button onclick="openViewModal(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">visibility</span> View Product
+      </button>
+      <button onclick="handleEditProduct(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
+        <span class="material-symbols-outlined text-[17px] text-slate-400">edit</span> Edit Product
+      </button>
+      <div class="my-1 border-t border-slate-100"></div>
+      <button onclick="restoreArchivedToDraft(${p.id}); closeActionMenu();" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50">
+        <span class="material-symbols-outlined text-[17px] text-blue-500">restore</span> Restore to Draft
+      </button>
+    `;
+  }
+
+  dd.innerHTML = menuItemsHtml;
+  document.body.appendChild(dd);
+  activeDropdownEl = dd;
+
+  const btnRect = e.currentTarget.getBoundingClientRect();
+  const menuWidth = 208;
+  let top = btnRect.bottom + 4;
+  let left = btnRect.right - menuWidth;
+
+  if (left < 10) left = 10;
+  if (top + 180 > window.innerHeight) {
+    top = btnRect.top - 170;
+  }
+
+  dd.style.top = `${top}px`;
+  dd.style.left = `${left}px`;
+}
+
+function closeActionMenu() {
+  if (activeDropdownEl) {
+    activeDropdownEl.remove();
+    activeDropdownEl = null;
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#floating-action-menu') && !e.target.closest('button[onclick*="toggleActionMenu"]')) {
+    closeActionMenu();
+  }
+  if (!e.target.closest('#filter-popover') && !e.target.closest('#filter-popover-btn')) {
+    const pop = document.getElementById('filter-popover');
+    if (pop) pop.classList.add('hidden');
+  }
+});
+
+// ACTION HANDLERS
+function handleEditProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  showToast(`Edit sheet opened for "${p.name}". Changes will save immediately.`, 'info');
+}
+
+function setAvailability(id, newAvail) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  p.availability = newAvail;
+  renderProductList();
+  showToast(`Status updated: "${p.name}" is now ${newAvail}!`, 'success');
+}
+
+function toggleFeatured(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  p.featured = !p.featured;
+  renderProductList();
+  showToast(p.featured ? `"${p.name}" set as Featured item on catalog showcase!` : `"${p.name}" removed from featured.`, 'success');
+}
+
+function archiveProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'Archived';
+  renderProductList();
+  showToast(`Product moved to Archived`, 'info');
+}
+
+function publishDraft(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'Active';
+  p.availability = 'Available';
+  renderProductList();
+  showToast(`Product published successfully`, 'success');
+}
+
+// INVIOLABLE CONSTRAINT: Restore from Archived MUST move directly to DRAFT ONLY! Never directly to Active.
+function restoreArchivedToDraft(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'Draft';
+  p.availability = 'Draft';
+  renderProductList();
+  showToast(`Product restored to Draft for review.`, 'success');
+}
+
+// VIEW PRODUCT MODAL
+function openViewModal(id) {
+  viewingProductId = id;
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('view-name').innerText = p.name;
+  document.getElementById('view-brand').innerText = `Brand: ${p.brand || 'Original'}`;
+  document.getElementById('view-category').innerText = p.category;
+  document.getElementById('view-condition').innerText = p.condition;
+  document.getElementById('view-price').innerText = formatRupiah(p.price);
+  document.getElementById('view-desc').innerText = p.desc || 'No description provided by seller.';
+  document.getElementById('view-img').src = p.img;
+  document.getElementById('view-status-badge').innerHTML = renderStatusAndAvailabilityBadge(p);
+
+  const featBtn = document.getElementById('view-featured-btn');
+  if (featBtn) {
+    if (p.featured) {
+      featBtn.innerText = 'Remove Featured';
+      featBtn.className = 'px-3 py-1 rounded-lg text-xs font-semibold bg-amber-100 border border-amber-200 text-amber-800';
+    } else {
+      featBtn.innerText = 'Set Featured';
+      featBtn.className = 'px-3 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-700 shadow-sm hover:bg-slate-50';
+    }
+  }
+
+  const editBtn = document.getElementById('btn-view-quick-edit');
+  if (editBtn) {
+    editBtn.onclick = () => {
+      closeModal('view-product-modal');
+      handleEditProduct(p.id);
+    };
+  }
+
+  openModal('view-product-modal');
+}
+
+function toggleFeaturedFromModal() {
+  if (!viewingProductId) return;
+  toggleFeatured(viewingProductId);
+  openViewModal(viewingProductId);
+}
+
+// MODAL CONTROLS
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('hidden');
+}
+
+function openStorePreviewModal() {
+  const previewBox = document.getElementById('store-preview-cards');
+  if (previewBox) {
+    const activeSample = products.filter(p => p.status === 'Active' && p.availability === 'Available').slice(0, 4);
+    previewBox.innerHTML = activeSample.map(p => `
+      <div class="p-3 bg-white rounded-xl border border-slate-200">
+        <img src="${p.img}" class="h-20 w-full object-cover rounded-lg mb-2" alt="${p.name}"/>
+        <p class="text-xs font-bold text-slate-900 truncate">${p.name}</p>
+        <p class="text-xs text-blue-600 font-extrabold mt-0.5">${formatRupiah(p.price)}</p>
+      </div>
+    `).join('');
+  }
+  openModal('store-preview-modal');
+}
+
+function toggleProfileDropdown() {
+  const el = document.getElementById('profile-dropdown');
+  if (el) el.classList.toggle('hidden');
+}
+
+function closeProfileDropdown() {
+  const el = document.getElementById('profile-dropdown');
+  if (el) el.classList.add('hidden');
+}
+
+function handleNavClick(sectionName, desc) {
+  showToast(`Navigating to ${sectionName}: ${desc}`, 'info');
+}
+
+// TOAST NOTIFICATIONS
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-slate-900 text-white shadow-xl text-xs font-medium border border-slate-700';
+
+  const icon = type === 'success' ? 'check_circle' : 'info';
+  const iconColor = type === 'success' ? 'text-emerald-400' : 'text-blue-400';
+
+  toast.innerHTML = `
+    <span class="material-symbols-outlined ${iconColor} text-[18px]">${icon}</span>
+    <span>${message}</span>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.remove('translate-y-2', 'opacity-0');
+  }, 10);
+
+  setTimeout(() => {
+    toast.classList.add('opacity-0', 'translate-y-2');
+    setTimeout(() => toast.remove(), 300);
+  }, 3200);
+}
+
+// INITIALIZATION
+document.addEventListener('DOMContentLoaded', () => {
+  renderProductList();
+});
+renderProductList();
+</script>
+
+
+
+
+</body></html>

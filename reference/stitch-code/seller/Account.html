@@ -1,0 +1,883 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Account - Kataloga Seller Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#f8f9ff",
+            background: "#f8f9ff",
+            "surface-card": "#ffffff",
+            primary: "#2563eb",
+            "primary-hover": "#1d4ed8",
+            "primary-light": "#eff6ff",
+            secondary: "#64748b",
+            "on-surface": "#0f172a",
+            "outline-border": "#e2e8f0",
+            error: "#dc2626",
+            "error-container": "#fef2f2",
+            "on-error": "#ffffff",
+            tertiary: "#16a34a",
+            "tertiary-light": "#f0fdf4"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          },
+          spacing: {
+            "sidebar-w": "16rem"
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased">
+<!-- Toast Notification System -->
+<div class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none transition-all duration-300" id="toast-container"></div>
+<!-- ========================================================================= -->
+<!-- APPLICATION SHELL: SIDEBAR (DESKTOP) -->
+<!-- ========================================================================= -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-screen w-sidebar-w bg-surface-card border-r border-outline-border flex-col justify-between z-40">
+<div class="flex flex-col">
+<!-- Brand Logo -->
+<div class="h-16 flex items-center gap-3 px-6 border-b border-outline-border">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold shadow-sm">
+<span class="material-symbols-outlined text-[20px]">auto_stories</span>
+</div>
+<span class="font-bold text-lg text-on-surface tracking-tight">Kataloga</span>
+</div>
+<!-- Menu Items -->
+<nav class="p-4 flex flex-col gap-1.5 text-sm">
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-slate-50 transition-colors font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-slate-50 transition-colors font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="">Products</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-slate-50 transition-colors font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">favorite_border</span>
+<span class="">Customer Interest</span>
+</a>
+<!-- My Store with Sub-item -->
+<div class="flex flex-col">
+<button class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-slate-50 transition-colors font-medium" onclick="toggleSidebarStoreMenu()" type="button">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<span class="">My Store</span>
+</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-200" id="store-chevron">expand_more</span>
+</button>
+<div class="pl-9 pr-2 py-1 flex flex-col gap-1" id="store-submenu">
+<a class="px-3 py-1.5 rounded-md text-xs font-medium text-secondary hover:text-primary hover:bg-primary-light/50 transition-colors flex items-center gap-2" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+<span class="">Store Management</span>
+</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-slate-50 transition-colors font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">archive</span>
+<span class="">Archive</span>
+</a>
+<!-- Account item (Marked active with clean primary blue pill) -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-primary-light text-primary font-semibold transition-colors mt-2" href="#">
+<span class="material-symbols-outlined text-[20px] fill">person</span>
+<span class="">Account</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Footer / Store info badge -->
+<div class="p-4 border-t border-outline-border">
+<div class="flex items-center gap-3 p-2 rounded-lg bg-surface border border-outline-border/60">
+<div class="w-8 h-8 rounded-md bg-blue-600/10 text-primary flex items-center justify-center font-bold text-xs">
+          TKJ
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-semibold text-on-surface truncate">Toko Komputer Jaya</span>
+<span class="text-[11px] text-secondary truncate">Active Plan • Free</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- APPLICATION SHELL: MAIN WRAPPER & TOP HEADER -->
+<!-- ========================================================================= -->
+<div class="lg:pl-sidebar-w flex flex-col min-h-screen">
+<!-- Top Header -->
+<header class="fixed top-0 right-0 left-0 lg:left-sidebar-w h-16 bg-surface-card border-b border-outline-border z-30 flex items-center justify-between px-4 sm:px-8">
+<!-- Mobile Logo & Breadcrumb -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 lg:hidden">
+<div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white font-bold">
+<span class="material-symbols-outlined text-[17px]">auto_stories</span>
+</div>
+<span class="font-bold text-base text-on-surface">Kataloga</span>
+</div>
+<!-- Breadcrumb on Desktop -->
+<div class="hidden lg:flex items-center gap-2 text-sm text-secondary">
+<span class="font-medium text-slate-400">Dashboard</span>
+<span class="text-xs text-slate-300">/</span>
+<span class="font-semibold text-on-surface">Account</span>
+</div>
+</div>
+<!-- Header Right: Notification & Profile with dropdown -->
+<div class="flex items-center gap-3 sm:gap-4">
+<!-- Notification Bell with Indicator -->
+<button class="relative p-2 rounded-lg text-secondary hover:text-on-surface hover:bg-slate-100 transition-colors" onclick="showToast('Tidak ada notifikasi baru.')" type="button">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white"></span>
+</button>
+<div class="h-6 w-px bg-outline-border"></div>
+<!-- Profile trigger & Dropdown -->
+<div class="relative">
+<button class="flex items-center gap-3 p-1 rounded-lg hover:bg-slate-50 transition-colors focus:outline-none" id="profile-btn" onclick="toggleProfileDropdown()" type="button">
+<img alt="Sarah Anindita" class="w-9 h-9 rounded-full object-cover ring-2 ring-outline-border/60" id="header-avatar" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0">
+<div class="hidden md:flex flex-col text-left">
+<span class="text-sm font-semibold text-on-surface leading-tight" id="header-user-name">Sarah Anindita</span>
+<span class="text-xs text-secondary leading-tight">Toko Komputer Jaya</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-[18px]">expand_more</span>
+</button>
+<!-- Dropdown menu -->
+<div class="hidden absolute right-0 mt-2 w-60 bg-surface-card border border-outline-border rounded-xl shadow-lg z-50 py-1.5 overflow-hidden" id="profile-dropdown">
+<div class="px-4 py-2.5 border-b border-outline-border/80">
+<p class="text-sm font-semibold text-on-surface" id="dropdown-user-name">Sarah Anindita</p>
+<p class="text-xs text-secondary truncate" id="dropdown-user-email">sarah@kataloga.com</p>
+<span class="inline-flex items-center gap-1 mt-1 text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[12px]">verified</span> Toko Komputer Jaya
+              </span>
+</div>
+<a class="flex items-center gap-2.5 px-4 py-2 text-sm text-primary font-semibold bg-primary-light/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span class="">Account Settings</span>
+</a>
+<a class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary hover:text-on-surface hover:bg-slate-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+<span class="">Manage Store</span>
+</a>
+<div class="my-1 border-t border-outline-border"></div>
+<button class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-error hover:bg-error-container/40 transition-colors text-left" onclick="openLogoutModal()" type="button">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span class="">Logout</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT AREA -->
+<!-- ========================================================================= -->
+<main class="flex-1 pt-20 pb-24 lg:pb-12 px-4 sm:px-8 max-w-5xl w-full mx-auto">
+<!-- PAGE HEADER -->
+<div class="mb-6">
+<h1 class="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">Account</h1>
+<p class="text-sm sm:text-base text-secondary mt-1">Manage your personal account</p>
+</div>
+<!-- MAIN CARDS STACK -->
+<div class="flex flex-col gap-6">
+<!-- ===================================================================== -->
+<!-- CARD 1: PROFILE -->
+<!-- ===================================================================== -->
+<section class="bg-surface-card rounded-xl border border-outline-border p-6 sm:p-7 shadow-sm">
+<div class="pb-5 border-b border-outline-border">
+<h2 class="text-lg font-bold text-on-surface">Profile</h2>
+<p class="text-xs sm:text-sm text-secondary mt-0.5">Personal information and contact details</p>
+</div>
+<form class="mt-6 flex flex-col gap-6" id="profile-form" onsubmit="handleSaveProfile(event)">
+<!-- Top row: Avatar & Change Photo -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pb-4 border-b border-outline-border/60">
+<div class="relative w-20 h-20 shrink-0">
+<img alt="Profile photo" class="w-20 h-20 rounded-full object-cover ring-2 ring-primary/20 shadow-sm" id="profile-avatar-display" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0">
+<button class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center shadow-md hover:bg-primary-hover transition-colors" onclick="triggerAvatarPicker()" title="Change photo" type="button">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2.5">
+<button class="px-3.5 py-2 text-xs font-semibold rounded-lg border border-outline-border bg-white text-on-surface hover:bg-slate-50 transition-colors shadow-xs" onclick="triggerAvatarPicker()" type="button">
+                    Change Photo
+                  </button>
+<button class="px-3 py-2 text-xs font-semibold rounded-lg text-secondary hover:text-error transition-colors" onclick="removeCustomAvatar()" type="button">
+                    Remove
+                  </button>
+</div>
+<p class="text-xs text-secondary">Recommended square JPG or PNG, max 2MB.</p>
+</div>
+</div>
+<!-- Form fields -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<!-- Name (Optional) -->
+<div class="md:col-span-2">
+<label class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5" for="input-name">
+                  Name <span class="text-slate-400 font-normal lowercase">(optional)</span>
+</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-outline-border bg-white text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" id="input-name" placeholder="Enter your name" type="text" value="Sarah Anindita">
+</div>
+<!-- Email -->
+<div>
+<label class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5" for="input-email">
+                  Email <span class="text-error">*</span>
+</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-outline-border bg-white text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" id="input-email" placeholder="user@email.com" type="email" value="sarah@kataloga.com">
+<p class="text-[11px] text-secondary mt-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-slate-400">info</span>
+                  Used for login and notifications
+                </p>
+</div>
+<!-- Phone -->
+<div>
+<label class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5" for="input-phone">
+                  Phone <span class="text-error">*</span>
+</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-outline-border bg-white text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" id="input-phone" placeholder="08xxxxxxxxxx" type="tel" value="+62 812-3456-7890">
+<p class="text-[11px] text-secondary mt-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-slate-400">info</span>
+                  Used for login and customer contact
+                </p>
+</div>
+</div>
+<!-- Bottom of Card: Save Changes -->
+<div class="flex items-center justify-end pt-3 border-t border-outline-border/60">
+<button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span class="">Save Changes</span>
+</button>
+</div>
+</form>
+</section>
+<!-- ===================================================================== -->
+<!-- CARD 2: MY STORE -->
+<!-- ===================================================================== -->
+<section class="bg-surface-card rounded-xl border border-outline-border p-6 sm:p-7 shadow-sm">
+<div class="flex items-center justify-between pb-5 border-b border-outline-border">
+<div>
+<h2 class="text-lg font-bold text-on-surface">My Store</h2>
+<p class="text-xs sm:text-sm text-secondary mt-0.5">Your connected store on Kataloga</p>
+</div>
+<!-- Quick Dev Preview Toggle -->
+<div class="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
+<button class="text-[11px] font-semibold px-2.5 py-1 rounded bg-white text-primary shadow-xs transition-all" id="btn-toggle-has-store" onclick="setStoreState(true)" type="button">
+                Has Store
+              </button>
+<button class="text-[11px] font-medium px-2.5 py-1 rounded text-secondary hover:text-on-surface transition-all" id="btn-toggle-no-store" onclick="setStoreState(false)" type="button">
+                No Store
+              </button>
+</div>
+</div>
+<!-- STATE A: HAS STORE -->
+<div class="mt-6" id="store-state-active">
+<div class="p-4 sm:p-5 rounded-xl border border-outline-border bg-surface/50 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+<div class="flex items-start sm:items-center gap-4">
+<!-- Store Logo Squircle -->
+<div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+                  TKJ
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-on-surface">Toko Komputer Jaya</h3>
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-tertiary bg-tertiary-light px-2 py-0.5 rounded-full border border-green-200">
+<span class="material-symbols-outlined text-[13px] fill">verified</span> Verified Merchant
+                    </span>
+</div>
+<!-- Store URL with copy button -->
+<div class="mt-1.5 flex items-center gap-2 text-xs font-mono text-secondary bg-white px-2.5 py-1 rounded-md border border-outline-border/80 w-fit">
+<span class="material-symbols-outlined text-[14px] text-slate-400">link</span>
+<span id="store-url-text" class="">kataloga.com/store/toko-komputer-jaya</span>
+<button class="ml-1 text-primary hover:text-primary-hover font-sans text-xs font-medium flex items-center gap-0.5" onclick="copyStoreUrl()" title="Copy URL" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span class="hidden sm:inline">Copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action: Manage Store -->
+<a class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-outline-border bg-white text-on-surface hover:border-primary hover:text-primary text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0" href="#">
+<span class="">Manage Store</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- STATE B: NO STORE YET (Hidden by default) -->
+<div class="mt-6 hidden" id="store-state-empty">
+<div class="p-8 rounded-xl border border-dashed border-outline-border bg-surface/30 text-center flex flex-col items-center justify-center">
+<div class="w-12 h-12 rounded-full bg-blue-50 text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[26px]">store</span>
+</div>
+<h3 class="text-base font-bold text-on-surface">You don't have a store yet</h3>
+<p class="text-xs sm:text-sm text-secondary mt-1 max-w-sm">Create your catalog store and start showcasing products to your customers right away.</p>
+<button class="mt-4 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold shadow-sm transition-all flex items-center gap-2" onclick="showToast('Membuka wizard pembuatan toko baru...')" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Create Store</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- CARD 3: SECURITY -->
+<!-- ===================================================================== -->
+<section class="bg-surface-card rounded-xl border border-outline-border p-6 sm:p-7 shadow-sm">
+<div class="pb-5 border-b border-outline-border">
+<h2 class="text-lg font-bold text-on-surface">Security</h2>
+<p class="text-xs sm:text-sm text-secondary mt-0.5">Manage your password and active sessions</p>
+</div>
+<div class="mt-6 flex flex-col gap-6">
+<!-- Section A: Password -->
+<div class="p-4 sm:p-5 rounded-xl border border-outline-border bg-surface/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-lg bg-white border border-outline-border flex items-center justify-center text-primary shadow-xs shrink-0">
+<span class="material-symbols-outlined text-[22px]">key</span>
+</div>
+<div>
+<span class="text-xs font-semibold text-secondary uppercase tracking-wider">Password</span>
+<div class="text-on-surface font-mono tracking-widest text-sm sm:text-base font-bold select-none mt-0.5">••••••••••••••••</div>
+<span class="text-[11px] text-slate-400 block mt-0.5">Last changed 3 months ago</span>
+</div>
+</div>
+<button class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-white border border-outline-border hover:border-primary hover:text-primary text-on-surface text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0" onclick="openPasswordModal()" type="button">
+<span class="">Change Password</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<!-- Section B: Login Information -->
+
+<!-- Section C: Active Sessions -->
+
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- CARD 4: ACCOUNT ACTIONS -->
+<!-- ===================================================================== -->
+<section class="bg-surface-card rounded-xl border border-outline-border p-6 sm:p-7 shadow-sm">
+<div class="pb-5 border-b border-outline-border">
+<h2 class="text-lg font-bold text-on-surface">Account Actions</h2>
+<p class="text-xs sm:text-sm text-secondary mt-0.5">Manage account access and logout</p>
+</div>
+<div class="mt-6 p-4 sm:p-5 rounded-xl border border-red-100 bg-error-container/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-lg bg-error-container text-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">logout</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-on-surface">Log out of Kataloga</h4>
+<p class="text-xs text-secondary mt-0.5">Log out of your Kataloga account on this device.</p>
+</div>
+</div>
+<button class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-error hover:bg-red-700 text-on-error text-xs sm:text-sm font-semibold transition-all shadow-xs shrink-0" onclick="openLogoutModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">logout</span>
+<span class="">Logout</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<!-- ========================================================================= -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-outline-border flex items-center justify-around z-30 px-2 shadow-lg">
+  <a class="flex flex-col items-center justify-center py-1.5 text-secondary hover:text-on-surface transition-colors flex-1 min-h-[48px]" href="#">
+    <span class="material-symbols-outlined text-[22px]">grid_view</span>
+    <span class="text-[11px] mt-0.5 font-medium">Dashboard</span>
+  </a>
+  <a class="flex flex-col items-center justify-center py-1.5 text-secondary hover:text-on-surface transition-colors flex-1 min-h-[48px]" href="#">
+    <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+    <span class="text-[11px] mt-0.5 font-medium">Products</span>
+  </a>
+  <a class="flex flex-col items-center justify-center py-1.5 text-secondary hover:text-on-surface transition-colors flex-1 min-h-[48px]" href="#">
+    <span class="material-symbols-outlined text-[22px]">favorite_border</span>
+    <span class="text-[11px] mt-0.5 font-medium">Interest</span>
+  </a>
+  <button class="flex flex-col items-center justify-center py-1.5 text-primary transition-colors flex-1 min-h-[48px] relative" onclick="toggleMobileMoreSheet()" type="button">
+    <span class="material-symbols-outlined text-[22px]">more_horiz</span>
+    <span class="text-[11px] mt-0.5 font-semibold">More</span>
+    <span class="absolute top-1.5 right-6 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></span>
+  </button>
+</nav>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL 1: CHANGE PASSWORD -->
+<!-- ========================================================================= -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity" id="password-modal">
+<div class="bg-surface-card rounded-xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-outline-border relative">
+<div class="flex items-center justify-between pb-3">
+<h3 class="text-lg font-bold text-on-surface">Change Password</h3>
+<button class="p-1.5 rounded-lg text-secondary hover:bg-slate-100 transition-colors" onclick="closePasswordModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="text-xs sm:text-sm text-secondary mb-5">Update your password to keep your account secure.</p>
+<form class="space-y-4" id="password-form" onsubmit="handleSavePassword(event)">
+<!-- Current Password -->
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1" for="input-curr-pass">
+            Current Password <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full h-10 px-3 pr-10 rounded-lg border border-outline-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" id="input-curr-pass" placeholder="••••••••••••" type="password">
+<button class="absolute right-2.5 top-2.5 text-secondary hover:text-on-surface" onclick="togglePasswordInput('input-curr-pass', 'icon-curr-eye')" type="button">
+<span class="material-symbols-outlined text-[18px]" id="icon-curr-eye">visibility</span>
+</button>
+</div>
+<p class="hidden text-xs text-error mt-1 flex items-center gap-1" id="err-curr-pass">
+<span class="material-symbols-outlined text-[13px]">error</span> Current password is required.
+          </p>
+</div>
+<!-- New Password -->
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1" for="input-new-pass">
+            New Password <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full h-10 px-3 pr-10 rounded-lg border border-outline-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" id="input-new-pass" placeholder="Minimum 8 characters" type="password">
+<button class="absolute right-2.5 top-2.5 text-secondary hover:text-on-surface" onclick="togglePasswordInput('input-new-pass', 'icon-new-eye')" type="button">
+<span class="material-symbols-outlined text-[18px]" id="icon-new-eye">visibility</span>
+</button>
+</div>
+<p class="text-[11px] text-secondary mt-1">Must be at least 8 characters long.</p>
+<p class="hidden text-xs text-error mt-1 flex items-center gap-1" id="err-new-pass">
+<span class="material-symbols-outlined text-[13px]">error</span> Password must be at least 8 characters.
+          </p>
+</div>
+<!-- Confirm New Password -->
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1" for="input-confirm-pass">
+            Confirm New Password <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full h-10 px-3 pr-10 rounded-lg border border-outline-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" id="input-confirm-pass" placeholder="Re-enter new password" type="password">
+<button class="absolute right-2.5 top-2.5 text-secondary hover:text-on-surface" onclick="togglePasswordInput('input-confirm-pass', 'icon-conf-eye')" type="button">
+<span class="material-symbols-outlined text-[18px]" id="icon-conf-eye">visibility</span>
+</button>
+</div>
+<p class="hidden text-xs text-error mt-1 flex items-center gap-1" id="err-confirm-pass">
+<span class="material-symbols-outlined text-[13px]">error</span> Password tidak cocok / Passwords do not match.
+          </p>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-3 pt-3">
+<button class="px-4 py-2 text-xs sm:text-sm font-semibold text-secondary hover:bg-slate-100 rounded-lg transition-colors" onclick="closePasswordModal()" type="button">
+            Cancel
+          </button>
+<button class="px-5 py-2 text-xs sm:text-sm font-semibold bg-primary hover:bg-primary-hover text-white rounded-lg transition-all shadow-sm" type="submit">
+            Save Password
+          </button>
+</div>
+</form>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL 2: LOGOUT OTHER DEVICES CONFIRMATION -->
+<!-- ========================================================================= -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity" id="logout-others-modal">
+<div class="bg-surface-card rounded-xl max-w-sm w-full p-6 shadow-2xl border border-outline-border text-center">
+<div class="w-12 h-12 rounded-full bg-blue-50 text-primary flex items-center justify-center mx-auto mb-3">
+<span class="material-symbols-outlined text-[24px]">devices</span>
+</div>
+<h3 class="text-base font-bold text-on-surface">Log out from all other devices?</h3>
+<p class="text-xs sm:text-sm text-secondary mt-1.5 mb-5">This will terminate all other active sessions except this current device.</p>
+<div class="flex items-center gap-3">
+<button class="flex-1 py-2 text-xs sm:text-sm font-semibold text-secondary bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors" onclick="closeLogoutOtherDevicesModal()" type="button">
+          Cancel
+        </button>
+<button class="flex-1 py-2 text-xs sm:text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-lg transition-colors shadow-sm" onclick="executeLogoutOtherDevices()" type="button">
+          Confirm Logout
+        </button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL 3: LOGOUT ON THIS DEVICE CONFIRMATION -->
+<!-- ========================================================================= -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity" id="logout-modal">
+<div class="bg-surface-card rounded-xl max-w-sm w-full p-6 shadow-2xl border border-outline-border text-center">
+<div class="w-12 h-12 rounded-full bg-red-50 text-error flex items-center justify-center mx-auto mb-3">
+<span class="material-symbols-outlined text-[24px]">logout</span>
+</div>
+<h3 class="text-base font-bold text-on-surface">Keluar dari akun?</h3>
+<p class="text-xs sm:text-sm text-secondary mt-1.5 mb-5">Kamu akan keluar dari dashboard Kataloga pada peramban ini. Kamu bisa masuk kembali kapan saja.</p>
+<div class="flex items-center gap-3">
+<button class="flex-1 py-2 text-xs sm:text-sm font-semibold text-secondary bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors" onclick="closeLogoutModal()" type="button">
+          Batal
+        </button>
+<button class="flex-1 py-2 text-xs sm:text-sm font-semibold text-white bg-error hover:bg-red-700 rounded-lg transition-colors shadow-sm" onclick="executeLogout()" type="button">
+          Logout
+        </button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL 4: AVATAR PICKER SWITCHER -->
+<!-- ========================================================================= -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity" id="avatar-modal">
+<div class="bg-surface-card rounded-xl max-w-sm w-full p-5 shadow-2xl border border-outline-border">
+<div class="flex items-center justify-between pb-3 border-b border-outline-border">
+<h3 class="text-sm font-bold text-on-surface">Choose Profile Picture</h3>
+<button class="p-1 rounded text-secondary hover:bg-slate-100" onclick="closeAvatarPicker()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="py-4">
+<p class="text-xs text-secondary mb-3">Select a demo avatar or upload a custom image:</p>
+<div class="flex items-center justify-center gap-4 py-2">
+<button class="w-14 h-14 rounded-full overflow-hidden ring-2 ring-primary ring-offset-2 hover:scale-105 transition-transform" onclick="setAvatarImg('https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0')" type="button">
+<img alt="Sarah Original" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0">
+</button>
+<button class="w-14 h-14 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-base hover:scale-105 transition-transform ring-2 ring-transparent hover:ring-primary ring-offset-2" onclick="setAvatarInitials('SA')" type="button">
+            SA
+          </button>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-border text-center">
+<label class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">upload_file</span>
+<span class="">Upload from device</span>
+<input accept="image/*" class="hidden" onchange="handleFileUpload(event)" type="file">
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MOBILE BOTTOM SHEET: 'MORE' DRAWER -->
+<!-- ========================================================================= -->
+<div class="hidden fixed inset-0 z-50 flex flex-col justify-end bg-slate-900/40 backdrop-blur-xs lg:hidden transition-opacity" id="mobile-more-sheet" onclick="if(event.target === this) toggleMobileMoreSheet()"><div class="bg-white rounded-t-2xl p-5 shadow-2xl flex flex-col gap-3 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
+  <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-1"></div>
+  <div class="flex items-center justify-between pb-3 border-b border-outline-border">
+    <span class="text-base font-bold text-on-surface">Menu Lainnya</span>
+    <button class="p-1.5 rounded-lg text-secondary hover:bg-slate-100 transition-colors" onclick="toggleMobileMoreSheet()" type="button">
+      <span class="material-symbols-outlined text-[20px]">close</span>
+    </button>
+  </div>
+  <div class="flex flex-col gap-2.5 pt-1 text-sm">
+    <a class="flex items-center gap-3.5 p-3.5 rounded-xl border border-outline-border bg-white hover:bg-slate-50 transition-colors" href="#" onclick="showToast('Navigasi ke Categories...'); toggleMobileMoreSheet();">
+      <div class="w-10 h-10 rounded-lg bg-blue-50 text-primary flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[20px]">folder</span>
+      </div>
+      <div class="flex flex-col flex-1 min-w-0">
+        <span class="font-bold text-sm text-on-surface">Categories</span>
+        <span class="text-xs text-secondary truncate">Kelola hierarki &amp; kategori produk</span>
+      </div>
+      <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+    </a>
+    <a class="flex items-center gap-3.5 p-3.5 rounded-xl border border-outline-border bg-white hover:bg-slate-50 transition-colors" href="#" onclick="showToast('Navigasi ke My Store...'); toggleMobileMoreSheet();">
+      <div class="w-10 h-10 rounded-lg bg-blue-50 text-primary flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[20px]">storefront</span>
+      </div>
+      <div class="flex flex-col flex-1 min-w-0">
+        <span class="font-bold text-sm text-on-surface">My Store</span>
+        <span class="text-xs text-secondary truncate">Profil toko, jam operasional &amp; preview katalog</span>
+      </div>
+      <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+    </a>
+    <a class="flex items-center gap-3.5 p-3.5 rounded-xl border border-primary/30 bg-primary-light/50 transition-colors relative" href="#" onclick="showToast('Kamu berada di halaman Account'); toggleMobileMoreSheet();">
+      <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+        <span class="material-symbols-outlined text-[20px] fill">person</span>
+      </div>
+      <div class="flex flex-col flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-sm text-primary">Account</span>
+          <span class="text-[10px] font-semibold text-primary bg-white px-2 py-0.5 rounded-full border border-primary/20">Sedang Aktif</span>
+        </div>
+        <span class="text-xs text-secondary truncate">Pengaturan akun, password &amp; keamanan</span>
+      </div>
+      <span class="material-symbols-outlined text-[18px] text-primary">check</span>
+    </a>
+  </div>
+</div></div>
+<!-- ========================================================================= -->
+<!-- JAVASCRIPT ENGINE -->
+<!-- ========================================================================= -->
+<script>
+    // State Store
+    const accountState = {
+      name: 'Sarah Anindita',
+      email: 'sarah@kataloga.com',
+      phone: '+62 812-3456-7890',
+      storeName: 'Toko Komputer Jaya',
+      hasStore: true,
+      avatar: 'https://lh3.googleusercontent.com/aida/AEtjO1WBafXHfrbPrCCWN5qKKeWAlLs1Km-C0IsWPeiT-xPNMXdXf7XkcZkq8cPawJmbh7ANyUJjywaUv-qKB9FCTU7F8a48nL70UzVQoClJ25svb95CgOq_EWN_y6SQETFTT5lLm11D68WHbx4qrYKiZkubQj_7LlvwvYcQ6wA8AleVOwyjJd0_gabqeO9lxqpX7B-Zw5d_JSU6eCNypJ6Ha_yx8LZKjXVUe3_exFmMX_mpbG-zZhi4TccDUH0'
+    };
+
+    // Toast Notification Maker
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const isError = type === 'error';
+      const bgColor = isError ? 'bg-error text-white' : 'bg-slate-900 text-white';
+      const icon = isError ? 'error' : 'check_circle';
+
+      toast.className = `${bgColor} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 text-xs font-semibold`;
+      toast.innerHTML = `
+        <span class="material-symbols-outlined text-[18px]">${icon}</span>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 30);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-x-4');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Top Header & Sidebar Dropdowns
+    function toggleProfileDropdown() {
+      const dropdown = document.getElementById('profile-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const btn = document.getElementById('profile-btn');
+      const dropdown = document.getElementById('profile-dropdown');
+      if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    function toggleSidebarStoreMenu() {
+      const submenu = document.getElementById('store-submenu');
+      const chevron = document.getElementById('store-chevron');
+      submenu.classList.toggle('hidden');
+      chevron.classList.toggle('rotate-180');
+    }
+
+    function toggleMobileMoreSheet() {
+      const sheet = document.getElementById('mobile-more-sheet');
+      sheet.classList.toggle('hidden');
+    }
+
+    // Save Profile Information
+    function handleSaveProfile(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById('input-name').value.trim();
+      const emailVal = document.getElementById('input-email').value.trim();
+      const phoneVal = document.getElementById('input-phone').value.trim();
+
+      if (!emailVal || !phoneVal) {
+        showToast('Email dan nomor telepon wajib diisi.', 'error');
+        return;
+      }
+
+      accountState.name = nameVal || 'Sarah Anindita';
+      accountState.email = emailVal;
+      accountState.phone = phoneVal;
+
+      // Update sync elements
+      document.getElementById('header-user-name').innerText = accountState.name;
+      document.getElementById('dropdown-user-name').innerText = accountState.name;
+      document.getElementById('dropdown-user-email').innerText = accountState.email;
+      document.getElementById('security-email-display').innerText = accountState.email;
+      document.getElementById('security-phone-display').innerText = accountState.phone;
+
+      showToast('Profil berhasil diperbarui.');
+    }
+
+    // Store State Toggle Switcher
+    function setStoreState(hasStore) {
+      accountState.hasStore = hasStore;
+      const activeState = document.getElementById('store-state-active');
+      const emptyState = document.getElementById('store-state-empty');
+      const btnHas = document.getElementById('btn-toggle-has-store');
+      const btnNo = document.getElementById('btn-toggle-no-store');
+
+      if (hasStore) {
+        activeState.classList.remove('hidden');
+        emptyState.classList.add('hidden');
+        btnHas.className = "text-[11px] font-semibold px-2.5 py-1 rounded bg-white text-primary shadow-xs transition-all";
+        btnNo.className = "text-[11px] font-medium px-2.5 py-1 rounded text-secondary hover:text-on-surface transition-all";
+        showToast('Mode: Toko aktif');
+      } else {
+        activeState.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        btnNo.className = "text-[11px] font-semibold px-2.5 py-1 rounded bg-white text-primary shadow-xs transition-all";
+        btnHas.className = "text-[11px] font-medium px-2.5 py-1 rounded text-secondary hover:text-on-surface transition-all";
+        showToast('Mode: Belum memiliki toko');
+      }
+    }
+
+    function copyStoreUrl() {
+      const urlText = document.getElementById('store-url-text').innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(urlText);
+      }
+      showToast('Tautan toko disalin ke papan klip!');
+    }
+
+    // Password Modal & Logic
+    function openPasswordModal() {
+      document.getElementById('password-form').reset();
+      document.getElementById('err-curr-pass').classList.add('hidden');
+      document.getElementById('err-new-pass').classList.add('hidden');
+      document.getElementById('err-confirm-pass').classList.add('hidden');
+      document.getElementById('password-modal').classList.remove('hidden');
+    }
+
+    function closePasswordModal() {
+      document.getElementById('password-modal').classList.add('hidden');
+    }
+
+    function togglePasswordInput(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerText = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.innerText = 'visibility';
+      }
+    }
+
+    function handleSavePassword(e) {
+      e.preventDefault();
+      const curr = document.getElementById('input-curr-pass').value;
+      const newPass = document.getElementById('input-new-pass').value;
+      const confirmPass = document.getElementById('input-confirm-pass').value;
+
+      let valid = true;
+      const errCurr = document.getElementById('err-curr-pass');
+      const errNew = document.getElementById('err-new-pass');
+      const errConfirm = document.getElementById('err-confirm-pass');
+
+      errCurr.classList.add('hidden');
+      errNew.classList.add('hidden');
+      errConfirm.classList.add('hidden');
+
+      if (!curr) {
+        errCurr.classList.remove('hidden');
+        valid = false;
+      }
+
+      if (!newPass || newPass.length < 8) {
+        errNew.classList.remove('hidden');
+        valid = false;
+      }
+
+      if (newPass !== confirmPass) {
+        errConfirm.classList.remove('hidden');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      closePasswordModal();
+      showToast('Password berhasil diperbarui.');
+    }
+
+    // Logout Other Devices Modal & Logic
+    function openLogoutOtherDevicesModal() {
+      document.getElementById('logout-others-modal').classList.remove('hidden');
+    }
+
+    function closeLogoutOtherDevicesModal() {
+      document.getElementById('logout-others-modal').classList.add('hidden');
+    }
+
+    function executeLogoutOtherDevices() {
+      closeLogoutOtherDevicesModal();
+      showToast('Semua perangkat lain telah berhasil di-logout.');
+    }
+
+    // Logout Current Session Modal & Logic
+    function openLogoutModal() {
+      const profileMenu = document.getElementById('profile-dropdown');
+      if (profileMenu) profileMenu.classList.add('hidden');
+      document.getElementById('logout-modal').classList.remove('hidden');
+    }
+
+    function closeLogoutModal() {
+      document.getElementById('logout-modal').classList.add('hidden');
+    }
+
+    function executeLogout() {
+      closeLogoutModal();
+      showToast('Mengalihkan ke halaman Login...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    }
+
+    // Avatar Selection & Mock File Upload
+    function triggerAvatarPicker() {
+      document.getElementById('avatar-modal').classList.remove('hidden');
+    }
+
+    function closeAvatarPicker() {
+      document.getElementById('avatar-modal').classList.add('hidden');
+    }
+
+    function setAvatarImg(src) {
+      document.getElementById('profile-avatar-display').src = src;
+      document.getElementById('header-avatar').src = src;
+      closeAvatarPicker();
+      showToast('Foto profil diperbarui');
+    }
+
+    function setAvatarInitials(initials) {
+      // Create SVG data URL for initials
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#2563eb"/><text x="50" y="58" font-family="sans-serif" font-size="36" font-weight="bold" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initials}</text></svg>`;
+      const encoded = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+      setAvatarImg(encoded);
+    }
+
+    function removeCustomAvatar() {
+      setAvatarInitials('SA');
+      showToast('Foto profil dihapus');
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          setAvatarImg(evt.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+
+
+
+
+
+
+</body></html>
