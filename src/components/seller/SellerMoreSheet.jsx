@@ -1,21 +1,20 @@
 import { useNavigate } from 'react-router-dom'
 import BottomSheet from '../storefront/BottomSheet'
 import { SELLER_MORE_ITEMS } from '../../constants/sellerNav'
-import { useAuth } from '../../hooks/useAuth'
 
 /**
  * Mobile-only "More" menu (bottom sheet). Shows the seller features that are
  * not in the 3-item mobile bottom navigation plus Logout.
- * @param {{ open: boolean, onClose: () => void }} props
+ * Logout asks the seller shell for confirmation, which performs the actual
+ * auth logout.
+ * @param {{ open: boolean, onClose: () => void, onLogoutRequest: () => void }} props
  */
-function SellerMoreSheet({ open, onClose }) {
-  const { logout } = useAuth()
+function SellerMoreSheet({ open, onClose, onLogoutRequest }) {
   const navigate = useNavigate()
 
-  async function handleLogout() {
+  function handleLogout() {
     onClose()
-    await logout()
-    navigate('/', { replace: true })
+    onLogoutRequest()
   }
 
   return (

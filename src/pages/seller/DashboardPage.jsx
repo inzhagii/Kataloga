@@ -54,7 +54,7 @@ function DashboardPage() {
 
   return (
     <div className="flex min-h-full flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
             {store?.name || 'Dashboard'}
@@ -63,13 +63,13 @@ function DashboardPage() {
             Selamat datang, kelola toko dan katalog kamu.
           </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="grid w-full grid-cols-2 gap-2.5 sm:w-auto sm:flex sm:items-center sm:gap-3">
           {store ? (
             <a
               href={`/${store.storeId}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-outline-variant px-5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
+              className="inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-outline-variant px-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low sm:px-5"
             >
               <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
                 storefront
@@ -79,7 +79,9 @@ function DashboardPage() {
           ) : null}
           <Link
             to="/seller/products/new"
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
+            className={`inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl bg-primary px-3 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:px-5 ${
+              store ? '' : 'col-span-2'
+            }`}
           >
             <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
               add

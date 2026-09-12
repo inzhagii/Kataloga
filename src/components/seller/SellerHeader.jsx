@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 
 /**
  * Seller shell top header. Mobile shows the Kataloga brand; desktop shows the
  * current page title. The right side has an avatar dropdown with Account,
  * My Store and Logout only (the sidebar remains the primary navigation).
- * @param {{ title: string }} props
+ * Logout asks the seller shell for confirmation, which performs the actual
+ * auth logout.
+ * @param {{ title: string, onLogoutRequest: () => void }} props
  */
-function SellerHeader({ title }) {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+function SellerHeader({ title, onLogoutRequest }) {
+  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const triggerRef = useRef(null)
 
@@ -30,10 +31,9 @@ function SellerHeader({ title }) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
-  async function handleLogout() {
+  function handleLogout() {
     setOpen(false)
-    await logout()
-    navigate('/', { replace: true })
+    onLogoutRequest()
   }
 
   return (

@@ -3,12 +3,16 @@ import DashboardSectionHeading from './DashboardSectionHeading'
 import RecentActivityList from '../activities/RecentActivityList'
 
 /**
- * Dashboard section 3: Recent Activity timeline.
- * Only PRODUCT_PUBLISHED, PRODUCT_EDITED and STORE_UPDATED events.
- * "Lihat Semua" opens the full activity list on /seller/activities.
+ * Dashboard section 3: Recent Activity timeline — a compact preview, not the
+ * full list. Only PRODUCT_PUBLISHED, PRODUCT_EDITED and STORE_UPDATED events.
+ * It shows the same number of latest items as the Customer Interest preview
+ * so the two sections stay visually balanced; "Lihat Semua" opens the full
+ * activity list on /seller/activities.
  * @param {{ activities: import('../../../data/models.js').RecentActivity[] }} props
  */
 function RecentActivity({ activities }) {
+  const latest = (activities ?? []).slice(0, 3)
+
   return (
     <section
       aria-labelledby="recent-activity-heading"
@@ -31,7 +35,7 @@ function RecentActivity({ activities }) {
           </Link>
         </div>
 
-        <RecentActivityList activities={activities} />
+        <RecentActivityList activities={latest} />
       </div>
     </section>
   )

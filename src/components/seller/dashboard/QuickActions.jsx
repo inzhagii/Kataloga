@@ -35,12 +35,14 @@ function QuickActions() {
       >
         Quick Actions
       </h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {actions.map((action) => (
           <Link
             key={action.to}
             to={action.to}
-            className="group flex items-center gap-3.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm transition-all hover:border-primary/50 hover:shadow-md"
+            className={`group flex items-center gap-3.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm transition-all hover:border-primary/50 hover:shadow-md ${
+              action.to === '/seller/products' ? 'col-span-2 sm:col-span-1' : ''
+            }`}
           >
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-container text-secondary transition-colors group-hover:bg-primary group-hover:text-on-primary">
               <span className="material-symbols-outlined text-[22px]" aria-hidden="true">

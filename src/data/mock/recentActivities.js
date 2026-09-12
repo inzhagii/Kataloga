@@ -9,6 +9,30 @@ import { ACTIVITY_TYPE } from '../../constants/enums'
 /** @type {import('../models.js').RecentActivity[]} */
 export const recentActivities = [
   {
+    id: 9,
+    type: ACTIVITY_TYPE.PRODUCT_PUBLISHED,
+    message: 'SSD NVMe 512GB berhasil dipublikasi ke katalog.',
+    date: '2026-09-12T07:30:00.000Z',
+  },
+  {
+    id: 8,
+    type: ACTIVITY_TYPE.PRODUCT_EDITED,
+    message: 'Processor AMD Ryzen 5 5600 diperbarui (harga dan foto produk diubah).',
+    date: '2026-09-11T14:10:00.000Z',
+  },
+  {
+    id: 7,
+    type: ACTIVITY_TYPE.STORE_UPDATED,
+    message: 'Alamat lengkap toko dan jam operasional diperbarui.',
+    date: '2026-09-11T09:45:00.000Z',
+  },
+  {
+    id: 6,
+    type: ACTIVITY_TYPE.PRODUCT_PUBLISHED,
+    message: 'Router WiFi TP-Link Archer C6 berhasil dipublikasi ke katalog.',
+    date: '2026-09-10T18:25:00.000Z',
+  },
+  {
     id: 5,
     type: ACTIVITY_TYPE.PRODUCT_PUBLISHED,
     message: 'Laptop Asus VivoBook 14 berhasil dipublikasi ke katalog.',

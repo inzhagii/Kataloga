@@ -10,13 +10,12 @@ function parentCount(parent, childrenByParent, productCounts) {
 }
 
 function TypeBadge({ custom }) {
-  return custom ? (
+  if (!custom) {
+    return null
+  }
+  return (
     <span className="rounded-md bg-primary-container px-2 py-0.5 text-[11px] font-semibold text-primary">
       Custom
-    </span>
-  ) : (
-    <span className="rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-semibold text-secondary">
-      Default
     </span>
   )
 }

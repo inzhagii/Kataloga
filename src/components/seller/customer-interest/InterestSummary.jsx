@@ -27,23 +27,23 @@ function InterestSummary({ totalInterest, whatsappClicks, marketplaceClicks }) {
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
       {cards.map((card) => (
         <div
           key={card.label}
-          className="flex items-start justify-between rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-sm"
+          className="flex min-w-0 items-start justify-between rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm sm:p-5"
         >
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-secondary">
+          <div className="min-w-0">
+            <span className="block text-[11px] font-bold uppercase tracking-wider text-secondary sm:text-xs">
               {card.label}
             </span>
-            <div className="mt-2 text-2xl font-extrabold tracking-tight text-on-surface">
+            <div className="mt-2 text-2xl font-extrabold tracking-tight text-on-surface sm:text-3xl">
               {card.valueLine}
             </div>
-            <p className="mt-2 text-xs text-secondary">{card.help}</p>
+            <p className="mt-1.5 hidden text-xs text-secondary sm:block">{card.help}</p>
           </div>
-          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-container text-secondary">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-container text-secondary sm:h-10 sm:w-10">
+            <span className="material-symbols-outlined text-[20px] sm:text-[22px]" aria-hidden="true">
               {card.icon}
             </span>
           </span>

@@ -65,31 +65,33 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
           description="Kondisi katalog toko kamu saat ini."
         />
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
         {cards.map((card) => (
           <Link
             key={card.label}
             to={card.to}
             className={`group rounded-xl border border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md ${card.accentClass}`}
           >
-            <div className="flex items-start justify-between p-6">
+            <div className="flex items-start justify-between p-4 sm:p-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-secondary">
                   {card.label}
                 </span>
-                <div className={`mt-2 text-3xl font-extrabold tracking-tight ${card.countClass}`}>
+                <div className={`mt-1.5 text-2xl font-extrabold tracking-tight sm:mt-2 sm:text-3xl ${card.countClass}`}>
                   {card.count}
                 </div>
               </div>
               <div
-                className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors ${card.iconClass}`}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors sm:h-11 sm:w-11 ${card.iconClass}`}
               >
-                <span className="material-symbols-outlined text-[24px]" aria-hidden="true">
+                <span className="material-symbols-outlined text-[20px] sm:text-[24px]" aria-hidden="true">
                   {card.icon}
                 </span>
               </div>
             </div>
-            <p className="px-6 pb-6 text-xs text-secondary">{card.subtitle}</p>
+            <p className="px-4 pb-4 text-xs leading-snug text-secondary sm:px-6 sm:pb-6">
+              {card.subtitle}
+            </p>
           </Link>
         ))}
       </div>

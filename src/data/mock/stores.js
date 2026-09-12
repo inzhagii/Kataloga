@@ -3,16 +3,19 @@
  * Replaced by API responses once the backend is available.
  */
 
+import storeLogo from '../../assets/mock/store-logo.svg'
+
 /** @type {import('../models.js').Store[]} */
 export const stores = [
   {
     storeId: 'toko-komputer-jaya',
     name: 'Toko Komputer Jaya',
-    logoUrl: undefined,
+    logoUrl: storeLogo,
     description:
       'Menjual laptop, smartphone, dan aksesoris gadget dengan harga bersahabat sejak 2015.',
     province: 'Jawa Barat',
     city: 'Kota Bandung',
+    fullAddress: 'Jl. Dipatiukur No. 12, Cidadap, Kota Bandung, Jawa Barat 40132',
     operatingHours: 'Senin - Sabtu, 09.00 - 18.00',
     whatsapp: '6281234567890',
     channels: [

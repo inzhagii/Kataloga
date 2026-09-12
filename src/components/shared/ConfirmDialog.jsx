@@ -29,10 +29,20 @@ function ConfirmDialog({
   const confirmRef = useRef(null)
 
   useEffect(() => {
-    if (open && confirmRef.current) {
+    if (!open) {
+      return undefined
+    }
+    if (confirmRef.current) {
       confirmRef.current.focus()
     }
-  }, [open])
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        onCancel()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open, onCancel])
 
   if (!open) {
     return null
@@ -49,8 +59,12 @@ function ConfirmDialog({
       role="dialog"
       aria-modal="true"
       aria-label={title}
+      onClick={onCancel}
     >
-      <div className="w-full max-w-sm rounded-2xl bg-surface-container-lowest p-6 shadow-2xl">
+      <div
+        className="w-full max-w-sm rounded-2xl bg-surface-container-lowest p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div
           className={`flex h-11 w-11 items-center justify-center rounded-full ${
             tone === 'danger' ? 'bg-error-container' : 'bg-surface-container-low'

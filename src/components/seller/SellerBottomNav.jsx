@@ -6,8 +6,11 @@ import SellerMoreSheet from './SellerMoreSheet'
 /**
  * Mobile-only reusable bottom navigation: three primary seller features plus
  * a More button that opens the More sheet for the remaining features.
+ * Logout requests are forwarded from the More sheet to the seller shell for
+ * confirmation.
+ * @param {{ onLogoutRequest: () => void }} props
  */
-function SellerBottomNav() {
+function SellerBottomNav({ onLogoutRequest }) {
   const [moreOpen, setMoreOpen] = useState(false)
 
   return (
@@ -48,7 +51,7 @@ function SellerBottomNav() {
           <span className="mt-0.5 text-[11px] font-medium">More</span>
         </button>
       </nav>
-      <SellerMoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
+      <SellerMoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} onLogoutRequest={onLogoutRequest} />
     </>
   )
 }

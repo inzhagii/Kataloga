@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import SellerSidebar from '../components/seller/SellerSidebar'
 import SellerHeader from '../components/seller/SellerHeader'
 import SellerBottomNav from '../components/seller/SellerBottomNav'
+import ConfirmDialog from '../components/shared/ConfirmDialog'
 import { useAuth } from '../hooks/useAuth'
 import { getMyStore } from '../services/storeService'
 
@@ -51,9 +52,11 @@ function getSellerPageTitle(pathname) {
  * Accounts without a store are routed to the Create Store flow.
  */
 function SellerLayout() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const location = useLocation()
   const [store, setStore] = useState(null)
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -67,20 +70,46 @@ function SellerLayout() {
     }
   }, [])
 
+  /**
+   * Logout is confirmed once at the seller shell level so every logout entry
+   * point (desktop sidebar, avatar dropdown, mobile More) shares the same
+   * confirmation dialog and the same single logout implementation.
+   */
+  function requestLogout() {
+    setLogoutOpen(true)
+  }
+
   if (user && !user.hasStore) {
     return <Navigate to="/create-store" replace />
   }
 
+  async function confirmLogout() {
+    setLogoutOpen(false)
+    await logout()
+    navigate('/', { replace: true })
+  }
+
   return (
     <div className="min-h-svh bg-surface text-on-surface">
-      <SellerSidebar store={store} />
+      <SellerSidebar store={store} onLogoutRequest={requestLogout} />
       <div className="flex min-h-svh flex-col lg:pl-sidebar-width">
-        <SellerHeader title={getSellerPageTitle(location.pathname)} />
+        <SellerHeader title={getSellerPageTitle(location.pathname)} onLogoutRequest={requestLogout} />
         <main className="mx-auto w-full max-w-[80rem] flex-1 px-4 pb-24 pt-20 sm:px-6 lg:px-8 lg:pb-12 lg:pt-24">
           <Outlet />
         </main>
       </div>
-      <SellerBottomNav />
+      <SellerBottomNav onLogoutRequest={requestLogout} />
+
+      <ConfirmDialog
+        open={logoutOpen}
+        title="Keluar dari akun?"
+        description="Anda akan keluar dari akun Kataloga."
+        confirmLabel="Logout"
+        cancelLabel="Batal"
+        tone="danger"
+        onConfirm={confirmLogout}
+        onCancel={() => setLogoutOpen(false)}
+      />
     </div>
   )
 }

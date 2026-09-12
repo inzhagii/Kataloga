@@ -10,16 +10,16 @@ import { createCategory, updateCategory, deleteCategory } from '../../services/c
 
 function StatCard({ label, value, icon }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-3.5 shadow-sm sm:p-4">
+    <div className="flex min-w-0 items-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-3 shadow-sm sm:p-4">
       <span
-        className="material-symbols-outlined text-[22px] text-secondary"
+        className="material-symbols-outlined hidden shrink-0 text-[22px] text-secondary sm:inline"
         aria-hidden="true"
       >
         {icon}
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-bold text-on-surface">{value}</p>
-        <p className="truncate text-[11px] text-secondary">{label}</p>
+        <p className="text-sm font-bold leading-tight text-on-surface">{value}</p>
+        <p className="mt-0.5 text-[11px] leading-snug text-secondary">{label}</p>
       </div>
     </div>
   )
@@ -113,7 +113,11 @@ function CategoriesPage() {
   if (status === 'error') {
     return (
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Categories</h1>
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Categories
+          </h1>
+        </div>
         <EmptyState
           icon="error"
           title="Gagal memuat category"
@@ -170,32 +174,31 @@ function CategoriesPage() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-            Categories
-          </h1>
-          <p className="mt-1 text-sm text-secondary">
-            Kelola Kategori Utama &amp; Sub Kategori untuk katalog kamu (maksimal dua level).
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setModal({ open: true, mode: 'create', category: null })}
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
-        >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-            add
-          </span>
-          Tambah Kategori
-        </button>
+      <div className="mb-5 text-center sm:text-left">
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+          Categories
+        </h1>
+        <p className="mt-1 text-sm text-secondary">
+          Kelola Kategori Utama &amp; Sub Kategori untuk katalog kamu (maksimal dua level).
+        </p>
       </div>
 
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mb-3 grid grid-cols-3 gap-3">
         <StatCard label="Kategori Utama" value={stats.utama} icon="account_tree" />
         <StatCard label="Sub Kategori" value={stats.sub} icon="category" />
         <StatCard label="Total Product" value={stats.totalProducts} icon="inventory_2" />
       </div>
+
+      <button
+        type="button"
+        onClick={() => setModal({ open: true, mode: 'create', category: null })}
+        className="mb-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:w-auto"
+      >
+        <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+          add
+        </span>
+        Tambah Kategori
+      </button>
 
       {customCount === 0 ? (
         <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary-container/40 px-4 py-3">
@@ -210,9 +213,9 @@ function CategoriesPage() {
         </div>
       ) : null}
 
-      <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-        <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3">
-          <span className="material-symbols-outlined text-[20px] text-secondary" aria-hidden="true">
+      <div className="mb-4 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 sm:flex sm:items-center sm:gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-3.5 py-3 sm:px-4">
+          <span className="material-symbols-outlined shrink-0 text-[20px] text-secondary" aria-hidden="true">
             search
           </span>
           <input
@@ -241,7 +244,7 @@ function CategoriesPage() {
           <button
             type="button"
             onClick={toggleAllParents}
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 text-xs font-semibold text-primary transition-colors hover:bg-surface-container"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-3 text-[11px] font-semibold whitespace-nowrap text-primary transition-colors hover:bg-surface-container sm:px-4 sm:text-xs"
           >
             <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
               {allCollapsed ? 'unfold_more' : 'unfold_less'}

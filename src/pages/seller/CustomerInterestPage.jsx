@@ -64,9 +64,11 @@ function CustomerInterestPage() {
   if (status === 'error') {
     return (
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-          Customer Interest
-        </h1>
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Customer Interest
+          </h1>
+        </div>
         <EmptyState
           icon="error"
           title="Gagal memuat customer interest"
@@ -88,10 +90,12 @@ function CustomerInterestPage() {
   if (interests.length === 0) {
     return (
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-          Customer Interest
-        </h1>
-        <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Customer Interest
+          </h1>
+          <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
+        </div>
         <div className="mt-6">
           <InterestSummary
             totalInterest={summary.totalInterest}
@@ -110,10 +114,12 @@ function CustomerInterestPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-        Customer Interest
-      </h1>
-      <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
+      <div className="text-center sm:text-left">
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+          Customer Interest
+        </h1>
+        <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
+      </div>
 
       <div className="mt-6">
         <InterestSummary

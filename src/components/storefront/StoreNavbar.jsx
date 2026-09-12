@@ -4,13 +4,14 @@ import MarketplaceSelector from './MarketplaceSelector'
 import WhatsAppIcon from '../ui/WhatsAppIcon'
 
 /**
- * Storefront navbar: store logo + name on the left; address (compact, when
- * set) and account controls on the right. WhatsApp/marketplace actions are NOT
- * part of the navbar anymore — pages opt into them by passing handlers, and
- * keep them in the page content/actions area. Guest sees Masuk/Daftar;
- * logged-in customers see a generic user-circle icon (no uploaded photo).
- * returnPath lets pages (e.g. Product Detail) keep the guest on the current
- * page after login; it defaults to the Store Landing URL.
+ * Storefront navbar: store logo + name on the left; account controls on the
+ * right. Full address is NOT part of the navbar (it is only used in the
+ * footer). WhatsApp/marketplace actions are NOT part of the navbar anymore —
+ * pages opt into them by passing handlers, and keep them in the page
+ * content/actions area. Guest sees Masuk/Daftar; logged-in customers see a
+ * generic user-circle icon (no uploaded photo). returnPath lets pages (e.g.
+ * Product Detail) keep the guest on the current page after login; it defaults
+ * to the Store Landing URL.
  *
  * @param {{
  *   store: import('../../data/models.js').Store,
@@ -36,18 +37,6 @@ function StoreNavbar({ store, returnPath, onWhatsApp, onSelectChannel }) {
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
-          {store.fullAddress ? (
-            <span
-              className="hidden min-w-0 items-center gap-1.5 px-1 text-xs text-on-surface-variant lg:flex"
-              title={store.fullAddress}
-            >
-              <span className="material-symbols-outlined shrink-0 text-[16px] text-secondary" aria-hidden="true">
-                location_on
-              </span>
-              <span className="max-w-[10rem] truncate">{store.fullAddress}</span>
-            </span>
-          ) : null}
-
           {onSelectChannel ? (
             <MarketplaceSelector store={store} onSelectChannel={onSelectChannel} compact />
           ) : null}

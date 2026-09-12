@@ -1,6 +1,5 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { SELLER_SIDEBAR_ITEMS } from '../../constants/sellerNav'
-import { useAuth } from '../../hooks/useAuth'
 
 /**
  * Get the initials for a store/user name (max 2 chars).
@@ -22,17 +21,14 @@ function getInitials(name) {
 
 /**
  * Desktop-only reusable seller sidebar. Single navigation used by every
- * seller page. Logout clears the authentication state (ROUTES: no /logout page).
- * @param {{ store: import('../../data/models.js').Store | null }} props
+ * seller page. Logout requests confirmation at the seller-shell level, which
+ * performs the actual auth logout (ROUTES: no /logout page).
+ * @param {{
+ *   store: import('../../data/models.js').Store | null,
+ *   onLogoutRequest: () => void,
+ * }} props
  */
-function SellerSidebar({ store }) {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
-
-  async function handleLogout() {
-    await logout()
-    navigate('/', { replace: true })
-  }
+function SellerSidebar({ store, onLogoutRequest }) {
 
   return (
     <aside className="fixed left-0 top-0 z-40 hidden h-svh w-sidebar-width flex-col justify-between border-r border-outline-variant bg-surface-container-lowest lg:flex">
@@ -87,7 +83,7 @@ function SellerSidebar({ store }) {
         </Link>
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={onLogoutRequest}
           className="mt-2 flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-sm font-medium text-secondary transition-colors hover:bg-surface-container hover:text-on-surface"
         >
           <span className="material-symbols-outlined text-[20px]" aria-hidden="true">

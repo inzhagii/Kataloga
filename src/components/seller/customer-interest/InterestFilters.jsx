@@ -21,8 +21,8 @@ function InterestFilters({
   canReset,
 }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-      <div className="relative w-full min-w-0 sm:w-72">
+    <div className="grid w-full grid-cols-2 items-stretch gap-2 sm:flex sm:items-center sm:gap-3">
+      <div className="relative min-w-0 sm:w-72">
         <span
           className="material-symbols-outlined pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[20px] text-outline"
           aria-hidden="true"
@@ -50,7 +50,7 @@ function InterestFilters({
         ) : null}
       </div>
 
-      <div className="relative w-full min-w-0 sm:w-auto sm:min-w-[180px]">
+      <div className="relative min-w-0 sm:w-auto sm:min-w-[180px]">
         <select
           value={activityFilter}
           onChange={(event) => onActivityFilterChange(event.target.value)}
@@ -75,7 +75,7 @@ function InterestFilters({
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex h-10 items-center gap-1.5 self-start rounded-lg bg-surface-container px-4 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-error-container/40 hover:text-error sm:self-auto"
+          className="col-span-2 inline-flex h-10 items-center gap-1.5 self-start justify-center rounded-lg bg-surface-container px-4 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-error-container/40 hover:text-error sm:col-span-1 sm:justify-start sm:self-auto"
         >
           <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
             restart_alt

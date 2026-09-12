@@ -29,11 +29,11 @@ function FilterPopover({ filters, onChange, resetFilters, categories, activeCoun
   )
 
   return (
-    <div ref={panelRef} className="relative inline-block">
+    <div ref={panelRef} className="relative w-full lg:w-auto">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-3.5 py-2.5 text-sm font-semibold text-on-surface shadow-sm transition-all hover:border-outline"
+        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-outline-variant bg-surface-container-lowest px-1.5 py-2.5 text-xs font-semibold whitespace-nowrap text-on-surface shadow-sm transition-all hover:border-outline lg:w-auto lg:gap-2 lg:px-3.5 lg:text-sm"
       >
         <span className="material-symbols-outlined text-[18px] text-outline" aria-hidden="true">
           tune
@@ -47,7 +47,7 @@ function FilterPopover({ filters, onChange, resetFilters, categories, activeCoun
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-72 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-xl sm:right-auto sm:left-0">
+        <div className="absolute left-0 z-50 mt-2 w-72 rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-xl sm:left-0">
           <div className="mb-3 flex items-center justify-between border-b border-outline-variant/30 pb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-secondary">
               Filter Produk

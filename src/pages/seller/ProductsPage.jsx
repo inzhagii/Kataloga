@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSellerProducts } from '../../hooks/useSellerProducts'
 import { listCategories } from '../../services/categoryService'
 import {
@@ -223,7 +223,11 @@ function ProductsPage() {
   if (status === 'error') {
     return (
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Products</h1>
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Products
+          </h1>
+        </div>
         <EmptyState
           icon="error"
           title="Gagal memuat produk"
@@ -244,22 +248,11 @@ function ProductsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-            Products
-          </h1>
-          <p className="mt-1 text-sm text-secondary">Kelola produk dan katalog kamu.</p>
-        </div>
-        <Link
-          to="/seller/products/new"
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
-        >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-            add
-          </span>
-          Tambah Produk
-        </Link>
+      <div className="mb-5 text-center sm:text-left">
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+          Products
+        </h1>
+        <p className="mt-1 text-sm text-secondary">Kelola produk dan katalog kamu.</p>
       </div>
 
       <ProductsToolbar
@@ -272,6 +265,7 @@ function ProductsPage() {
         sort={sort}
         onSort={setSort}
         categories={categories}
+        addHref="/seller/products/new"
       />
 
       <StatusTabs

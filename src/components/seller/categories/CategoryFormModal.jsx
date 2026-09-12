@@ -229,7 +229,7 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
               {parents.map((parent) => (
                 <option key={parent.id} value={parent.id}>
                   {parent.name}
-                  {parent.custom ? ' (Custom)' : ' (Default)'}
+                  {parent.custom ? ' (Custom)' : ''}
                 </option>
               ))}
             </select>
