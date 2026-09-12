@@ -192,73 +192,44 @@ function ParentRow({
  * expand/collapse and stats, mirroring the approved Category Management
  * screen. Default categories are read-only; custom categories get edit/delete.
  *
+ * Collapse state is owned by the page: the page supplies the `collapsed` set
+ * and the toggle callback, and renders the "Collapse Semua" action next to
+ * the search field.
+ *
  * @param {{
  *   parents: import('../../../data/models.js').Category[],
  *   childrenByParent: Record<number, import('../../../data/models.js').Category[]>,
  *   productCounts: Record<string, number>,
+ *   collapsed: Set<number>,
+ *   onToggle: (parentId: number) => void,
  *   onEdit: (category: import('../../../data/models.js').Category) => void,
  *   onDelete: (category: import('../../../data/models.js').Category) => void,
  * }} props
  */
-function CategoryTree({ parents, childrenByParent, productCounts, onEdit, onDelete }) {
-  const [collapsed, setCollapsed] = useState(() => new Set())
-
-  function toggle(parentId) {
-    setCollapsed((current) => {
-      const next = new Set(current)
-      if (next.has(parentId)) {
-        next.delete(parentId)
-      } else {
-        next.add(parentId)
-      }
-      return next
-    })
-  }
-
-  const allCollapsed = parents.length > 0 && parents.every((parent) => collapsed.has(parent.id))
-
-  function toggleAll() {
-    setCollapsed(() => (allCollapsed ? new Set() : new Set(parents.map((parent) => parent.id))))
-  }
-
+function CategoryTree({ parents, childrenByParent, productCounts, collapsed, onToggle, onEdit, onDelete }) {
   if (parents.length === 0) {
     return null
   }
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={toggleAll}
-          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary-container"
-        >
-          <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-            {allCollapsed ? 'unfold_more' : 'unfold_less'}
-          </span>
-          {allCollapsed ? 'Expand Semua' : 'Collapse Semua'}
-        </button>
-      </div>
-
-      <div className="space-y-3">
-        {parents.map((parent) => {
-          const children = childrenByParent[parent.id] || []
-          const totalCount = parentCount(parent, childrenByParent, productCounts)
-          return (
-            <ParentRow
-              key={parent.id}
-              parent={parent}
-              collapsed={collapsed.has(parent.id)}
-              onToggle={() => toggle(parent.id)}
-              children={children}
-              totalCount={totalCount}
-              productCounts={productCounts}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          )
-        })}
-      </div>
+      {parents.map((parent) => {
+        const children = childrenByParent[parent.id] || []
+        const totalCount = parentCount(parent, childrenByParent, productCounts)
+        return (
+          <ParentRow
+            key={parent.id}
+            parent={parent}
+            collapsed={collapsed.has(parent.id)}
+            onToggle={() => onToggle(parent.id)}
+            children={children}
+            totalCount={totalCount}
+            productCounts={productCounts}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        )
+      })}
     </div>
   )
 }

@@ -198,7 +198,7 @@ function StoreLandingPage() {
 
   return (
     <div className="min-h-svh bg-surface">
-      <StoreNavbar store={store} />
+      <StoreNavbar store={store} onWhatsApp={handleWhatsApp} onSelectChannel={handleSelectChannel} />
 
       <main className="mx-auto max-w-[1140px] px-4 pb-16 pt-20 md:px-6 md:pt-24">
         <StoreHeader

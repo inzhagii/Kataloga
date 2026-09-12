@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import BottomSheet from './BottomSheet'
+import WhatsAppIcon from '../ui/WhatsAppIcon'
 
 /**
  * Share dialog (mobile bottom sheet / desktop centered dialog). Uses the
@@ -62,11 +63,9 @@ function ShareSheet({ open, onClose, title, description, url, whatsappText }) {
           <button
             type="button"
             onClick={handleWhatsAppShare}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-3 text-xs font-semibold text-on-primary shadow-sm transition-colors hover:bg-blue-700 sm:text-sm"
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-whatsapp px-4 py-3 text-xs font-semibold text-on-whatsapp shadow-sm transition-colors hover:brightness-95 sm:text-sm"
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-              chat
-            </span>
+            <WhatsAppIcon size={18} />
             <span>Bagikan ke WhatsApp</span>
           </button>
 

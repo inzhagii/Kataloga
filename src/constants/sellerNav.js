@@ -10,7 +10,6 @@ export const SELLER_SIDEBAR_ITEMS = [
   { to: '/seller/categories', label: 'Categories', icon: 'category' },
   { to: '/seller/customer-interest', label: 'Customer Interest', icon: 'favorite_border' },
   { to: '/seller/my-store', label: 'My Store', icon: 'storefront' },
-  { to: '/seller/account', label: 'Profile', icon: 'person' },
 ]
 
 const BOTTOM_NAV_PATHS = ['/seller/dashboard', '/seller/products', '/seller/customer-interest']
@@ -19,6 +18,8 @@ export const SELLER_BOTTOM_NAV_ITEMS = SELLER_SIDEBAR_ITEMS.filter(({ to }) =>
   BOTTOM_NAV_PATHS.includes(to),
 )
 
-export const SELLER_MORE_ITEMS = SELLER_SIDEBAR_ITEMS.filter(
-  ({ to }) => to === '/seller/categories' || to === '/seller/my-store' || to === '/seller/account',
-)
+export const SELLER_MORE_ITEMS = [
+  { to: '/seller/categories', label: 'Categories', icon: 'category' },
+  { to: '/seller/my-store', label: 'My Store', icon: 'storefront' },
+  { to: '/seller/account', label: 'Profile', icon: 'person' },
+]

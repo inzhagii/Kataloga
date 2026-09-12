@@ -156,8 +156,8 @@ function ProfileForm({ user, onAvatarError, onSaved }) {
   return (
     <section className="rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-5 shadow-sm sm:p-6">
       <div className="mb-5 border-b border-outline-variant/30 pb-4">
-        <h2 className="text-base font-bold text-on-surface">Profil</h2>
-        <p className="text-xs text-secondary">Informasi akun kamu.</p>
+        <h2 className="text-base font-bold text-on-surface">Informasi Akun Kamu</h2>
+        <p className="text-xs text-secondary">Nama, email, nomor HP, dan foto profil kamu.</p>
       </div>
 
       <form onSubmit={handleSave} noValidate className="flex flex-col gap-5">

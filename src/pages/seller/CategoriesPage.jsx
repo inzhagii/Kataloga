@@ -38,6 +38,7 @@ function CategoriesPage() {
   } = useCategories()
 
   const [search, setSearch] = useState('')
+  const [collapsed, setCollapsed] = useState(() => new Set())
   const [modal, setModal] = useState({ open: false, mode: 'create', category: null })
   const [deleteCandidate, setDeleteCandidate] = useState(null)
   const [noticed, setNoticed] = useState(null)
@@ -63,6 +64,28 @@ function CategoriesPage() {
     }
     return { visibleParents, matchedChildren }
   }, [query, parents, childrenByParent])
+
+  const allCollapsed =
+    filtered.visibleParents.length > 0 &&
+    filtered.visibleParents.every((parent) => collapsed.has(parent.id))
+
+  function toggleParent(parentId) {
+    setCollapsed((current) => {
+      const next = new Set(current)
+      if (next.has(parentId)) {
+        next.delete(parentId)
+      } else {
+        next.add(parentId)
+      }
+      return next
+    })
+  }
+
+  function toggleAllParents() {
+    setCollapsed(() =>
+      allCollapsed ? new Set() : new Set(filtered.visibleParents.map((parent) => parent.id)),
+    )
+  }
 
   const stats = useMemo(() => {
     const subCount = categories.filter((category) => category.parentId !== null).length
@@ -187,28 +210,43 @@ function CategoriesPage() {
         </div>
       ) : null}
 
-      <div className="mb-4 flex items-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3">
-        <span className="material-symbols-outlined text-[20px] text-secondary" aria-hidden="true">
-          search
-        </span>
-        <input
-          type="search"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Cari category..."
-          aria-label="Cari category"
-          className="min-w-0 flex-1 bg-transparent text-sm text-on-surface placeholder:text-outline outline-none"
-        />
-        {search ? (
+      <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+        <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3">
+          <span className="material-symbols-outlined text-[20px] text-secondary" aria-hidden="true">
+            search
+          </span>
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Cari category..."
+            aria-label="Cari category"
+            className="min-w-0 flex-1 bg-transparent text-sm text-on-surface placeholder:text-outline outline-none"
+          />
+          {search ? (
+            <button
+              type="button"
+              onClick={() => setSearch('')}
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-secondary transition-colors hover:bg-surface-container"
+              aria-label="Hapus pencarian"
+            >
+              <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                close
+              </span>
+            </button>
+          ) : null}
+        </div>
+
+        {filtered.visibleParents.length > 0 ? (
           <button
             type="button"
-            onClick={() => setSearch('')}
-            className="flex h-6 w-6 items-center justify-center rounded-md text-secondary transition-colors hover:bg-surface-container"
-            aria-label="Hapus pencarian"
+            onClick={toggleAllParents}
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 text-xs font-semibold text-primary transition-colors hover:bg-surface-container"
           >
             <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-              close
+              {allCollapsed ? 'unfold_more' : 'unfold_less'}
             </span>
+            {allCollapsed ? 'Expand Semua' : 'Collapse Semua'}
           </button>
         ) : null}
       </div>
@@ -233,6 +271,8 @@ function CategoriesPage() {
           parents={filtered.visibleParents}
           childrenByParent={filtered.matchedChildren}
           productCounts={productCounts}
+          collapsed={collapsed}
+          onToggle={toggleParent}
           onEdit={(category) => setModal({ open: true, mode: 'edit', category })}
           onDelete={openDelete}
         />

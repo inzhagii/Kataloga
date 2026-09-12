@@ -47,20 +47,16 @@ function AccountPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ProfileForm
-            user={user}
-            onAvatarError={setAvatarError}
-            onSaved={() => {
-              setToast({ type: 'success', message: 'Profil berhasil diperbarui.' })
-              setAvatarError('')
-            }}
-          />
-        </div>
-        <div className="lg:col-span-1">
-          <SellerStoreCard />
-        </div>
+      <div className="flex flex-col gap-5">
+        <ProfileForm
+          user={user}
+          onAvatarError={setAvatarError}
+          onSaved={() => {
+            setToast({ type: 'success', message: 'Profil berhasil diperbarui.' })
+            setAvatarError('')
+          }}
+        />
+        <SellerStoreCard />
       </div>
 
       {avatarError ? (

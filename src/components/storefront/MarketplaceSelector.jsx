@@ -6,8 +6,10 @@ import BottomSheet from './BottomSheet'
  * Channel selection triggers the authentication check in the page before any
  * navigation happens. Desktop uses a dropdown/popover; mobile uses a bottom
  * sheet. Channels are plain {name,url} — no marketplace icons/logos.
+ * The `compact` variant targets the storefront navbar.
+ * @param {{ store: import('../../data/models.js').Store, onSelectChannel: (channel: import('../../data/models.js').ExternalChannel) => void, compact?: boolean }} props
  */
-function MarketplaceSelector({ store, onSelectChannel }) {
+function MarketplaceSelector({ store, onSelectChannel, compact = false }) {
   const [open, setOpen] = useState(false)
   const anchorRef = useRef(null)
   const channels = store.channels ?? []
@@ -75,13 +77,17 @@ function MarketplaceSelector({ store, onSelectChannel }) {
         aria-haspopup="true"
         aria-expanded={open}
         title={hasChannels ? undefined : 'Belum ada saluran'}
-        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-outline-variant/20 bg-surface-container-lowest px-4 py-2.5 text-xs font-medium text-on-surface shadow-sm transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
+        className={
+          compact
+            ? 'inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-outline-variant/50 bg-surface/80 px-2.5 py-1.5 text-xs font-medium text-on-surface transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-60'
+            : 'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-outline-variant/20 bg-surface-container-lowest px-4 py-2.5 text-xs font-medium text-on-surface shadow-sm transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm'
+        }
       >
-        <span className="material-symbols-outlined text-[18px] text-primary" aria-hidden="true">
+        <span className="material-symbols-outlined text-[16px] shrink-0 text-primary sm:text-[18px]" aria-hidden="true">
           storefront
         </span>
-        <span className="whitespace-nowrap">Marketplace</span>
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+        <span className={compact ? 'hidden md:inline whitespace-nowrap' : 'whitespace-nowrap'}>Marketplace</span>
+        <span className="material-symbols-outlined text-[16px] sm:text-[18px]" aria-hidden="true">
           expand_more
         </span>
       </button>

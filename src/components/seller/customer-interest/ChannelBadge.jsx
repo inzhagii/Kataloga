@@ -1,19 +1,19 @@
 import { INTEREST_TYPE } from '../../../constants/enums'
+import WhatsAppIcon from '../../ui/WhatsAppIcon'
 
 /**
  * Channel badge for a customer interest activity.
- * WhatsApp uses a single accent; marketplace shows the exact configured
- * channel name with brand-ish colors for known channels and a neutral
- * fallback otherwise. No logos or integration icons (channels are generic).
+ * WhatsApp uses a single WhatsApp-green accent; marketplace shows the exact
+ * configured channel name with brand-ish colors for known channels and a
+ * neutral fallback otherwise. No logos or integration icons (channels are
+ * generic).
  * @param {{ channelType: 'WHATSAPP_CLICK'|'MARKETPLACE_CLICK', channel: string|null }} props
  */
 function ChannelBadge({ channelType, channel }) {
   if (channelType === INTEREST_TYPE.WHATSAPP_CLICK) {
     return (
-      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-tertiary-fixed/30 px-2.5 py-1 text-[11px] font-semibold text-tertiary">
-        <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
-          chat
-        </span>
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-whatsapp-container px-2.5 py-1 text-[11px] font-semibold text-on-whatsapp-container">
+        <WhatsAppIcon size={14} />
         <span>WhatsApp Click</span>
       </span>
     )

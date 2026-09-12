@@ -32,6 +32,11 @@
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
 
+  --color-whatsapp: #25d366;
+  --color-on-whatsapp: #ffffff;
+  --color-whatsapp-container: #defbe8;
+  --color-on-whatsapp-container: #0b3d22;
+
   --spacing-space-2xs: 0.25rem;
   --spacing-space-xs: 0.5rem;
   --spacing-space-sm: 0.75rem;

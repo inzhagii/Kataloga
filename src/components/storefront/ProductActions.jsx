@@ -1,4 +1,5 @@
 import MarketplaceSelector from './MarketplaceSelector'
+import WhatsAppIcon from '../ui/WhatsAppIcon'
 
 /**
  * Product action row: WhatsApp (primary, full-width) on top, then Marketplace
@@ -11,15 +12,9 @@ function ProductActions({ store, onWhatsApp, onSelectChannel, onShare }) {
       <button
         type="button"
         onClick={onWhatsApp}
-        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm transition-colors hover:bg-blue-700 sm:text-sm"
+        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-whatsapp px-4 py-2.5 text-xs font-semibold text-on-whatsapp shadow-sm transition-colors hover:brightness-95 sm:text-sm"
       >
-        <span
-          className="material-symbols-outlined text-[18px]"
-          aria-hidden="true"
-          style={{ fontVariationSettings: '"FILL" 1' }}
-        >
-          chat
-        </span>
+        <WhatsAppIcon size={18} />
         <span className="whitespace-nowrap">Hubungi via WhatsApp</span>
       </button>
 

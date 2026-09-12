@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { SELLER_SIDEBAR_ITEMS } from '../../constants/sellerNav'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -70,22 +70,31 @@ function SellerSidebar({ store }) {
         </nav>
       </div>
       <div className="border-t border-outline-variant p-4">
+        <Link
+          to="/seller/account"
+          className="flex w-full items-center gap-3 rounded-lg border border-outline-variant/60 bg-surface p-2 transition-colors hover:bg-surface-container"
+          aria-label="Buka Profile"
+        >
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-bold text-primary">
+            {getInitials(store?.name)}
+          </div>
+          <p className="min-w-0 flex-1 truncate text-xs font-semibold text-on-surface">
+            {store?.name || '…'}
+          </p>
+          <span className="material-symbols-outlined shrink-0 text-[18px] text-secondary" aria-hidden="true">
+            expand_more
+          </span>
+        </Link>
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-sm font-medium text-secondary transition-colors hover:bg-surface-container hover:text-on-surface"
+          className="mt-2 flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-sm font-medium text-secondary transition-colors hover:bg-surface-container hover:text-on-surface"
         >
           <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
             logout
           </span>
           <span>Logout</span>
         </button>
-        <div className="mt-2 flex items-center gap-3 rounded-lg border border-outline-variant/60 bg-surface p-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-bold text-primary">
-            {getInitials(store?.name)}
-          </div>
-          <p className="min-w-0 truncate text-xs font-semibold text-on-surface">{store?.name || '…'}</p>
-        </div>
       </div>
     </aside>
   )

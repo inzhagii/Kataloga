@@ -206,7 +206,12 @@ function ProductDetailPage() {
 
   return (
     <div className="min-h-svh bg-surface">
-      <StoreNavbar store={store} returnPath={returnPath} />
+      <StoreNavbar
+        store={store}
+        returnPath={returnPath}
+        onWhatsApp={handleWhatsApp}
+        onSelectChannel={handleSelectChannel}
+      />
 
       <main className="mx-auto max-w-[1140px] px-4 pb-16 pt-16 md:px-6">
         <div className="pt-5 sm:pt-7">
