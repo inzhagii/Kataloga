@@ -34,3 +34,17 @@ export function validateStoreId(value) {
   }
   return { valid: true, value: formatted, message: '' }
 }
+
+/**
+ * Build the public store URL from the current origin and store ID.
+ * Keeps every store URL preview free of hardcoded production domains.
+ * The origin is derived from the browser when not provided.
+ * @param {string} storeId
+ * @param {string} [origin]
+ * @returns {string}
+ */
+export function buildStoreUrl(storeId, origin) {
+  const base = origin ?? (typeof window !== 'undefined' ? window.location.origin : '')
+  const value = String(storeId ?? '').trim()
+  return value ? `${base}/${value}` : base
+}

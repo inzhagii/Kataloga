@@ -8,7 +8,7 @@ import StoreContactSection from '../../components/seller/mystore/StoreContactSec
 import AnnouncementSection from '../../components/seller/mystore/AnnouncementSection'
 import { useMyStore } from '../../hooks/useMyStore'
 import { useRegionData } from '../../hooks/useRegionData'
-import { canChangeStoreId, updateStore } from '../../services/storeService'
+import { canChangeStoreId, checkStoreIdAvailable, updateStore } from '../../services/storeService'
 import { recordStoreUpdated } from '../../services/activityService'
 import {
   isValidPhone,
@@ -158,6 +158,29 @@ function MyStoreEditor({ store, onSaved }) {
     if (!validate()) {
       return
     }
+    const nextStoreId = normalizeStoreId(form.storeId)
+    const storeIdChanged = nextStoreId !== normalizeStoreId(store.storeId || '')
+    if (storeIdChanged && !cooldown.locked) {
+      try {
+        const { available } = await checkStoreIdAvailable(nextStoreId)
+        if (!available) {
+          setErrors((current) => ({
+            ...current,
+            storeId: 'Store ID sudah digunakan. Silakan pilih Store ID lain.',
+          }))
+          return
+        }
+      } catch (availabilityError) {
+        setErrors((current) => ({
+          ...current,
+          storeId:
+            availabilityError instanceof Error
+              ? availabilityError.message
+              : 'Tidak dapat memeriksa ketersediaan Store ID. Silakan coba lagi.',
+        }))
+        return
+      }
+    }
     setSaving(true)
     try {
       const payload = {
@@ -219,6 +242,7 @@ function MyStoreEditor({ store, onSaved }) {
         <section>
           <StoreIdentitySection
             form={form}
+            savedStoreId={store.storeId}
             errors={errors}
             availability={availability}
             cooldown={cooldown}

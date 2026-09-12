@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import SectionCard from '../products/form/SectionCard'
-import { normalizeStoreId, validateStoreId } from '../../../utils/storeId'
+import { buildStoreUrl, normalizeStoreId, validateStoreId } from '../../../utils/storeId'
 
 const INPUT_CLASS =
   'w-full rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20'
@@ -42,7 +42,7 @@ function resolveLiveStoreId(typed, saved) {
 function StoreLinkSection({ store, storeId, onNotify, children }) {
   const [copied, setCopied] = useState(false)
 
-  const url = `${window.location.origin}/${resolveLiveStoreId(storeId, store.storeId)}`
+  const url = buildStoreUrl(resolveLiveStoreId(storeId, store.storeId))
 
   async function handleCopy() {
     try {

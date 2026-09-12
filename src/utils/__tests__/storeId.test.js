@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { STORE_ID_PATTERN, normalizeStoreId, validateStoreId } from '../storeId'
+import {
+  STORE_ID_PATTERN,
+  buildStoreUrl,
+  normalizeStoreId,
+  validateStoreId,
+} from '../storeId'
 
 describe('STORE_ID_PATTERN', () => {
   it('accepts lowercase letters, digits and hyphens', () => {
@@ -44,5 +49,25 @@ describe('validateStoreId', () => {
     const result = validateStoreId('Toko Komputer')
     expect(result.valid).toBe(false)
     expect(result.message).toContain('huruf kecil, angka, dan tanda hubung')
+  })
+})
+
+describe('buildStoreUrl', () => {
+  const origin = 'https://kataloga.example'
+
+  it('builds a URL from the origin and the store id', () => {
+    expect(buildStoreUrl('toko-komputer-jaya', origin)).toBe(
+      `${origin}/toko-komputer-jaya`,
+    )
+  })
+
+  it('trims the store id before appending', () => {
+    expect(buildStoreUrl('  toko-jaya  ', origin)).toBe(`${origin}/toko-jaya`)
+  })
+
+  it('returns the origin alone for an empty store id', () => {
+    expect(buildStoreUrl('', origin)).toBe(origin)
+    expect(buildStoreUrl(null, origin)).toBe(origin)
+    expect(buildStoreUrl(undefined, origin)).toBe(origin)
   })
 })

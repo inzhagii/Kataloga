@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getMyStore } from '../../../services/storeService'
+import { buildStoreUrl } from '../../../utils/storeId'
 
 /**
  * Read-only store summary in the Account page: name, logo, verification,
@@ -31,7 +32,7 @@ function SellerStoreCard() {
   }
 
   async function handleCopy() {
-    const url = `${window.location.origin}/${store.storeId}`
+    const url = buildStoreUrl(store.storeId)
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
@@ -67,7 +68,7 @@ function SellerStoreCard() {
               </span>
             ) : null}
           </div>
-          <p className="text-xs text-secondary">kataloga.id/{store.storeId}</p>
+          <p className="text-xs text-secondary">{buildStoreUrl(store.storeId)}</p>
         </div>
       </div>
 

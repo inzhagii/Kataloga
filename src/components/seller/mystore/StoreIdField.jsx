@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { checkStoreIdAvailable } from '../../../services/storeService'
+import { buildStoreUrl, normalizeStoreId, validateStoreId } from '../../../utils/storeId'
 
 /**
  * Store ID input: enforces the documented format, checks availability on
@@ -8,6 +9,7 @@ import { checkStoreIdAvailable } from '../../../services/storeService'
  *
  * @param {{
  *   storeId: string,
+ *   savedStoreId: string,
  *   error: string,
  *   availability: 'idle'|'checking'|'available'|'taken',
  *   cooldown: { locked: boolean, nextChangeLabel: string },
@@ -15,19 +17,40 @@ import { checkStoreIdAvailable } from '../../../services/storeService'
  *   onBlur: () => void,
  * }} props
  */
-function StoreIdField({ storeId, error, availability, cooldown, onChange, onBlur }) {
+function StoreIdField({
+  storeId,
+  savedStoreId,
+  error,
+  availability,
+  cooldown,
+  onChange,
+  onBlur,
+}) {
   const [checked, setChecked] = useState(null)
   const [availabilityOverride, setAvailabilityOverride] = useState(null)
 
   async function handleBlur() {
     const value = storeId.trim()
-    if (!value || value === checked || cooldown.locked) {
+    if (!value || cooldown.locked || value === checked) {
       return
     }
     onBlur()
-    const result = await checkStoreIdAvailable(value)
+    const { valid } = validateStoreId(value)
+    if (!valid) {
+      return
+    }
+    const normalized = normalizeStoreId(value)
+    if (normalized === normalizeStoreId(savedStoreId ?? '')) {
+      return
+    }
     setChecked(value)
-    setAvailabilityOverride(result.available ? 'available' : 'taken')
+    setAvailabilityOverride('checking')
+    try {
+      const result = await checkStoreIdAvailable(normalized)
+      setAvailabilityOverride(result.available ? 'available' : 'taken')
+    } catch {
+      setAvailabilityOverride(null)
+    }
   }
 
   const resolvedAvailability = availabilityOverride ?? availability
@@ -39,7 +62,7 @@ function StoreIdField({ storeId, error, availability, cooldown, onChange, onBlur
         className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
       >
         Store ID <span className="text-error">*</span>
-        <span className="font-normal lowercase text-secondary">&nbsp;/&nbsp;{storeId ? `kataloga.id/${storeId.trim()}` : ''}</span>
+        <span className="font-normal lowercase text-secondary">&nbsp;/&nbsp;{storeId ? buildStoreUrl(storeId.trim()) : ''}</span>
       </label>
       {cooldown.locked ? (
         <div className="mb-3 rounded-lg bg-primary-container/50 px-3 py-2.5 text-xs leading-relaxed text-primary">

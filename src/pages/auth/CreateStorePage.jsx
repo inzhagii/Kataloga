@@ -4,7 +4,7 @@ import AuthShell from '../../components/auth/AuthShell'
 import TextField from '../../components/auth/TextField'
 import { useAuth } from '../../hooks/useAuth'
 import { checkStoreIdAvailable, createStore } from '../../services/storeService'
-import { normalizeStoreId, validateStoreId } from '../../utils/storeId'
+import { buildStoreUrl, normalizeStoreId, validateStoreId } from '../../utils/storeId'
 
 function CreateStorePage() {
   const { user, authLoaded, attachStore } = useAuth()
@@ -159,7 +159,7 @@ function CreateStorePage() {
             }}
             onBlur={handleStoreIdBlur}
             error={storeIdError}
-            hint="Store ID menjadi bagian dari URL toko kamu: kataloga.com/{storeId}"
+            hint={`Store ID menjadi bagian dari URL toko kamu: ${buildStoreUrl('{storeId}')}`}
             placeholder="Contoh: toko-komputer-jaya"
             autoComplete="off"
           />

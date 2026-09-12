@@ -110,6 +110,7 @@ function LogoPicker({ logoUrl, error, onLogoChange, onLogoRemove, onLogoError })
  *
  * @param {{
  *   form: { storeId: string, logoUrl?: string },
+ *   savedStoreId: string,
  *   errors: Record<string, string>,
  *   availability: 'idle'|'checking'|'available'|'taken',
  *   cooldown: { locked: boolean, nextChangeLabel: string },
@@ -123,6 +124,7 @@ function LogoPicker({ logoUrl, error, onLogoChange, onLogoRemove, onLogoError })
  */
 function StoreIdentitySection({
   form,
+  savedStoreId,
   errors,
   availability,
   cooldown,
@@ -143,6 +145,7 @@ function StoreIdentitySection({
       <div className="mt-1.5 flex flex-col gap-6">
         <StoreIdField
           storeId={form.storeId}
+          savedStoreId={savedStoreId}
           error={errors.storeId}
           availability={availability}
           cooldown={cooldown}
