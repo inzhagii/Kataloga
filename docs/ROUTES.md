@@ -166,7 +166,7 @@ storeId merupakan public Store ID.
 
 Contoh:
 
-kataloga.com/toko-komputer-jaya
+/toko-komputer-jaya
 
 Store ID tidak perlu ditampilkan sebagai informasi visual pada halaman.
 
@@ -189,7 +189,7 @@ numeric public product ID
 
 Contoh:
 
-kataloga.com/toko-komputer-jaya/products/20
+/toko-komputer-jaya/products/20
 Purpose
 
 Menampilkan:

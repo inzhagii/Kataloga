@@ -60,7 +60,7 @@ Store memiliki public URL:
 
 Contoh:
 
-`kataloga.com/toko-komputer-jaya`
+`/toko-komputer-jaya`
 
 Store ID adalah identifier yang digunakan pada public URL.
 
@@ -136,7 +136,7 @@ Route:
 
 Contoh:
 
-`kataloga.com/toko-komputer-jaya`
+`/toko-komputer-jaya`
 
 Tidak terdapat public directory atau halaman yang menampilkan seluruh store Kataloga.
 
@@ -620,7 +620,11 @@ Product card memiliki:
 Desktop: 3 columns
 Mobile: 2 columns
 
-Sold-out product tetap terlihat dengan SOLD OUT state/badge.
+Katalog aktif hanya berisi produk PUBLISHED.
+
+Produk SOLD_OUT tidak termasuk katalog aktif.
+
+Tidak ada sold-out visual state pada Product Card.
 
 26. Product Search
 
@@ -663,7 +667,6 @@ Tidak ada filter:
 
 Price
 Attribute
-Desktop
 
 Filter ditampilkan secara compact/horizontal.
 
@@ -703,7 +706,7 @@ Route:
 
 Contoh:
 
-kataloga.com/toko-komputer-jaya/products/20
+/toko-komputer-jaya/products/20
 
 productId adalah public numeric database-style ID.
 

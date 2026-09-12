@@ -109,9 +109,25 @@ Rules enforced by the backend:
 - `GET /stores/{storeId}/products` → published products (public)
 - `GET /stores/{storeId}/products/{productId}` → product DTO | null (public, published only)
 - `GET /products?status=active` → seller products (session-scoped)
-  - `active` = **PUBLISHED only**. SOLD_OUT, DRAFT, and ARCHIVED are separate
-    lists. See "backend confirmation needed" note below.
+  - `active` = **PUBLISHED only**.
 - `GET /products?status=archived` → ARCHIVED products (separate list)
+
+> **Seller management lists — frontend adapter (implemented today):**
+> `src/services/adapters/api/productApi.js` currently only implements these
+> two query values:
+>
+> - `status=active` → PUBLISHED products (Active Products)
+> - `status=archived` → ARCHIVED products
+>
+> There is **no adapter implementation** for a `draft` or `sold_out` query
+> value, and no separate endpoint for those lists.
+
+> **Seller management lists — proposed, backend confirmation required:**
+> the seller Products page surfaces PUBLISHED, DRAFT, and SOLD_OUT in one
+> management list. Whether the backend exposes DRAFT and SOLD_OUT as separate
+> `?status=` values (`draft`, `sold_out`) or returns the seller management
+> set containing them is **not finalized** and needs backend confirmation.
+> Do not treat `status=draft` or `status=sold_out` as implemented.
 - `GET /products/{productId}` → seller product by ID (any status)
 - `POST /products` — product DTO → product DTO (store from session)
 - `PATCH /products/{productId}` — partial product DTO → product DTO
@@ -146,8 +162,10 @@ Lifecycle (backend-enforced):
 
 > **Backend confirmation needed:** the transport for marking a product SOLD_OUT
 > and back to PUBLISHED (PATCH on status vs. dedicated endpoint), and the exact
-> `?status=` value semantics (`active`, `draft`, `sold_out`, `archived`).
-> What is whether seller category filtering (`/seller/products?category=...`)
+> `?status=` value semantics for the drafting/sold-out seller lists (separate
+> `draft` / `sold_out` query values vs. a management set containing them — the
+> frontend adapter only implements `active` and `archived` today; see the notes
+> above). Whether seller category filtering (`/seller/products?category=...`)
 > is performed server- or client-side also needs backend confirmation.
 
 ## 6. Category (`categoryService`)
@@ -234,8 +252,10 @@ Activity DTO:
 These points changed the *contract document* to match the finalized Kataloga
 requirements, but the actual backend behavior needs confirmation:
 
-1. `GET /products?status=` semantics: `active` = PUBLISHED only; DRAFT,
-   SOLD_OUT, ARCHIVED as separate status values.
+1. `GET /products?status=` semantics: the frontend adapter implements
+   `active` = PUBLISHED only and `archived`. Whether DRAFT and SOLD_OUT are
+   exposed as separate `?status=` values (`draft`, `sold_out`) or returned as
+   part of the seller management set needs backend confirmation.
 2. Transport for SOLD_OUT ↔ PUBLISHED transitions (PATCH on status vs. a
    dedicated endpoint).
 3. Province/City master data: source endpoint and per-store storage shape for

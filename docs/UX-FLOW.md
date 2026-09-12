@@ -246,7 +246,7 @@ Profile
 
 Store ID digunakan sebagai public URL:
 
-kataloga.com/{storeId}
+/{storeId}
 
 Store ID:
 
@@ -272,7 +272,7 @@ Pada Store Landing, Store ID tidak ditampilkan sebagai informasi visual.
 
 Contoh URL:
 
-kataloga.com/toko-komputer-jaya
+/toko-komputer-jaya
 9. Customer Store Landing Flow
 
 Route:
