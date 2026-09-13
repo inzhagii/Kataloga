@@ -22,6 +22,7 @@ function storeInitial(store) {
  * contact/channel items — never a filled green button. Clicking it still runs
  * the existing onWhatsApp handler so the Customer Interest + guest login rules
  * stay intact. Marketplace clicks reuse the page handler the same way.
+ *
  */
 function StoreFooter({ store = {}, onWhatsApp, onSelectChannel }) {
   const channels = store.channels ?? []

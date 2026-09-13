@@ -193,6 +193,6 @@ describe('Store location updates are isolated per store', () => {
     const storeA = await getStore(STORE_A_ID)
     expect(storeA.province).toBe('Jawa Barat')
     expect(storeA.city).toBe('Kota Bandung')
-    expect(storeA.fullAddress).toBe('Jl. Dipatiukur No. 12, Cidadap, Kota Bandung, Jawa Barat 40132')
+    expect(storeA.fullAddress).toBe('Jl. Asia Afrika No. 10, Bandung')
   })
 })

@@ -94,7 +94,7 @@ function SellerLayout() {
       <SellerSidebar store={store} onLogoutRequest={requestLogout} />
       <div className="flex min-h-svh flex-col lg:pl-sidebar-width">
         <SellerHeader title={getSellerPageTitle(location.pathname)} onLogoutRequest={requestLogout} />
-        <main className="mx-auto w-full max-w-[80rem] flex-1 px-4 pb-24 pt-20 sm:px-6 lg:px-8 lg:pb-12 lg:pt-24">
+        <main className="mx-auto w-full flex-1 px-4 pb-24 pt-20 sm:px-6 lg:max-w-none lg:px-8 lg:pb-12 lg:pt-24">
           <Outlet />
         </main>
       </div>

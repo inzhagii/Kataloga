@@ -208,7 +208,7 @@ function ProductDetailPage() {
     <div className="min-h-svh bg-surface">
       <StoreNavbar store={store} returnPath={returnPath} />
 
-      <main className="mx-auto max-w-[1140px] px-4 pb-16 pt-16 md:px-6">
+      <main className="mx-auto w-full max-w-[1140px] px-4 pt-16 md:px-6">
         <div className="pt-5 sm:pt-7">
           <Link
             to={`/${store.storeId}`}
@@ -223,20 +223,26 @@ function ProductDetailPage() {
             Kembali ke Toko
           </Link>
 
-          <div className="mt-5 grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-10">
-            <ProductGallery product={product} storeName={store.name} />
-            <ProductInfo
-              product={product}
-              store={store}
-              onWhatsApp={handleWhatsApp}
-              onSelectChannel={handleSelectChannel}
-              onShare={handleShare}
-            />
-          </div>
+          <div className="mt-5 grid w-full grid-cols-1 items-start gap-6 lg:mt-5 lg:grid-cols-2 lg:items-stretch lg:gap-10 lg:overflow-hidden lg:h-[calc(100svh-8rem)]">
+            <div className="min-w-0 lg:h-full lg:overflow-hidden">
+              <ProductGallery product={product} storeName={store.name} />
+            </div>
 
-          <div className="mt-7 grid grid-cols-1 items-start gap-5 sm:mt-10 sm:gap-6 lg:grid-cols-2">
-            <ProductDetailsSection product={product} />
-            <ProductDescription description={product.description} />
+            <div className="flex min-w-0 flex-col gap-5 sm:gap-6 lg:h-full lg:min-h-0 lg:gap-0 lg:overflow-y-auto lg:overflow-x-hidden lg:pb-8 lg:pr-1">
+              <ProductInfo
+                product={product}
+                store={store}
+                onWhatsApp={handleWhatsApp}
+                onSelectChannel={handleSelectChannel}
+                onShare={handleShare}
+              />
+              <div className="lg:pt-6">
+                <ProductDetailsSection product={product} />
+              </div>
+              <div className="lg:pt-6">
+                <ProductDescription description={product.description} />
+              </div>
+            </div>
           </div>
         </div>
       </main>

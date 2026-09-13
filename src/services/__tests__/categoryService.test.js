@@ -5,6 +5,8 @@ import {
   listCategories,
   updateCategory,
 } from '../categoryService'
+import { createProduct } from '../productService'
+import { PRODUCT_STATUS } from '../../constants/enums'
 import { actAsStoreA, actAsStoreB, beforeEachScenario } from './setup'
 
 beforeEach(() => {
@@ -126,7 +128,15 @@ describe('updateCategory', () => {
 describe('deleteCategory', () => {
   it('blocks deleting a category still used by a product', async () => {
     actAsStoreA()
-    await expect(deleteCategory(8)).rejects.toThrow('masih digunakan')
+    const category = await createCategory({ name: 'Vintage', parentId: null })
+    await createProduct({
+      name: 'Kaos Vintage',
+      images: ['https://example.com/vintage.jpg'],
+      category: 'Vintage',
+      condition: 'NEW',
+      status: PRODUCT_STATUS.DRAFT,
+    })
+    await expect(deleteCategory(category.id)).rejects.toThrow('masih digunakan')
   })
 
   it('blocks deleting a parent that still has subcategories', async () => {

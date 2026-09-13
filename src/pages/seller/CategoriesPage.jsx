@@ -10,17 +10,19 @@ import { createCategory, updateCategory, deleteCategory } from '../../services/c
 
 function StatCard({ label, value, icon }) {
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-3 shadow-sm sm:p-4">
-      <span
-        className="material-symbols-outlined hidden shrink-0 text-[22px] text-secondary sm:inline"
-        aria-hidden="true"
-      >
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-sm font-bold leading-tight text-on-surface">{value}</p>
-        <p className="mt-0.5 text-[11px] leading-snug text-secondary">{label}</p>
+    <div className="flex min-w-0 items-center rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-3 py-3 shadow-sm sm:justify-between sm:gap-3 sm:py-4 sm:pl-5 sm:pr-6">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <span
+          className="material-symbols-outlined shrink-0 text-[18px] text-secondary sm:text-[22px]"
+          aria-hidden="true"
+        >
+          {icon}
+        </span>
+        <span className="hidden truncate text-xs text-secondary sm:block">{label}</span>
       </div>
+      <span className="min-w-0 flex-1 text-center text-xl font-extrabold leading-tight tracking-tight text-on-surface sm:flex-none sm:text-right sm:text-2xl">
+        {value}
+      </span>
     </div>
   )
 }
@@ -100,8 +102,8 @@ function CategoriesPage() {
     return (
       <div className="space-y-4" aria-busy="true">
         <div className="h-10 w-56 animate-pulse rounded-xl bg-surface-container-high/60" />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[0, 1, 2, 3].map((item) => (
+        <div className="grid grid-cols-3 gap-3">
+          {[0, 1, 2].map((item) => (
             <div key={item} className="h-20 animate-pulse rounded-xl bg-surface-container-high/60" />
           ))}
         </div>
@@ -170,29 +172,46 @@ function CategoriesPage() {
     setDeleteCandidate(category)
   }
 
-  const customCount = categories.filter((category) => category.custom).length
+  const customRootCount = categories.filter(
+    (category) => category.custom && category.parentId === null,
+  ).length
 
   return (
     <div>
-      <div className="mb-5 text-center sm:text-left">
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-          Categories
-        </h1>
-        <p className="mt-1 text-sm text-secondary">
-          Kelola Kategori Utama &amp; Sub Kategori untuk katalog kamu (maksimal dua level).
-        </p>
+      <div className="mb-5">
+        <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+              Categories
+            </h1>
+            <p className="mt-1 text-sm text-secondary">
+              Kelola Kategori Utama &amp; Sub Kategori untuk katalog kamu (maksimal dua level).
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setModal({ open: true, mode: 'create', category: null })}
+            className="hidden shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:inline-flex"
+          >
+            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+              add
+            </span>
+            Tambah Kategori
+          </button>
+        </div>
       </div>
 
       <div className="mb-3 grid grid-cols-3 gap-3">
         <StatCard label="Kategori Utama" value={stats.utama} icon="account_tree" />
         <StatCard label="Sub Kategori" value={stats.sub} icon="category" />
-        <StatCard label="Total Product" value={stats.totalProducts} icon="inventory_2" />
+        <StatCard label="Total Produk" value={stats.totalProducts} icon="inventory_2" />
       </div>
 
       <button
         type="button"
         onClick={() => setModal({ open: true, mode: 'create', category: null })}
-        className="mb-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:w-auto"
+        className="mb-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:hidden"
       >
         <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
           add
@@ -200,7 +219,7 @@ function CategoriesPage() {
         Tambah Kategori
       </button>
 
-      {customCount === 0 ? (
+      {customRootCount === 0 ? (
         <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary-container/40 px-4 py-3">
           <span className="material-symbols-outlined text-[20px] text-primary" aria-hidden="true">
             lightbulb
@@ -213,8 +232,8 @@ function CategoriesPage() {
         </div>
       ) : null}
 
-      <div className="mb-4 grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-2 sm:flex sm:items-center sm:gap-2.5">
-        <div className="flex min-w-0 items-center gap-2.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-3.5 py-3 sm:px-4">
+      <div className="mb-4 flex w-full items-stretch gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-3.5 py-3 sm:px-4">
           <span className="material-symbols-outlined shrink-0 text-[20px] text-secondary" aria-hidden="true">
             search
           </span>

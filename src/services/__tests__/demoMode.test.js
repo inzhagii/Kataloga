@@ -178,9 +178,9 @@ describe('demo data respects locked data models', () => {
   it('demonstrates search, filter and sort against the demo catalog', () => {
     const published = products.filter((p) => p.status === PRODUCT_STATUS.PUBLISHED)
 
-    const ssd = filterAndSortProducts(published, { query: 'ssd' })
-    expect(ssd.length).toBeGreaterThan(0)
-    expect(ssd[0].name.toLowerCase()).toContain('ssd')
+    const samsung = filterAndSortProducts(published, { query: 'samsung' })
+    expect(samsung.length).toBeGreaterThan(0)
+    expect(samsung[0].name.toLowerCase()).toContain('samsung')
 
     const secondHand = filterAndSortProducts(published, { condition: CONDITION.SECOND })
     expect(secondHand.length).toBeGreaterThan(0)
@@ -210,7 +210,7 @@ describe('demo data respects locked data models', () => {
       customerName: 'Pengunjung Demo',
       customerId: 99,
       productId: 1,
-      productName: 'Laptop Asus VivoBook 14',
+      productName: 'ASUS VivoBook 14',
       channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: chosen.name,
       externalUrl: chosen.url,
