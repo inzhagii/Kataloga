@@ -7,6 +7,12 @@
  * Komponen Komputer → Processor, RAM, Storage
  * Networking        → Router, Switch
  * Gaming (custom)   → Gadget Gaming
+ *
+ * The TechSpace Bandung store adds its own custom, store-scoped tree:
+ * Computer → Laptop, Desktop, Monitor
+ * Accessories → Keyboard, Mouse, Headset
+ * Networking → Router, Modem
+ * Gaming → Gaming Gear, Streaming
  */
 
 /** @type {import('../models.js').Category[]} */
@@ -26,4 +32,18 @@ export const categories = [
   { id: 15, name: 'Switch', parentId: 13, custom: false },
   { id: 7, name: 'Gaming', parentId: null, custom: true, storeId: 'toko-komputer-jaya' },
   { id: 8, name: 'Gadget Gaming', parentId: 7, custom: true, storeId: 'toko-komputer-jaya' },
+  { id: 16, name: 'Computer', parentId: null, custom: true, storeId: 'techspace-bandung' },
+  { id: 17, name: 'Laptop', parentId: 16, custom: true, storeId: 'techspace-bandung' },
+  { id: 18, name: 'Desktop', parentId: 16, custom: true, storeId: 'techspace-bandung' },
+  { id: 19, name: 'Monitor', parentId: 16, custom: true, storeId: 'techspace-bandung' },
+  { id: 20, name: 'Accessories', parentId: null, custom: true, storeId: 'techspace-bandung' },
+  { id: 21, name: 'Keyboard', parentId: 20, custom: true, storeId: 'techspace-bandung' },
+  { id: 22, name: 'Mouse', parentId: 20, custom: true, storeId: 'techspace-bandung' },
+  { id: 23, name: 'Headset', parentId: 20, custom: true, storeId: 'techspace-bandung' },
+  { id: 24, name: 'Networking', parentId: null, custom: true, storeId: 'techspace-bandung' },
+  { id: 25, name: 'Router', parentId: 24, custom: true, storeId: 'techspace-bandung' },
+  { id: 26, name: 'Modem', parentId: 24, custom: true, storeId: 'techspace-bandung' },
+  { id: 27, name: 'Gaming', parentId: null, custom: true, storeId: 'techspace-bandung' },
+  { id: 28, name: 'Gaming Gear', parentId: 27, custom: true, storeId: 'techspace-bandung' },
+  { id: 29, name: 'Streaming', parentId: 27, custom: true, storeId: 'techspace-bandung' },
 ]

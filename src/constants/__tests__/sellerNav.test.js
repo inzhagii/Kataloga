@@ -6,14 +6,14 @@ import {
 } from '../sellerNav'
 
 describe('seller sidebar items', () => {
-  it('lists the locked feature order with Categories last', () => {
+  it('lists the locked feature order with Categories right after Products', () => {
     expect(SELLER_SIDEBAR_ITEMS.map((item) => item.label)).toEqual([
       'Dashboard',
       'Products',
+      'Categories',
       'Customer Interest',
       'Recent Activity',
       'My Store',
-      'Categories',
     ])
   })
 

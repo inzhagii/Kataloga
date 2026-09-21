@@ -4,12 +4,12 @@ import { useState } from 'react'
  * Add/Edit custom category. Bottom-sheet on mobile, centered dialog on
  * desktop.
  *
- * Create mode offers Kategori Utama (level-1, no parent) or Sub Kategori
- * (chooses an existing Kategori Utama). From the Sub Kategori flow, "+ Buat
- * Kategori Utama Baru" creates a new Kategori Utama first and then returns to
- * the Sub Kategori flow with it pre-selected, so the new category is
- * immediately usable as its parent. Only Kategori Utama can be a parent,
- * keeping the hierarchy at two levels. Editing a Kategori Utama renames only.
+ * Create mode offers two forms (segmented "Jenis Kategori" toggle):
+ * - Kategori Utama (level-1, no parent): only "Nama Kategori Utama".
+ * - Sub Kategori: "Nama Sub Kategori" + an existing Kategori Utama parent.
+ * Only Kategori Utama can be a parent, keeping the hierarchy at two levels.
+ * Editing a Kategori Utama renames only; editing a Sub Kategori may rename it
+ * or promote it to a Kategori Utama.
  *
  * @param {{
  *   open: boolean,
@@ -60,23 +60,28 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
     isEdit && category && category.parentId !== null ? String(category.parentId) : 'none',
   )
   const [createType, setCreateType] = useState('utama')
-  const [parentFirst, setParentFirst] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  const showParentField = isEdit ? !isParent : createType === 'sub'
 
   const heading = isEdit
     ? 'Edit Kategori'
     : createType === 'sub'
       ? 'Tambah Sub Kategori'
-      : parentFirst
-        ? 'Buat Kategori Utama Baru'
-        : 'Tambah Kategori'
+      : 'Tambah Kategori Utama'
 
   const submitLabel = isEdit
     ? 'Simpan'
     : createType === 'sub'
       ? 'Buat Sub Kategori'
       : 'Buat Kategori Utama'
+
+  const nameLabel = isEdit
+    ? 'Nama Kategori'
+    : createType === 'sub'
+      ? 'Nama Sub Kategori'
+      : 'Nama Kategori Utama'
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -91,19 +96,10 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
     }
     setSubmitting(true)
     try {
-      const created = await onSubmit({
+      await onSubmit({
         name: trimmed,
         parentId: parentValue === 'none' ? null : Number(parentValue),
       })
-      if (!isEdit && parentFirst) {
-        setParentFirst(false)
-        setCreateType('sub')
-        setParentValue(String(created.id))
-        setName('')
-        setError('')
-        setSubmitting(false)
-        return
-      }
       setError('')
       setSubmitting(false)
       onClose()
@@ -139,15 +135,14 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
           <div className="grid grid-cols-2 gap-1 rounded-xl bg-surface-container-low p-1">
             <button
               type="button"
-              aria-pressed={!parentFirst && createType === 'utama'}
+              aria-pressed={createType === 'utama'}
               onClick={() => {
                 setCreateType('utama')
-                setParentFirst(false)
                 setParentValue('none')
                 setError('')
               }}
               className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                !parentFirst && createType === 'utama'
+                createType === 'utama'
                   ? 'bg-primary text-on-primary shadow-sm'
                   : 'text-secondary hover:bg-surface-container-low'
               }`}
@@ -159,7 +154,6 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
               aria-pressed={createType === 'sub'}
               onClick={() => {
                 setCreateType('sub')
-                setParentFirst(false)
                 setError('')
               }}
               className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
@@ -180,7 +174,7 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
             htmlFor="category-name"
             className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
           >
-            Nama Kategori <span className="text-error">*</span>
+            {nameLabel} <span className="text-error">*</span>
           </label>
           <input
             id="category-name"
@@ -190,7 +184,7 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
               setName(event.target.value)
               setError('')
             }}
-            placeholder="Contoh: Keyboard Mekanikal"
+            placeholder={isEdit ? category?.name : createType === 'sub' ? 'Contoh: Keyboard Mekanikal' : 'Contoh: Gadget Gaming'}
             autoFocus
             className="w-full rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
           />
@@ -211,75 +205,37 @@ function CategoryFormInner({ isEdit, isParent, category, parents, onClose, onSub
           </p>
         ) : (
           <div>
-            <label
-              htmlFor="category-parent"
-              className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
-            >
-              Kategori Utama
-            </label>
-            <select
-              id="category-parent"
-              value={parentValue}
-              onChange={(event) => setParentValue(event.target.value)}
-              className="w-full appearance-none rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
-            >
-              <option value="none">
-                {isEdit ? 'Jadikan Kategori Utama' : 'Pilih Kategori Utama'}
-              </option>
-              {parents.map((parent) => (
-                <option key={parent.id} value={parent.id}>
-                  {parent.name}
-                  {parent.custom ? ' (Custom)' : ''}
-                </option>
-              ))}
-            </select>
-            {!isEdit && createType === 'sub' ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setCreateType('utama')
-                  setParentFirst(true)
-                  setParentValue('none')
-                  setError('')
-                }}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary-container"
-              >
-                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-                  add
-                </span>
-                Buat Kategori Utama Baru
-              </button>
+            {showParentField ? (
+              <>
+                <label
+                  htmlFor="category-parent"
+                  className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
+                >
+                  Kategori Utama
+                </label>
+                <select
+                  id="category-parent"
+                  value={parentValue}
+                  onChange={(event) => setParentValue(event.target.value)}
+                  className="w-full appearance-none rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="none">
+                    {isEdit ? 'Jadikan Kategori Utama' : 'Pilih Kategori Utama'}
+                  </option>
+                  {parents.map((parent) => (
+                    <option key={parent.id} value={parent.id}>
+                      {parent.name}
+                      {parent.custom ? ' (Custom)' : ''}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1.5 text-[11px] text-secondary">
+                  Maksimal dua level: Kategori Utama &rarr; Sub Kategori.
+                </p>
+              </>
             ) : null}
-            <p className="mt-1.5 text-[11px] text-secondary">
-              Maksimal dua level: Kategori Utama &rarr; Sub Kategori.
-            </p>
           </div>
         )}
-
-        {!isEdit && createType === 'utama' ? (
-          <p className="rounded-lg bg-surface-container-low px-3 py-2.5 text-xs leading-relaxed text-secondary">
-            {parentFirst
-              ? 'Kategori Utama baru disimpan tanpa parent. Setelah dibuat, kembali ke flow Sub Kategori untuk memilihnya sebagai Kategori Utama.'
-              : 'Kategori Utama adalah level teratas dan tidak memiliki parent.'}
-          </p>
-        ) : null}
-
-        {!isEdit && parentFirst ? (
-          <button
-            type="button"
-            onClick={() => {
-              setCreateType('sub')
-              setParentFirst(false)
-              setError('')
-            }}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:underline"
-          >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-              arrow_back
-            </span>
-            Kembali ke Sub Kategori
-          </button>
-        ) : null}
 
         <div className="mt-2 flex justify-end gap-3">
           <button

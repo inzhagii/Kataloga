@@ -31,7 +31,9 @@ import ConfirmDialog from '../../components/shared/ConfirmDialog'
  * Seller Products: seller-management list (PUBLISHED, DRAFT and SOLD_OUT)
  * with per-row actions (edit, publish, sold-out, reactivate, featured,
  * archive), search/filter and the Active/Draft/Sold Out tabs. The locked
- * layout has no Sort on the seller Products list.
+ * layout has no Sort on the seller Products list. Archive is a navigation item
+ * rendered exactly once per breakpoint: in the StatusTabs row (desktop) and
+ * beside Filter in the toolbar (mobile).
  * Archived products live on /seller/products/archived. Active Products =
  * PUBLISHED only.
  */
@@ -321,7 +323,16 @@ function ProductsPage() {
         </div>
         <Link
           to="/seller/products/new"
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
+          className="hidden shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:inline-flex"
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            add
+          </span>
+          Tambah Produk
+        </Link>
+        <Link
+          to="/seller/products/new"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:hidden"
         >
           <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
             add
@@ -339,14 +350,14 @@ function ProductsPage() {
         hasActiveFilters={hasActiveFilters}
         categories={categories}
         brands={brands}
-        archiveLink={<ArchivedProductsLink count={archivedCount} className="lg:hidden" />}
+        archiveLink={<ArchivedProductsLink count={archivedCount} className="sm:hidden" />}
       />
 
       <StatusTabs
         tab={tab}
         onTabChange={setTab}
         counts={counts}
-        archivedCount={archivedCount}
+        archiveLink={<ArchivedProductsLink count={archivedCount} />}
       />
 
       {products.length === 0 ? (

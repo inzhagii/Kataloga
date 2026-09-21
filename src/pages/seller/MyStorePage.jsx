@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useBlocker } from 'react-router-dom'
 import EmptyState from '../../components/shared/EmptyState'
 import Toast from '../../components/shared/Toast'
-import StoreIdentitySection from '../../components/seller/mystore/StoreIdentitySection'
+import ConfirmDialog from '../../components/shared/ConfirmDialog'
 import StoreLinkSection from '../../components/seller/mystore/StoreLinkSection'
 import StoreInfoSection from '../../components/seller/mystore/StoreInfoSection'
+import AddressSection from '../../components/seller/mystore/AddressSection'
+import OperatingHoursSection from '../../components/seller/mystore/OperatingHoursSection'
 import StoreContactSection from '../../components/seller/mystore/StoreContactSection'
 import AnnouncementSection from '../../components/seller/mystore/AnnouncementSection'
 import { useMyStore } from '../../hooks/useMyStore'
@@ -94,7 +97,22 @@ function MyStoreEditor({ store, onSaved }) {
   const [channelError, setChannelError] = useState('')
   const [linkToast, setLinkToast] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [openSections, setOpenSections] = useState(() => new Set(['identity']))
+  const [openSections, setOpenSections] = useState(() => new Set(['storeIdLink']))
+  const [dirty, setDirty] = useState(false)
+
+  const blocker = useBlocker(() => dirty)
+
+  useEffect(() => {
+    if (!dirty) {
+      return undefined
+    }
+    function handleBeforeUnload(event) {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [dirty])
 
   const cooldown = useMemo(() => {
     const { allowed, nextChangeDate } = canChangeStoreId(store)
@@ -110,6 +128,7 @@ function MyStoreEditor({ store, onSaved }) {
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }))
+    setDirty(true)
     setErrors((current) => {
       if (!current[field]) {
         return current
@@ -221,10 +240,10 @@ function MyStoreEditor({ store, onSaved }) {
 
       <div className="space-y-6">
         <section>
-          <StoreIdentitySection
-            form={form}
-            savedStoreId={store.storeId}
-            errors={errors}
+          <StoreLinkSection
+            store={store}
+            storeId={form.storeId}
+            error={errors.storeId}
             availability={availability}
             cooldown={cooldown}
             onStoreIdChange={(value) => setField('storeId', value)}
@@ -240,24 +259,9 @@ function MyStoreEditor({ store, onSaved }) {
               }
               return next
             })}
-            onLogoChange={(dataUrl) => {
-              setLogoError('')
-              setForm((current) => ({ ...current, logoUrl: dataUrl }))
-            }}
-            onLogoRemove={() => setForm((current) => ({ ...current, logoUrl: '' }))}
-            onLogoError={setLogoError}
-          >
-            <SectionToggleButton {...toggleProps('identity')} />
-          </StoreIdentitySection>
-        </section>
-
-        <section>
-          <StoreLinkSection
-            store={store}
-            storeId={form.storeId}
             onNotify={(message) => setLinkToast(message)}
           >
-            <SectionToggleButton {...toggleProps('link')} />
+            <SectionToggleButton {...toggleProps('storeIdLink')} />
           </StoreLinkSection>
         </section>
 
@@ -272,9 +276,31 @@ function MyStoreEditor({ store, onSaved }) {
             provincesStatus={regions.provincesStatus}
             citiesStatus={regions.citiesStatus}
             regionsError={regions.error}
+            onLogoChange={(dataUrl) => {
+              setLogoError('')
+              setDirty(true)
+              setForm((current) => ({ ...current, logoUrl: dataUrl }))
+            }}
+            onLogoRemove={() => {
+              setDirty(true)
+              setForm((current) => ({ ...current, logoUrl: '' }))
+            }}
+            onLogoError={setLogoError}
           >
             <SectionToggleButton {...toggleProps('info')} />
           </StoreInfoSection>
+        </section>
+
+        <section>
+          <OperatingHoursSection form={form} errors={errors} setField={setField}>
+            <SectionToggleButton {...toggleProps('hours')} />
+          </OperatingHoursSection>
+        </section>
+
+        <section>
+          <AddressSection form={form} setField={setField}>
+            <SectionToggleButton {...toggleProps('address')} />
+          </AddressSection>
         </section>
 
         <section>
@@ -286,6 +312,7 @@ function MyStoreEditor({ store, onSaved }) {
             onChannelsChange={(value) => {
               setChannels(value)
               setChannelError('')
+              setDirty(true)
             }}
             onChannelError={setChannelError}
           >
@@ -298,9 +325,18 @@ function MyStoreEditor({ store, onSaved }) {
             title={announcementTitle}
             message={announcementMessage}
             enabled={announcementEnabled}
-            onToggle={setAnnouncementEnabled}
-            onTitleChange={setAnnouncementTitle}
-            onMessageChange={setAnnouncementMessage}
+            onToggle={(value) => {
+              setAnnouncementEnabled(value)
+              setDirty(true)
+            }}
+            onTitleChange={(value) => {
+              setAnnouncementTitle(value)
+              setDirty(true)
+            }}
+            onMessageChange={(value) => {
+              setAnnouncementMessage(value)
+              setDirty(true)
+            }}
           >
             <SectionToggleButton {...toggleProps('announcement')} />
           </AnnouncementSection>
@@ -327,6 +363,16 @@ function MyStoreEditor({ store, onSaved }) {
       <div className="fixed inset-x-0 bottom-16 z-30 border-t border-outline-variant/60 bg-surface-container-lowest px-4 py-3 lg:hidden">
         <RsSavingButton saving={saving} onSave={handleSave} />
       </div>
+
+      <ConfirmDialog
+        open={blocker.state === 'blocked'}
+        title="Meninggalkan halaman?"
+        description="Perubahan belum disimpan. Yakin ingin meninggalkan halaman?"
+        confirmLabel="Ya, Keluar"
+        cancelLabel="Batal"
+        onConfirm={() => blocker.proceed()}
+        onCancel={() => blocker.reset()}
+      />
 
       <Toast toast={linkToast} onClose={() => setLinkToast(null)} />
     </div>

@@ -13,7 +13,11 @@ Batasan:
 - TIDAK mengubah/menambah/menghapus backend, database, schema, atau API server code di repository ini.
 - TIDAK menginstal dependency tanpa persetujuan.
 - TIDAK mengimplementasikan business logic backend; jika ditemukan gap backend, identifikasi dan dokumentasikan ke `docs/API-CONTRACT.md` sebagai item yang butuh konfirmasi backend, bukan diimplementasikan secara asal.
-- TIDAK mengarang endpoint API baru selain proposal yang sudah tercatat.
+- TIDAK mengarang endpoint API baru. Endpoint yang belum final ditulis sebagai `API DEPENDENCY / CONFIRMATION REQUIRED`, bukan endpoint baru.
+- TIDAK menjadikan frontend sebagai source of truth untuk ownership maupun authorization; backend menentukan ownership dari session.
+- TIDAK membuat fake API success; kegagalan API tidak boleh menghasilkan respons sukses palsu.
+- TIDAK menggunakan mock data sebagai production data source; production/API mode tidak boleh silent-fallback ke mock.
+- TIDAK commit/push kecuali diminta eksplisit oleh user.
 
 ## 1. Project Overview
 
@@ -35,6 +39,32 @@ Tidak ada:
 - inventory/stock quantity management.
 
 Customer menggunakan Kataloga untuk melihat katalog dan kemudian terhubung ke channel seller.
+
+---
+
+## 1.5 Authentication & API Transport (Laravel Sanctum)
+
+Kataloga memakai **session authentication** (Laravel Sanctum):
+
+- cookie session + CSRF protection,
+- TIDAK ada JWT,
+- TIDAK ada Bearer token,
+- TIDAK ada localStorage auth token.
+- Frontend TIDAK pernah menyimpan atau mengirim access token sendiri.
+
+Frontend transport (Phase B implementasi):
+
+- kirim `credentials: 'include'` agar session cookie dikirim,
+- bootstrap CSRF (GET /sanctum/csrf-cookie) lalu kirim header X-CSRF-TOKEN,
+- tangani 419 (session expired) dengan mengembalikan user ke /login.
+
+Backend adalah source of truth untuk:
+
+- ownership (store/product milik session),
+- authorization,
+- validasi final.
+
+Jangan memperkenalkan token strategy baru (JWT/Bearer/localStorage) tanpa konfirmasi backend.
 
 ---
 
@@ -306,13 +336,14 @@ Lifecycle:
 DRAFT → PUBLISHED
 PUBLISHED → SOLD_OUT
 SOLD_OUT → PUBLISHED
+SOLD_OUT → DRAFT
 PUBLISHED → ARCHIVED
 DRAFT → ARCHIVED
 ARCHIVED → DRAFT
 
-Tidak ada SOLD_OUT → DRAFT.
+Reaktivasi SOLD_OUT langsung ke PUBLISHED, ATAU turun ke DRAFT untuk edit sebelum republish.
 
-Reaktivasi SOLD_OUT langsung ke PUBLISHED.
+SOLD_OUT boleh kembali ke DRAFT untuk diedit.
 
 Tidak ada konsep Product availability (AVAILABLE / SOLD_OUT) pada V1.
 
@@ -328,18 +359,19 @@ UI Auto Archive terletak pada halaman Archive (/seller/products/archived), BUKAN
 
 Nilai yang diperbolehkan:
 
-- Tidak ada (default, menonaktifkan auto archive)
+- Never (default, auto archive nonaktif, direpresentasikan `null`)
 - 1 hari
 - 7 hari
 - 30 hari
 - 90 hari
 - 180 hari
-- 365 hari
-- Never (auto archive nonaktif, tetapi seller tetap bisa manual archive)
+- 360 hari
 
-`Tidak ada` dan `Never` sama-sama menonaktifkan auto archive dan TIDAK memblokir manual archive.
+`Never` (= null) menonaktifkan auto archive dan TIDAK memblokir manual archive.
 
-Threshold dihitung dari durasi waktu product menjadi SOLD_OUT.
+Auto archive scheduler adalah backend behavior; frontend hanya mengirim nilai setting ini.
+
+Threshold dihitung dari durasi waktu product menjadi SOLD_OUT (dari `sold_out_at`).
 
 SOLD_OUT yang melewati threshold auto archive menjadi ARCHIVED dan tidak tampil di katalog.
 
@@ -357,7 +389,7 @@ Product Unggulan adalah properti boolean terpisah di product.
 
 Maksimum 10 Product Unggulan per store.
 
-Feature dapat diaktifkan/dinonaktifkan hanya pada product status PUBLISHED.
+Feature dapat diaktifkan/dinonaktifkan hanya pada product status PUBLISHED atau SOLD_OUT.
 
 DRAFT tidak pernah Product Unggulan.
 
@@ -365,9 +397,9 @@ Product ARCHIVED tidak pernah Product Unggulan.
 
 Archiving otomatis menghapus status Product Unggulan.
 
-Product yang berubah menjadi SOLD_OUT otomatis kehilangan status Product Unggulan (is_featured = false).
+Product yang berubah menjadi SOLD_OUT TETAP mempertahankan status Product Unggulan (is_featured tetap).
 
-Reaktivasi SOLD_OUT ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+Reaktivasi SOLD_OUT ke PUBLISHED TIDAK mengubah status Product Unggulan (bila masih SOLD_OUT dengan featured, status tetap berlanjut).
 
 Katalog aktif berisi:
 
@@ -411,7 +443,7 @@ Tindakan yang tersedia per status pada seller management (list Products / Archiv
   - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
 - SOLD_OUT: Lihat Product, Publish Kembali, Archive
   - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
-  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+  - Reaktivasi ke PUBLISHED TIDAK mengubah status Product Unggulan (bila masih SOLD_OUT dengan featured, status tetap berlanjut).
 - ARCHIVED (halaman Archive): Detail Product, Restore
   - Halaman Archive TIDAK memiliki aksi "Lihat Product".
   - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
@@ -422,9 +454,9 @@ Tindakan yang tersedia per status pada seller management (list Products / Archiv
 Untuk Publish, field berikut wajib:
 
 Product Name
-Product Photo (minimum 1)
+Slug
+Product Photo (minimum 1, maksimum 5; tepat satu photo utama)
 Category
-Product Details
 Description
 Condition
 Price
@@ -432,10 +464,13 @@ Price
 Optional:
 
 Brand
+Product Details / attributes
 External Product Links
 Product Unggulan
 
 Draft boleh incomplete.
+
+Catatan: hasil akhir validasi tetap mengikuti backend (source of truth). Price bernilai 0 (gratis) adalah valid.
 
 Jangan membuat semua custom attributes wajib.
 
@@ -485,6 +520,8 @@ Jangan menggunakan "Parent Category" pada user-facing UI.
 
 Jangan membuat hierarchy lebih dalam tanpa requirement baru.
 
+Default category dikelola Kataloga (store-wide) dan TIDAK dapat diedit/dihapus.
+
 Seller dapat membuat custom category yang scoped ke store.
 
 Seller dapat membuat Kategori Utama baru langsung dari form pembuatan category.
@@ -519,6 +556,35 @@ Computer (5)
 
 Computer = aggregate usage 5 product.
 
+14.1 Brand
+
+Brand bersifat opsional dan terpisah dari Category.
+
+Brand terdiri dari:
+
+- Global/default brand: dikelola Kataloga (store-wide, `store_id` null), di-seed, TIDAK dapat diedit/dihapus.
+- Custom brand: scoped ke store, dikelola seller.
+
+Brand TIDAK berasosiasi dengan kategori.
+
+Satu product mereferensikan maksimal satu brand, berdasarkan nama.
+
+Duplicate brand name dalam satu store ditolak.
+
+Delete brand ditolak (409) selama masih ada product store yang mereferensikan brand tersebut.
+
+Tidak ada cascade delete dan tidak ada silent detach.
+
+Brand Management adalah section di dalam /seller/categories (Kategori | Brand), bukan route terpisah.
+
+Brand card di halaman Categories menggunakan aksi "Lihat Produk" yang mengarah ke:
+
+/seller/products?brand=...
+
+Seller dapat membuat brand langsung dari Add/Edit Product (menggunakan brand list yang sama).
+
+Brand rename yang propagasi ke product adalah behavior backend; konfirmasi diperlukan jika belum final.
+
 15. Product Details
 
 Product Details menggunakan hybrid approach:
@@ -528,7 +594,7 @@ seller custom attributes.
 
 Customer melihatnya dalam format yang clean.
 
-Product Details wajib tersedia untuk Publish.
+Product Details bersifat opsional untuk Publish (bukan wajib).
 
 16. External Sales Channels
 
@@ -596,7 +662,7 @@ Product view atau share tidak boleh membuat Customer Interest.
 
 19. Customer Interest
 
-Customer Interest hanya mencatat:
+Customer Interest hanya mencatat aktivitas CTA eksplisit:
 
 WHATSAPP_CLICK
 MARKETPLACE_CLICK
@@ -610,7 +676,23 @@ LOGOUT
 CATEGORY_ACTIVITY
 STORE_VISIT
 
-Marketplace activity harus menyimpan channel yang dipilih.
+Marketplace activity harus menyimpan channel yang dipilih (field `channel`, bukan `channel_type`).
+
+Field yang direkam berbasis agregasi (bukan per klik):
+
+- id
+- store_id
+- customer_user_id
+- product_id (nullable; null untuk context STORE)
+- context: STORE | PRODUCT
+- channel (representasi destination/action, contoh: "whatsapp", "shopee")
+- first_activity_at
+- last_activity_at
+- total_clicks
+
+Customer yang sama dalam konteks yang sama menaikkan `total_clicks` pada segmen agregat, bukan membuat row baru.
+
+TIDAK ada field channel_type.
 
 Identitas customer yang direkam:
 
@@ -633,9 +715,9 @@ Date: ...
 
 Customer yang sama dapat memiliki beberapa activity.
 
-Jangan membuat customer record baru untuk setiap activity.
+Total Interest berarti total klik/interaksi (total_clicks), bukan jumlah customer unique.
 
-Total Interest berarti total record interaksi, bukan jumlah customer unique.
+Destination redirect/WhatsApp hanya dibuka SETELAH pencatatan Customer Interest sukses (response API sukses).
 
 Customer Interest cards (Dashboard) menggunakan hierarchy:
 
@@ -671,15 +753,25 @@ Buka Channel
 
 20. Recent Activity
 
-Recent Activity seller hanya mencakup:
+Recent Activity dibuat OLEH backend (backend-created); frontend HANYA mengonsumsi.
 
-Product Published
-Product Edited
-Product Sold Out
-Product Reactivated
-Product Archived
-Product Restored
-Store Updated
+Frontend tidak memanggil `POST /activities` dan tidak membuat record activity sendiri.
+
+Jenis activity kanonik (nilai diubah saat backend mengirim):
+
+PRODUCT_PUBLISHED
+PRODUCT_UPDATED
+PRODUCT_SOLD_OUT
+PRODUCT_REACTIVATED
+PRODUCT_ARCHIVED
+PRODUCT_RESTORED
+CATEGORY_CREATED
+CATEGORY_UPDATED
+ANNOUNCEMENT_CREATED
+ANNOUNCEMENT_UPDATED
+STORE_UPDATED
+
+`PRODUCT_UPDATED` adalah bentuk kanonik (bukan "Product Edited").
 
 Dashboard menampilkan 4 aktivitas terbaru dan "Lihat Semua".
 
@@ -713,9 +805,6 @@ Product View
 Share
 Login
 Logout
-Category Create
-Category Edit
-Category Delete
 
 Customer activity berada di Customer Interest.
 
@@ -724,6 +813,8 @@ Customer activity berada di Customer Interest.
 Store:
 
 1 Account = maximum 1 Store
+
+Model: identitas database store adalah numeric `store.id`; `store_id` adalah identifier publik (URL). Frontend memakai `store_id` untuk URL publik dan read; ownership ditentukan backend dari session.
 
 Create Store hanya membutuhkan:
 
@@ -759,6 +850,7 @@ required,
 unique,
 public,
 human-readable,
+maksimal 50 karakter,
 dapat diubah seller,
 hanya dapat diubah sekali setiap 30 hari.
 
@@ -788,7 +880,9 @@ Store ID tidak ditampilkan secara visual pada Store Landing.
 
 Store Link diturunkan dari Store ID saat ini dan ditampilkan di My Store.
 
-Semua historical Store ID tetap menjadi valid alias yang redirect ke store saat ini.
+Historical Store ID menjadi valid alias yang redirect ke store saat ini selama 90 hari sejak perubahan (backend-owned; setelah 90 hari alias kedaluwarsa).
+
+Semua historical Store ID TIDAK bersifat permanen.
 
 Historical aliases adalah behavior backend-owned.
 
@@ -1136,6 +1230,14 @@ Jangan copy-paste seluruh Stitch project menjadi production.
 
 Mock data boleh digunakan selama API belum tersedia.
 
+Policy mock data:
+
+- Mock data BUKAN production data source dan BUKAN application state.
+- Production/API mode TIDAK boleh silent-fallback ke mock — kegagalan API tidak boleh menghasilkan respons sukses palsu dari mock.
+- Mock tidak boleh menyamar sebagai data backend di depan seller/customer.
+- Mock tidak dihapus sekarang; dapat tetap dipakai untuk unit test terisolasi dan development sementara.
+- Pembersihan branch mock yang sudah tidak relevan dilakukan saat task API cleanup setelah backend terverifikasi.
+
 Namun:
 
 pisahkan mock data dari UI,
@@ -1443,6 +1545,17 @@ Kerjakan Kataloga secara incremental.
 Urutan kerja mengikuti dokumentasi di:
 
 docs/IMPLEMENTATION-PLAN.md
+
+Alur fase besar:
+
+- PHASE A (dokumentasi & architecture reconciliation): sinkronisasi docs dengan
+  Backend Business/API Contract. Dilakukan terlebih dahulu; tidak mengubah
+  source code.
+- PHASE B (source-code implementation): implementasi setelah Phase A disetujui,
+  mengikuti urutan fase di IMPLEMENTATION-PLAN.md (API transport → envelope →
+  lifecycle → product → featured/auto-archive → store/category/brand →
+  customer interest → recent activity → search/filter/sort → mock cleanup →
+  test/integration).
 
 Urutan umum:
 

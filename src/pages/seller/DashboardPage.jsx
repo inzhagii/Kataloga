@@ -65,17 +65,15 @@ function DashboardPage() {
         </div>
         <div className="grid w-full grid-cols-2 gap-2.5 sm:w-auto sm:flex sm:items-center sm:gap-3">
           {store ? (
-            <a
-              href={`/${store.storeId}`}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              to={`/${store.storeId}`}
               className="inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-outline-variant px-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low sm:px-5"
             >
               <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
                 storefront
               </span>
               Lihat Toko
-            </a>
+            </Link>
           ) : null}
           <Link
             to="/seller/products/new"

@@ -20,4 +20,11 @@ export const brands = [
   { id: 9, name: 'Corsair', storeId: 'toko-komputer-jaya' },
   { id: 10, name: 'Kingston', storeId: 'toko-komputer-jaya' },
   { id: 11, name: 'TP-Link', storeId: 'toko-komputer-jaya' },
+  { id: 12, name: 'ASUS', storeId: 'techspace-bandung' },
+  { id: 13, name: 'Logitech', storeId: 'techspace-bandung' },
+  { id: 14, name: 'Keychron', storeId: 'techspace-bandung' },
+  { id: 15, name: 'TP-Link', storeId: 'techspace-bandung' },
+  { id: 16, name: 'Samsung', storeId: 'techspace-bandung' },
+  { id: 17, name: 'Elgato', storeId: 'techspace-bandung' },
+  { id: 18, name: 'Cooler Master', storeId: 'techspace-bandung' },
 ]

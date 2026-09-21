@@ -151,24 +151,25 @@ function ArchivedProductsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+      <div className="mb-6">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="min-w-0 text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
             Archived Products
           </h1>
-          <p className="mt-1 text-sm text-secondary">
-            Produk yang diarsipkan. Restore selalu kembali ke draft.
-          </p>
+          <Link
+            to="/seller/products"
+            aria-label="Kembali ke daftar produk"
+            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-outline-variant px-3 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container-low sm:h-11 sm:px-5 sm:text-sm"
+          >
+            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+              arrow_back
+            </span>
+            Kembali
+          </Link>
         </div>
-        <Link
-          to="/seller/products"
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-outline-variant px-5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
-        >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-            arrow_back
-          </span>
-          Kembali
-        </Link>
+        <p className="mt-1 text-sm text-secondary">
+          Produk yang diarsipkan. Restore selalu kembali ke draft.
+        </p>
       </div>
 
       <ProductsToolbar

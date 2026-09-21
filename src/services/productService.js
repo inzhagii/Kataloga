@@ -29,6 +29,9 @@ const STATUS_CHANGE_GUARD_MESSAGE =
 const ARCHIVED_FEATURED_MESSAGE =
   'Product yang diarsipkan tidak dapat menjadi Featured. Restore ke draft terlebih dahulu.'
 
+const FEATURE_PUBLISHED_ONLY_MESSAGE =
+  'Product Unggulan hanya dapat diaktifkan pada product yang berstatus PUBLISHED.'
+
 const FEATURED_LIMIT_MESSAGE =
   'Maksimal 10 Product Unggulan per toko. Hapus salah satu Featured terlebih dahulu.'
 
@@ -52,10 +55,11 @@ function nextProductId() {
 }
 
 /**
- * Featured guard: Product ARCHIVED is never Product Unggulan, and a store is
- * capped at 10 Product Unggulan across PUBLISHED / DRAFT / SOLD_OUT (inside
- * or outside the Auto Archive window). Returns the conflict message, or null
- * when the target state is allowed. Pass `productId === null` for creation.
+ * Featured guard: only PUBLISHED products may be Product Unggulan. DRAFT,
+ * SOLD_OUT and ARCHIVED are never featured, and a store is capped at 10
+ * Product Unggulan among its PUBLISHED products. Returns the conflict
+ * message, or null when the target state is allowed. Pass `productId ===
+ * null` for creation.
  * @param {string} storeId
  * @param {number | null} productId
  * @param {boolean} nextFeatured
@@ -70,6 +74,9 @@ function featuredGuardMessage(storeId, productId, nextFeatured) {
     if (product.status === PRODUCT_STATUS.ARCHIVED) {
       return ARCHIVED_FEATURED_MESSAGE
     }
+    if (product.status !== PRODUCT_STATUS.PUBLISHED) {
+      return FEATURE_PUBLISHED_ONLY_MESSAGE
+    }
     if (product.featured) {
       return null
     }
@@ -78,7 +85,7 @@ function featuredGuardMessage(storeId, productId, nextFeatured) {
     (item) =>
       item.storeId === storeId &&
       item.id !== productId &&
-      item.status !== PRODUCT_STATUS.ARCHIVED &&
+      item.status === PRODUCT_STATUS.PUBLISHED &&
       item.featured,
   ).length
   return featuredCount >= 10 ? FEATURED_LIMIT_MESSAGE : null
@@ -225,6 +232,7 @@ export function createProduct(payload) {
     return productApi.createProduct(payload)
   }
   const now = new Date().toISOString()
+  const initialStatus = payload.status ?? PRODUCT_STATUS.DRAFT
   const product = {
     id: nextProductId(),
     storeId: getCurrentStoreId(),
@@ -239,8 +247,8 @@ export function createProduct(payload) {
     details: payload.details ?? [],
     description: payload.description ?? '',
     externalLinks: payload.externalLinks ?? [],
-    status: payload.status ?? PRODUCT_STATUS.DRAFT,
-    featured: Boolean(payload.featured),
+    status: initialStatus,
+    featured: Boolean(payload.featured) && initialStatus === PRODUCT_STATUS.PUBLISHED,
     createdAt: now,
     updatedAt: now,
   }
@@ -283,8 +291,14 @@ export function updateProduct(productId, payload) {
   if (payload.status !== undefined && payload.status !== product.status) {
     return Promise.reject(new Error(STATUS_CHANGE_GUARD_MESSAGE))
   }
-  if (payload.featured !== undefined && payload.featured !== product.featured) {
-    const conflict = featuredGuardMessage(product.storeId, productId, payload.featured)
+  const requestedFeatured =
+    payload.featured !== undefined ? Boolean(payload.featured) : product.featured
+  const nextFeatured =
+    payload.featured !== undefined && product.status === PRODUCT_STATUS.PUBLISHED
+      ? requestedFeatured
+      : product.featured
+  if (payload.featured !== undefined && nextFeatured !== product.featured) {
+    const conflict = featuredGuardMessage(product.storeId, productId, nextFeatured)
     if (conflict) {
       return Promise.reject(new Error(conflict))
     }
@@ -294,6 +308,7 @@ export function updateProduct(productId, payload) {
     id: product.id,
     storeId: product.storeId,
     createdAt: product.createdAt,
+    featured: nextFeatured,
     updatedAt: new Date().toISOString(),
   })
   return withLatency(product)
@@ -322,8 +337,9 @@ export function publishProduct(productId) {
 
 /**
  * Toggle the featured flag on a product. Enforces the max-10 Product Unggulan
- * limit per store (backend remains the final authority) and never promotes an
- * ARCHIVED product (archiving already clears featured).
+ * limit per store among PUBLISHED products (backend remains the final
+ * authority) and only ever promotes a PUBLISHED product: DRAFT, SOLD_OUT and
+ * ARCHIVED are never Product Unggulan.
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */
@@ -387,7 +403,9 @@ export function restoreProduct(productId) {
 /**
  * Mark a PUBLISHED product as SOLD_OUT (PUBLISHED -> SOLD_OUT).
  * DRAFT and ARCHIVED products are never marked Sold Out directly. Records the
- * SOLD_OUT timestamp used by the mock Auto Archive simulation.
+ * SOLD_OUT timestamp used by the mock Auto Archive simulation. The Featured
+ * status is kept: a PUBLISHED Product Unggulan stays featured while SOLD_OUT
+ * (docs/PRODUCT.md). Archiving later clears it.
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */

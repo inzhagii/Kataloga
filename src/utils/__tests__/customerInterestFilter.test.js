@@ -125,6 +125,17 @@ describe('filterCustomerInterests', () => {
     expect(ids(filterCustomerInterests(interests, defaults))).toEqual([100, 101, 102, 103, 104])
   })
 
+  it('treats the "Semua Aktivitas" value (ALL) as no activity filter', () => {
+    // The Aktivitas select uses "ALL" while other selects use FILTER_ALL; both
+    // must keep the full dataset visible instead of dropping every record.
+    expect(ids(filterCustomerInterests(interests, { ...defaults, activity: 'ALL' }))).toEqual(
+      [100, 101, 102, 103, 104],
+    )
+    expect(
+      ids(filterCustomerInterests(interests, { ...defaults, activity: 'ALL', channel: 'WhatsApp' })),
+    ).toEqual([100, 103])
+  })
+
   it('searches customer name with partial, case-insensitive match', () => {
     expect(ids(filterCustomerInterests(interests, { ...defaults, query: 'budi' }))).toEqual([100])
     expect(ids(filterCustomerInterests(interests, { ...defaults, query: 'ANI' }))).toEqual([101])

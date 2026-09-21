@@ -1,6 +1,6 @@
 /**
  * Static rendering checks for the Brand Management card: locked content order
- * (name, usage count, Edit, Lihat Product, delete) with no decorative icon and
+ * (name, usage count, Edit, Lihat Produk, delete) with no decorative icon and
  * the brand filter deep link.
  */
 
@@ -29,10 +29,10 @@ describe('BrandCard', () => {
     expect(html).toContain('Asus')
     expect(html).toContain('2 Products')
     expect(html).toContain('Edit')
-    expect(html).toContain('Lihat Product')
+    expect(html).toContain('Lihat Produk')
   })
 
-  it('links Lihat Product to the seller products brand filter by id', () => {
+  it('links Lihat Produk to the seller products brand filter by id', () => {
     expect(render()).toContain('/seller/products?brand=3')
   })
 

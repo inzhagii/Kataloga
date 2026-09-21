@@ -8,6 +8,11 @@ import { buildStoreProductUrl, resolveProductSlug } from '../../utils/storefront
  * indicator (if SOLD_OUT still within its store Auto Archive window), image,
  * name, category, price, "Lihat Detail" and a share action. Does NOT show
  * brand, WhatsApp, marketplace or contact-seller actions.
+ * SOLD_OUT uses a customer-side gray tinted overlay over the image with a
+ * large centered "SOLD OUT" label. The overlay is non-interactive
+ * (pointer-events-none) and the card stays fully clickable. This gray
+ * treatment is customer-facing only; the seller management UI marks SOLD_OUT
+ * with red instead (context-specific).
  */
 function ProductCard({ product, storeId, storeName, variant = 'grid', onShare }) {
   const navigate = useNavigate()
@@ -71,9 +76,15 @@ function ProductCard({ product, storeId, storeName, variant = 'grid', onShare })
           />
 
           {isSoldOut ? (
-            <span className="absolute bottom-3 left-3 z-20 rounded-md bg-neutral-900/85 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur-sm">
-              SOLD OUT
-            </span>
+            <div
+              data-sold-out="true"
+              className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-neutral-500/40"
+              aria-hidden="true"
+            >
+              <span className="rounded-lg bg-neutral-900/70 px-3 py-1.5 text-lg font-black uppercase tracking-widest text-white shadow-sm backdrop-blur-sm sm:text-xl">
+                SOLD OUT
+              </span>
+            </div>
           ) : null}
         </div>
       </button>

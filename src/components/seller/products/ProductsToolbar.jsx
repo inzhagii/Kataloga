@@ -2,9 +2,17 @@ import FilterPopover from './FilterPopover'
 
 /**
  * Products list controls: search and filter. All UI state on the same route.
- * Locked rule: there is no Sort on the seller Products page; the Add Product
- * action lives in the page header (title row), not in this control row.
- * The optional Reset chip appears above the filter while filters are active.
+ * Locked rules:
+ * - Desktop (sm+): Search is flexible but not full-width (capped at max-w-xl)
+ *   and sits beside Filter on this row. The "+ Tambah Product" action lives in
+ *   the page header title row / under the title on mobile, never in this row.
+ *   The Archive nav item lives in the StatusTabs row (desktop).
+ * - Mobile: Search is full-width on its own row; Filter and the mobile Archive
+ *   nav item (archiveLink slot) are side-by-side on the next row.
+ * - No Sort exists on the seller Products page.
+ * - Archive is rendered exactly once per breakpoint: desktop via StatusTabs,
+ *   mobile here via the archiveLink slot.
+ * The optional Reset chip appears while filters are active.
  * @param {{
  *   search: string,
  *   onSearch: (value: string) => void,
@@ -37,8 +45,8 @@ function ProductsToolbar({
     (filters.featured ? 1 : 0)
 
   return (
-    <div className="mb-5 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
-      <div className="relative max-w-xl flex-1">
+    <div className="mb-5 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3">
+      <div className="relative w-full sm:max-w-xl sm:flex-1">
         <span
           className="material-symbols-outlined pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[20px] text-outline"
           aria-hidden="true"
@@ -55,7 +63,7 @@ function ProductsToolbar({
         />
       </div>
 
-      <div className="flex flex-row items-center gap-2.5 lg:w-auto lg:shrink-0">
+      <div className="flex flex-row items-center gap-2.5 sm:w-auto sm:shrink-0">
         <FilterPopover
           filters={filters}
           onChange={onFilterChange}
@@ -65,9 +73,9 @@ function ProductsToolbar({
           activeCount={activeFilterCount}
         />
 
-        {autoArchive}
-
         {archiveLink}
+
+        {autoArchive}
 
         {hasActiveFilters ? (
           <button

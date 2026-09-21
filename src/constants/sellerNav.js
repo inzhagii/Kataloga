@@ -1,21 +1,22 @@
 /**
  * Single source of truth for seller navigation items.
- * Desktop sidebar shows all items in the locked order (Categories last, right
- * before the Account Card). Mobile uses a 3-item bottom navigation plus a More
- * menu for the rest. Shared with the seller header dropdown.
+ * Desktop sidebar shows all items in the locked order (Categories third, right
+ * after Products; Profile/Account via the Account Card at the bottom).
+ * Mobile uses a 3-item bottom navigation plus a More menu for the rest.
+ * Shared with the seller header dropdown.
  *
- * Locked order (docs/IMPLEMENTATION-PLAN.md §M8): Dashboard, Products,
- * Customer Interest, Recent Activity, My Store, Categories. Archive is never a
- * navigation item.
+ * Locked order (latest approved revisions): Dashboard, Products, Categories,
+ * Customer Interest, Recent Activity, My Store. Archive is never a navigation
+ * item.
  */
 
 export const SELLER_SIDEBAR_ITEMS = [
   { to: '/seller/dashboard', label: 'Dashboard', icon: 'grid_view' },
   { to: '/seller/products', label: 'Products', icon: 'inventory_2' },
+  { to: '/seller/categories', label: 'Categories', icon: 'category' },
   { to: '/seller/customer-interest', label: 'Customer Interest', icon: 'favorite_border' },
   { to: '/seller/activities', label: 'Recent Activity', icon: 'history' },
   { to: '/seller/my-store', label: 'My Store', icon: 'storefront' },
-  { to: '/seller/categories', label: 'Categories', icon: 'category' },
 ]
 
 const BOTTOM_NAV_PATHS = ['/seller/dashboard', '/seller/products', '/seller/customer-interest']

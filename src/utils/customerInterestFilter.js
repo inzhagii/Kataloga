@@ -124,9 +124,11 @@ export function filterCustomerInterests(interests, options = {}) {
 
   const hasDate = toDMY(date) !== null
   const allowedCategories = categoryAllowedNames(category, categories, productCategories)
+  const isAnyActivity =
+    activity == null || activity === FILTER_ALL || String(activity).trim().toLowerCase() === 'all'
 
   return interests.filter((interest) => {
-    if (activity !== FILTER_ALL && interest.channelType !== activity) {
+    if (!isAnyActivity && interest.channelType !== activity) {
       return false
     }
     if (channel !== FILTER_ALL && String(interest.channel || '').trim() !== channel) {

@@ -1,22 +1,22 @@
-import ArchivedProductsLink from './ArchivedProductsLink'
-
 /**
  * Status tabs for /seller/products: Active (PUBLISHED only), Draft and
- * Sold Out as segmented tabs. Archive access lives on the right of the tab row
- * on desktop (and next to Filter on mobile); archived products have their own
- * page.
+ * Sold Out as segmented tabs. Sold Out carries the red seller-warning chip
+ * (customer storefront uses gray instead). Archive is a navigation item shown
+ * right-aligned on desktop via the optional archiveLink slot; on mobile it
+ * lives beside Filter in the ProductsToolbar. Exactly one Archive per
+ * breakpoint, never in the sidebar or the mobile bottom navigation.
  * @param {{
  *   tab: 'active'|'draft'|'soldOut',
  *   onTabChange: (tab: 'active'|'draft'|'soldOut') => void,
  *   counts: { active: number, drafts: number, soldOut: number },
- *   archivedCount: number,
+ *   archiveLink?: import('react').ReactNode,
  * }} props
  */
-function StatusTabs({ tab, onTabChange, counts, archivedCount }) {
+function StatusTabs({ tab, onTabChange, counts, archiveLink = null }) {
   const tabs = [
     { key: 'active', label: 'Active', count: counts.active, chip: 'bg-primary/10 text-primary' },
     { key: 'draft', label: 'Draft', count: counts.drafts, chip: 'bg-amber-100 text-amber-800' },
-    { key: 'soldOut', label: 'Sold Out', count: counts.soldOut, chip: 'bg-error/10 text-error' },
+    { key: 'soldOut', label: 'Sold Out', count: counts.soldOut, chip: 'bg-red-50 text-red-600' },
   ]
 
   return (
@@ -44,11 +44,7 @@ function StatusTabs({ tab, onTabChange, counts, archivedCount }) {
           </button>
         ))}
       </div>
-
-      <ArchivedProductsLink
-        count={archivedCount}
-        className="mb-2 hidden lg:inline-flex"
-      />
+      {archiveLink ? <div className="hidden pb-3 sm:block">{archiveLink}</div> : null}
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 /**
  * Brand card for the Brand Management grid. Shows the brand name, its product
- * usage count and the card actions (Edit, Lihat Product, delete). No decorative
+ * usage count and the card actions (Edit, Lihat Produk, delete). No decorative
  * icon per brand (locked rule).
  *
  * @param {{
@@ -37,12 +37,12 @@ function BrandCard({ brand, count, onEdit, onDelete }) {
         <Link
           to={`/seller/products?brand=${brand.id}`}
           className="inline-flex h-9 items-center justify-center gap-1 rounded-lg px-2 text-xs font-semibold text-primary transition-colors hover:bg-primary-container"
-          aria-label={`Lihat Product untuk ${brand.name}`}
+          aria-label={`Lihat Produk untuk ${brand.name}`}
         >
           <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
             visibility
           </span>
-          Lihat Product
+          Lihat Produk
         </Link>
         <button
           type="button"

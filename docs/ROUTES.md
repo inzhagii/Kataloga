@@ -246,7 +246,7 @@ Jika storeId merupakan historical Store ID lama:
 /arya
 → /toko-arya
 
-Semua historical Store ID tetap menuju store saat ini (redirect).
+Setiap historical Store ID menjadi valid alias yang menuju store saat ini (redirect) selama 90 hari sejak perubahan, lalu kedaluwarsa. Historical aliases TIDAK permanen.
 
 Historical aliases adalah behavior backend-owned.
 
@@ -428,7 +428,7 @@ Tindakan yang tersedia per status pada seller management (list Products / Archiv
   - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
 - SOLD_OUT: Lihat Product, Publish Kembali, Archive
   - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
-  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+  - Reaktivasi ke PUBLISHED TIDAK mengubah status Product Unggulan (bila masih SOLD_OUT dengan featured, status tetap berlanjut).
 - ARCHIVED (halaman Archive): Detail Product, Restore
   - Halaman Archive TIDAK memiliki aksi "Lihat Product".
   - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
@@ -550,7 +550,8 @@ Archive [ Kembali ]
 Auto Archive:
 
 - setting level store yang UI-nya terletak pada halaman Archive.
-- nilai: Tidak ada (default) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 365 hari / Never.
+- nilai: Never (default, `null`) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 360 hari.
+- TIDAK ada opsi "Tidak ada" maupun nilai 365 hari.
 - diubah melalui popover pada halaman Archive, bukan pada My Store.
 
 14. Seller Categories
@@ -689,13 +690,15 @@ Tidak ada QR Code.
 
 Jika Store ID berubah, Store Link ikut berubah.
 
-Store ID lama tetap menjadi valid alias yang redirect ke Store ID saat ini (backend-owned).
+Store ID lama tetap menjadi valid alias yang redirect ke Store ID saat ini selama 90 hari sejak perubahan, lalu kedaluwarsa (backend-owned, tidak permanen).
 
 Location dipilih dengan urutan: Province dahulu, kemudian City/Regency yang scoped ke province tersebut.
 
 Store ID
 
 Store ID dapat diedit tetapi hanya satu kali setiap 30 hari.
+
+Store ID maksimal 50 karakter.
 
 Perubahan Store ID tidak membutuhkan route baru.
 
@@ -987,7 +990,7 @@ Jika storeId adalah historical Store ID lama, store tetap dapat di-resolve:
 /arya
 → /toko-arya
 
-Semua historical Store ID menjadi valid alias yang menuju store saat ini (redirect).
+Setiap historical Store ID menjadi valid alias yang menuju store saat ini (redirect) selama 90 hari sejak perubahan, lalu kedaluwarsa. Historical aliases TIDAK permanen.
 
 Historical aliases adalah behavior backend-owned.
 

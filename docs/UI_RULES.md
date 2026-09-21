@@ -505,7 +505,7 @@ Produk SOLD_OUT yang masih dalam jendela auto archive ditampilkan dengan SOLD OU
 
 SOLD OUT card menggunakan visual state GRAY yang jelas berbeda dari card aktif, lebih dari sekadar teks "Sold Out". Sold Out BUKAN state merah/error.
 
-Auto archive adalah setting store-level (nilai: Tidak ada default / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 365 hari / Never), bukan pilihan durasi per-product.
+Auto archive adalah setting store-level (nilai: Never default (`null`) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 360 hari; TIDAK ada opsi "Tidak ada" maupun nilai 365 hari), bukan pilihan durasi per-product.
 
 SOLD_OUT yang melewati threshold auto archive menjadi ARCHIVED dan tidak tampil di katalog.
 
@@ -881,9 +881,19 @@ Tidak menggunakan uploaded customer profile photo (generic user-circle icon).
 
 Marketplace activity menyimpan channel yang dipilih.
 
+Customer Interest direkam sebagai data agregat (bukan per klik):
+
+- key agregasi: store + customer + product + context + channel
+- context: `STORE` | `PRODUCT`
+- field: id, store_id, customer_user_id, product_id (nullable), channel, first_activity_at, last_activity_at, total_clicks
+- klik berulang menaikkan `total_clicks`, bukan membuat row baru
+- TIDAK ada field `channel_type`
+
 Dashboard menampilkan summary.
 
-Total Interest berarti total record interaksi, bukan jumlah customer unique.
+Total Interest berarti total klik/interaksi (total_clicks), bukan jumlah customer unique.
+
+Redirect/WhatsApp destination hanya dibuka SETELAH pencatatan Customer Interest sukses.
 
 Activity owner di store miliknya sendiri TIDAK dicatat:
 
@@ -932,24 +942,30 @@ Filter:
 
 Context field:
 
-- Store Landing
-- Product Detail
+- STORE (Store Landing)
+- PRODUCT (Product Detail)
 
 Records tetap tampil meskipun channel dihapus dari konfigurasi store.
 
 32. Recent Activity
 
-Recent Activity hanya menampilkan:
+Recent Activity dibuat oleh backend; frontend hanya mengonsumsi (tidak ada `POST /activities`).
+
+Hanya menampilkan:
 
 Product Published
-Product Edited
+Product Updated
 Product Sold Out
 Product Reactivated
 Product Archived
 Product Restored
+Category Created
+Category Updated
+Announcement Created
+Announcement Updated
 Store Updated
 
-Tidak menampilkan:
+Tidak menampilkan (customer activity):
 
 WhatsApp Click
 Marketplace Click
@@ -957,9 +973,6 @@ Product View
 Share
 Login
 Logout
-Category Create
-Category Edit
-Category Delete
 
 Recent Activity adalah dashboard summary/timeline.
 
@@ -1053,15 +1066,16 @@ Simpan
 
 Edit mode hanya memiliki Batal dan Simpan (tanpa tombol status).
 
-Product Edited activity hanya dibuat ketika Simpan diklik dan perubahan berhasil dipersist.
+Activity Product Updated (PRODUCT_UPDATED) dibuat oleh backend ketika Simpan diklik dan perubahan berhasil dipersist; frontend tidak membuat activity sendiri (tidak ada `POST /activities`).
+
 36. Required Publish Fields
 
 Publish membutuhkan:
 
 Product Name
-Minimum 1 Photo
+Slug
+Photo (1-5, tepat satu foto utama)
 Category
-Product Details
 Description
 Condition
 Price
@@ -1069,8 +1083,15 @@ Price
 Optional:
 
 Brand
+Product Details / attributes
 External Product Links
 Product Unggulan
+
+Catatan:
+
+- Price bernilai 0 (gratis) adalah valid untuk Publish.
+- Product Details / attributes tidak wajib untuk Publish.
+- Slug adalah komponen URL kanonik (readable), unique dalam satu store, dan dikelola backend.
 
 UI harus membedakan field required dan optional dengan jelas.
 
@@ -1132,7 +1153,7 @@ Tindakan yang tersedia per status pada seller management (list Products / Archiv
   - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
 - SOLD_OUT: Lihat Product, Publish Kembali, Archive
   - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
-  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+  - Reaktivasi ke PUBLISHED TIDAK mengubah status Product Unggulan (bila masih SOLD_OUT dengan featured, status tetap berlanjut).
 - ARCHIVED (halaman Archive): Detail Product, Restore
   - Halaman Archive TIDAK memiliki aksi "Lihat Product".
   - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
@@ -1179,9 +1200,9 @@ Restore tidak langsung Published.
 
 Archiving otomatis menghapus status Product Unggulan.
 
-Product yang berubah menjadi SOLD_OUT otomatis kehilangan status Product Unggulan (is_featured = false).
+Product yang berubah menjadi SOLD_OUT TETAP mempertahankan status Product Unggulan.
 
-Reaktivasi SOLD_OUT ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+Reaktivasi SOLD_OUT ke PUBLISHED TIDAK mengubah status Product Unggulan.
 
 Archived Products view menyediakan:
 
@@ -1221,7 +1242,8 @@ Archive [ Kembali ]
 Auto Archive:
 
 - setting level store yang UI-nya terletak pada halaman Archive.
-- nilai: Tidak ada (default) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 365 hari / Never.
+- nilai: Never (default, `null`) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 360 hari.
+- TIDAK ada opsi "Tidak ada" maupun nilai 365 hari.
 - diubah melalui popover pada halaman Archive, bukan pada My Store.
 - jika nilai berubah, label tombol mengikuti nilai yang tersimpan (contoh: "Auto Archive", "Auto Archive 30 hari").
 - Simpan mem-persist setting; Batal membuang perubahan dan menutup popover.

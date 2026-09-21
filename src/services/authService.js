@@ -33,11 +33,34 @@ const OTP_CODE_PATTERN = /^\d{6}$/
 /** Demo-only fixed OTP code. Never sent to the API and never logged. */
 export const DEMO_OTP_CODE = '123456'
 
+/**
+ * Demo account (mock mode only): demo@kataloga.test / Demo123! owns the
+ * "TechSpace Bandung" storefront. The password is enforced through a seeded
+ * mock credential (see seedDemoCredential), so the exact password is required
+ * for this account in demo mode.
+ */
+export const DEMO_EMAIL = 'demo@kataloga.test'
+export const DEMO_PASSWORD = 'Demo123!'
+
 /** @type {Map<string, { code: string, expiresAt: number, attempts: number, lastSentAt: number }>} */
 const otpChallenges = new Map()
 
 /** @type {Map<string, string>} Demo-only userId -> password (never serialized). */
 const mockCredentials = new Map()
+
+/**
+ * Enforce the demo account password in mock mode. Guarded by a lookup so the
+ * seed never touches accounts that do not exist in the current user seed
+ * (e.g. after build-time filtering or test fixture swaps).
+ */
+function seedDemoCredential() {
+  const demo = users.find((item) => String(item.email).toLowerCase() === DEMO_EMAIL)
+  if (demo) {
+    mockCredentials.set(String(demo.id), DEMO_PASSWORD)
+  }
+}
+
+seedDemoCredential()
 
 /** @type {Map<string, number>} Short-lived proof that an OTP was verified. */
 const verifiedProofs = new Map()
@@ -68,6 +91,7 @@ export function resetAuthFlowState() {
   otpChallenges.clear()
   mockCredentials.clear()
   verifiedProofs.clear()
+  seedDemoCredential()
 }
 
 /**

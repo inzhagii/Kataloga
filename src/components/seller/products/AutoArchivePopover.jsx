@@ -3,15 +3,17 @@ import { useClickOutside } from '../../../hooks/useClickOutside'
 
 /**
  * Store-level Auto Archive setting (locked value set):
- * "Tidak ada" (default, off) / 1 / 7 / 30 / 90 / 180 / 365 hari / Never.
- * UI lives on the Archive page (/seller/products/archived), not My Store.
- * "Tidak ada" and "Never" both disable auto archive and never block manual
- * archiving — both persist as `autoArchiveDays: null`.
+ * 1 / 7 / 30 / 90 / 180 / 365 hari / Never. "Tidak ada" is not an option — the
+ * off state is Never. UI lives on the Archive page (/seller/products/archived),
+ * not My Store.
+ * "Never" disables auto archive and never blocks manual archiving — it
+ * persists as `autoArchiveDays: null`.
  *
  * The trigger label follows the stored value (e.g. "Auto Archive",
- * "Auto Archive 30 hari"). Simpan persists via the caller (updateStore);
- * Batal discards the draft and closes the popover. The scheduler that
- * archives SOLD_OUT products is backend-owned, so this only saves the setting.
+ * "Auto Archive 30 hari" or "Auto Archive (Never)"). Simpan persists via the
+ * caller (updateStore); Batal discards the draft and closes the popover. The
+ * scheduler that archives SOLD_OUT products is backend-owned, so this only
+ * saves the setting.
  *
  * @param {{
  *   autoArchiveDays: number|null,
@@ -26,7 +28,8 @@ function AutoArchivePopover({ autoArchiveDays, onSave, disabled = false }) {
   const panelRef = useRef(null)
   useClickOutside(panelRef, () => setOpen(false), open)
 
-  const triggerLabel = autoArchiveDays === null ? 'Auto Archive' : `Auto Archive ${autoArchiveDays} hari`
+  const triggerLabel =
+    autoArchiveDays === null ? 'Auto Archive (Never)' : `Auto Archive ${autoArchiveDays} hari`
 
   function openPopover() {
     setDraft(valueToKey(autoArchiveDays))
@@ -124,7 +127,6 @@ function AutoArchivePopover({ autoArchiveDays, onSave, disabled = false }) {
 }
 
 const AUTO_ARCHIVE_OPTIONS = [
-  { value: 'none', label: 'Tidak ada', days: null },
   { value: '1', label: '1 hari', days: 1 },
   { value: '7', label: '7 hari', days: 7 },
   { value: '30', label: '30 hari', days: 30 },
@@ -136,10 +138,10 @@ const AUTO_ARCHIVE_OPTIONS = [
 
 function valueToKey(autoArchiveDays) {
   if (autoArchiveDays === null || autoArchiveDays === undefined) {
-    return 'none'
+    return 'never'
   }
   const match = AUTO_ARCHIVE_OPTIONS.find((option) => option.days === Number(autoArchiveDays))
-  return match ? match.value : 'none'
+  return match ? match.value : 'never'
 }
 
 export default AutoArchivePopover

@@ -17,8 +17,8 @@ export function ProductStatusBadge({ status }) {
       label: 'Draft',
     },
     [PRODUCT_STATUS.SOLD_OUT]: {
-      chip: 'border-slate-200 bg-slate-50 text-slate-600',
-      dot: 'bg-slate-500',
+      chip: 'border-red-200 bg-red-50 text-red-600',
+      dot: 'bg-red-500',
       label: 'Sold Out',
     },
     [PRODUCT_STATUS.ARCHIVED]: {

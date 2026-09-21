@@ -1,8 +1,11 @@
 /**
  * Consumer test: the public ProductCard renders the locked product info order
- * and the conditional SOLD OUT / Product Unggulan indicators. Uses
- * react-dom/server (no DOM test library) and React.createElement inside a
- * MemoryRouter so useNavigate works without JSX (Vitest matches *.test.js).
+ * and the conditional SOLD OUT / Product Unggulan indicators. SOLD_OUT gets a
+ * gray, non-interactive overlay over the image while the card stays clickable
+ * (Lihat Detail + Share) — the customer-side treatment, distinct from the red
+ * seller-management indicators. Uses react-dom/server (no DOM test library)
+ * and React.createElement inside a MemoryRouter so useNavigate works without
+ * JSX (Vitest matches *.test.js).
  */
 
 import { describe, expect, it } from 'vitest'
@@ -69,6 +72,19 @@ describe('ProductCard public card', () => {
 
     const publishedHtml = renderCard(baseProduct)
     expect(publishedHtml).not.toContain('SOLD OUT')
+  })
+
+  it('adds a gray overlay with a large centered SOLD OUT label while the card stays clickable', () => {
+    const html = renderCard({ ...baseProduct, status: 'SOLD_OUT' })
+    expect(html).toContain('data-sold-out="true"')
+    expect(html).toContain('pointer-events-none')
+    expect(html).toContain('flex items-center justify-center')
+    expect(html).toContain('tracking-widest')
+    expect(html).toContain('text-lg')
+    expect(html).toContain('Lihat Detail')
+    expect(html).toContain('aria-label="Bagikan produk Laptop Asus ROG"')
+    expect(html).not.toContain('WhatsApp')
+    expect(html).not.toContain('Marketplace')
   })
 
   it('shows the Product Unggulan indicator only for featured products', () => {

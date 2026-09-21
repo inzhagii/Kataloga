@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import SectionCard from '../products/form/SectionCard'
+import StoreIdField from './StoreIdField'
 import { buildStoreUrl, normalizeStoreId, validateStoreId } from '../../../utils/storeId'
 
 const INPUT_CLASS =
@@ -27,19 +28,36 @@ function resolveLiveStoreId(typed, saved) {
 }
 
 /**
- * Store link section: shows the derived public storefront URL
- * ({origin}/{storeId}). The link updates live with the typed Store ID and is
- * never persisted. Salin copies the exact URL; Bagikan uses the native share
- * sheet when available and gracefully falls back to copying otherwise.
+ * "Store ID & Link" section (first section of My Store): the editable Store ID
+ * (with the locked format/availability/30-day cooldown rules) on top, then the
+ * derived public storefront URL ({origin}/{storeId}). The link updates live
+ * with the typed Store ID and is never persisted. Salin copies the exact URL;
+ * Bagikan uses the native share sheet when available and gracefully falls back
+ * to copying otherwise.
  *
  * @param {{
  *   store: import('../../../data/models.js').Store,
  *   storeId: string,
+ *   error: string,
+ *   availability: 'idle'|'checking'|'available'|'taken',
+ *   cooldown: { locked: boolean, nextChangeLabel: string },
+ *   onStoreIdChange: (value: string) => void,
+ *   onStoreIdBlur: () => void,
  *   onNotify: (message: { type: 'success'|'error', message: string }) => void,
  *   children: React.ReactNode,
  * }} props
  */
-function StoreLinkSection({ store, storeId, onNotify, children }) {
+function StoreLinkSection({
+  store,
+  storeId,
+  error = '',
+  availability = 'idle',
+  cooldown,
+  onStoreIdChange,
+  onStoreIdBlur,
+  onNotify,
+  children,
+}) {
   const [copied, setCopied] = useState(false)
 
   const url = buildStoreUrl(resolveLiveStoreId(storeId, store.storeId))
@@ -67,11 +85,21 @@ function StoreLinkSection({ store, storeId, onNotify, children }) {
   return (
     <SectionCard
       icon="link"
-      title="Link Toko"
-      subtitle="Bagikan alamat toko kamu di storefront."
+      title="Store ID & Link"
+      subtitle="Kelola Store ID dan bagikan alamat toko kamu di storefront."
       actions={children}
     >
       <div className="mt-1.5 flex flex-col gap-6">
+        <StoreIdField
+          storeId={storeId}
+          savedStoreId={store.storeId}
+          error={error}
+          availability={availability}
+          cooldown={cooldown}
+          onChange={onStoreIdChange}
+          onBlur={onStoreIdBlur}
+        />
+
         <div>
           <label
             htmlFor="store-link-url"
@@ -119,10 +147,10 @@ function StoreLinkSection({ store, storeId, onNotify, children }) {
               </button>
             </div>
           </div>
+          <p className="mt-2 text-[11px] text-secondary">
+            Link mengikuti Store ID kamu dan diperbarui otomatis.
+          </p>
         </div>
-        <p className="text-[11px] text-secondary">
-          Link mengikuti Store ID kamu dan diperbarui otomatis.
-        </p>
       </div>
     </SectionCard>
   )

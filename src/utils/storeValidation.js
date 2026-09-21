@@ -14,6 +14,7 @@
 import { isValidPhone } from '../services/authService'
 import { cityBelongsToProvince } from '../services/regionService'
 import { validateStoreId } from './storeId'
+import { isOperatingHoursValid, parseOperatingHours } from './operatingHours'
 
 /**
  * Validate a store location form.
@@ -76,6 +77,8 @@ export function validateStoreInformation(form) {
   }
   if (!String(form.operatingHours ?? '').trim()) {
     errors.operatingHours = 'Jam operasional wajib diisi.'
+  } else if (!isOperatingHoursValid(parseOperatingHours(form.operatingHours))) {
+    errors.operatingHours = 'Rentang jam operasional tidak valid.'
   }
 
   const whatsapp = String(form.whatsapp ?? '').trim()
@@ -92,7 +95,8 @@ export function validateStoreInformation(form) {
 
 /**
  * Allowed store-level Auto Archive threshold, days.
- * null disables auto archive ("Tidak ada" / "Never", both persist as null).
+ * null disables auto archive ("Never", persists as null). "Tidak ada" is not
+ * an option in the approved set.
  * Locked set from docs/PRODUCT.md §Auto Archive.
  */
 export const ALLOWED_AUTO_ARCHIVE_DAYS = new Set([1, 7, 30, 90, 180, 365])

@@ -108,7 +108,7 @@ describe('validateStoreInformation', () => {
 })
 
 describe('validateAutoArchiveDays', () => {
-  it('accepts null as disabled ("Tidak ada" / Never)', () => {
+  it('accepts null as disabled (Never)', () => {
     expect(validateAutoArchiveDays(null).valid).toBe(true)
     expect(validateAutoArchiveDays(undefined).valid).toBe(true)
   })

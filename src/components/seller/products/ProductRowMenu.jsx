@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { PRODUCT_STATUS } from '../../../constants/enums'
 import { useClickOutside } from '../../../hooks/useClickOutside'
 import { buildStoreProductUrl, resolveProductSlug } from '../../../utils/storefrontUrl'
 
 /**
  * Per-row action dropdown. Actions depend on product status (locked matrix):
- * - PUBLISHED: Lihat Produk, Edit, Archive, Feature / Unfeature, Sold Out.
- * - DRAFT: Edit, Publish, Archive. No "Lihat Produk", never featured.
- * - SOLD_OUT: Lihat Produk, Publish Kembali, Archive. No Edit.
+ * - PUBLISHED: Lihat Product, Edit, Archive, Feature / Unfeature, Sold Out.
+ * - DRAFT: Edit, Publish, Archive. No "Lihat Product", never featured.
+ * - SOLD_OUT: Lihat Product, Publish Kembali, Archive. No Edit.
  * - ARCHIVED: Detail Product (read-only internal view), Restore.
  *
  * @param {{
@@ -34,6 +34,7 @@ function ProductRowMenu({
 }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
+  const navigate = useNavigate()
   useClickOutside(menuRef, () => setOpen(false), open)
 
   const itemClass =
@@ -61,18 +62,19 @@ function ProductRowMenu({
         <div className="absolute right-0 top-full z-40 mt-1 w-52 rounded-xl border border-outline-variant/60 bg-surface-container-lowest py-1 shadow-xl">
           {product.status === PRODUCT_STATUS.PUBLISHED ||
           product.status === PRODUCT_STATUS.SOLD_OUT ? (
-            <a
-              href={buildStoreProductUrl(product.storeId, product.id, resolveProductSlug(product))}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
               className={itemClass}
-              onClick={close}
+              onClick={() => {
+                close()
+                navigate(buildStoreProductUrl(product.storeId, product.id, resolveProductSlug(product)))
+              }}
             >
               <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
                 visibility
               </span>
-              Lihat Produk
-            </a>
+              Lihat Product
+            </button>
           ) : null}
 
           {product.status === PRODUCT_STATUS.ARCHIVED ? (

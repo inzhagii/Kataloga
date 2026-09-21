@@ -314,16 +314,31 @@ describe('edit form keeps status (locked lifecycle)', () => {
 })
 
 describe('Product Unggulan (featured) rules', () => {
-  it('allows toggling featured on a SOLD_OUT product', async () => {
+  it('allows toggling featured on a PUBLISHED product', async () => {
     actAsStoreB()
-    const toggled = await toggleFeatured(101)
+    const toggled = await toggleFeatured(100)
     expect(toggled.featured).toBe(true)
-    expect(toggled.status).toBe(PRODUCT_STATUS.SOLD_OUT)
+    expect(toggled.status).toBe(PRODUCT_STATUS.PUBLISHED)
+  })
+
+  it('rejects toggling featured on a SOLD_OUT product', async () => {
+    actAsStoreB()
+    await expect(toggleFeatured(101)).rejects.toThrow(
+      'hanya dapat diaktifkan pada product yang berstatus PUBLISHED',
+    )
   })
 
   it('rejects toggling featured on an ARCHIVED product', async () => {
     actAsStoreB()
     await expect(toggleFeatured(102)).rejects.toThrow('tidak dapat menjadi Featured')
+  })
+
+  it('keeps the featured flag when a PUBLISHED Featured product becomes SOLD_OUT', async () => {
+    actAsStoreB()
+    await toggleFeatured(100)
+    const soldOut = await markSoldOut(100)
+    expect(soldOut.status).toBe(PRODUCT_STATUS.SOLD_OUT)
+    expect(soldOut.featured).toBe(true)
   })
 
   it('archiving clears the featured flag', async () => {
@@ -334,36 +349,72 @@ describe('Product Unggulan (featured) rules', () => {
     expect((await listPublicProducts(STORE_B_ID)).map((p) => p.id)).not.toContain(100)
   })
 
+  it('archiving a SOLD_OUT Featured product clears the featured flag', async () => {
+    actAsStoreB()
+    await toggleFeatured(100)
+    await markSoldOut(100)
+    const archived = await archiveProduct(100)
+    expect(archived.status).toBe(PRODUCT_STATUS.ARCHIVED)
+    expect(archived.featured).toBe(false)
+  })
+
   it('enforces the max-10 Product Unggulan limit per store', async () => {
     actAsStoreB()
     await toggleFeatured(100)
-    await toggleFeatured(101)
-    for (let i = 0; i < 8; i += 1) {
-      const draft = await createProduct({ name: `Draft featured ${i}` })
-      await toggleFeatured(draft.id)
+    for (let i = 0; i < 9; i += 1) {
+      const published = await createProduct({
+        name: `Featured ${i}`,
+        status: PRODUCT_STATUS.PUBLISHED,
+      })
+      await toggleFeatured(published.id)
     }
-    const eleventh = await createProduct({ name: 'Draft kesebelas' })
-    await expect(toggleFeatured(eleventh.id)).rejects.toThrow('Maksimal 10')
+    const extra = await createProduct({ name: 'Kesebelas', status: PRODUCT_STATUS.PUBLISHED })
+    await expect(toggleFeatured(extra.id)).rejects.toThrow('Maksimal 10')
   })
 
   it('enforces the max-10 limit through create and update', async () => {
     actAsStoreB()
     for (let i = 0; i < 10; i += 1) {
-      const draft = await createProduct({ name: `Draft featured ${i}` })
-      await toggleFeatured(draft.id)
+      await createProduct({ name: `Featured ${i}`, status: PRODUCT_STATUS.PUBLISHED, featured: true })
     }
-    await expect(createProduct({ name: 'Kelebihan', featured: true })).rejects.toThrow(
-      'Maksimal 10',
-    )
-    const extra = await createProduct({ name: 'Tambah satu lagi' })
+    await expect(
+      createProduct({ name: 'Kelebihan', status: PRODUCT_STATUS.PUBLISHED, featured: true }),
+    ).rejects.toThrow('Maksimal 10')
+    const extra = await createProduct({ name: 'Tambah satu lagi', status: PRODUCT_STATUS.PUBLISHED })
     await expect(updateProduct(extra.id, { featured: true })).rejects.toThrow('Maksimal 10')
   })
 
-  it('rejects enabling featured on an ARCHIVED product through update', async () => {
+  it('rejects enabling featured on an ARCHIVED product through toggle', async () => {
     actAsStoreB()
-    await expect(updateProduct(102, { featured: true })).rejects.toThrow(
-      'tidak dapat menjadi Featured',
-    )
+    const updated = await updateProduct(102, { featured: true })
+    expect(updated.status).toBe(PRODUCT_STATUS.ARCHIVED)
+    expect(updated.featured).toBe(false)
+  })
+
+  it('only ever features PUBLISHED products, but a normal edit preserves Featured on SOLD_OUT', async () => {
+    actAsStoreB()
+    const draft = await createProduct({ name: 'Draft unggulan', featured: true })
+    expect(draft.status).toBe(PRODUCT_STATUS.DRAFT)
+    expect(draft.featured).toBe(false)
+
+    const other = await createProduct({ name: 'Draft kedua' })
+    const updated = await updateProduct(other.id, { featured: true })
+    expect(updated.featured).toBe(false)
+
+    const soldOutUpdate = await updateProduct(101, { featured: true })
+    expect(soldOutUpdate.status).toBe(PRODUCT_STATUS.SOLD_OUT)
+    expect(soldOutUpdate.featured).toBe(false)
+
+    const archivedUpdate = await updateProduct(102, { name: 'Celana Chino Slim' })
+    expect(archivedUpdate.status).toBe(PRODUCT_STATUS.ARCHIVED)
+    expect(archivedUpdate.featured).toBe(false)
+
+    // Editing a SOLD_OUT Featured product (no featured intent) keeps Featured.
+    await toggleFeatured(100)
+    await markSoldOut(100)
+    const kept = await updateProduct(100, { name: 'Kaos Polos Premium Baru' })
+    expect(kept.status).toBe(PRODUCT_STATUS.SOLD_OUT)
+    expect(kept.featured).toBe(true)
   })
 })
 

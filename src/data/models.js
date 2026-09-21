@@ -28,7 +28,8 @@
  * @property {string} [province] - Province name (location, required when set).
  * @property {string} [city] - City/regency name, belongs to the province.
  * @property {string} [fullAddress] - Optional full street address.
- * @property {string} [operatingHours] - Operating hours.
+ * @property {string} [operatingHours] - Operating hours as a single wire string
+ *   (e.g. "Senin - Sabtu, 09:00 - 18:00"), composed by the structured editor.
  * @property {string} [whatsapp] - WhatsApp number.
  * @property {ExternalChannel[]} [channels] - External sales channels.
  * @property {boolean} [verified] - Verification status.

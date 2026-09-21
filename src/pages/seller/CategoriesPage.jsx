@@ -33,7 +33,6 @@ function CategoriesPage() {
     status,
     error,
     categories,
-    products,
     parents,
     childrenByParent,
     productCounts,
@@ -94,12 +93,13 @@ function CategoriesPage() {
 
   const stats = useMemo(() => {
     const subCount = categories.filter((category) => category.parentId !== null).length
+    const utamaCount = categories.filter((category) => category.parentId === null).length
     return {
-      utama: categories.filter((category) => category.parentId === null).length,
+      utama: utamaCount,
       sub: subCount,
-      totalProducts: String(products.length),
+      total: String(utamaCount + subCount),
     }
-  }, [categories, products])
+  }, [categories])
 
   const pageHeader = (
     <div className="mb-5">
@@ -253,7 +253,7 @@ function CategoriesPage() {
       <div className="mb-3 grid grid-cols-3 gap-3">
         <StatCard label="Kategori Utama" value={stats.utama} icon="account_tree" />
         <StatCard label="Sub Kategori" value={stats.sub} icon="category" />
-        <StatCard label="Total Produk" value={stats.totalProducts} icon="inventory_2" />
+        <StatCard label="Total Kategori" value={stats.total} icon="category" />
       </div>
 
       <button

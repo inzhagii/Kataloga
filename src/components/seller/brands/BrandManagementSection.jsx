@@ -12,7 +12,7 @@ import { createBrand, updateBrand, deleteBrand } from '../../../services/brandSe
  * Brand Management section (inside /seller/categories). Lists the store's
  * brands as a card grid (desktop 4 columns, mobile 2), supports create/edit,
  * blocks deleting a brand that is still used by products, and exposes
- * "Lihat Product" which applies the brand filter on /seller/products.
+ * "Lihat Produk" which applies the brand filter on /seller/products.
  */
 function BrandManagementSection() {
   const { status, error, brands, productCounts, reload } = useBrands()

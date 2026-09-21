@@ -35,15 +35,15 @@ describe('SellerSidebar', () => {
     expect(html).toContain('href="/seller/dashboard"')
   })
 
-  it('renders the locked feature order with Categories last', () => {
+  it('renders the locked feature order with Categories right after Products', () => {
     const html = render()
     const order = [
       'Dashboard',
       'Products',
+      'Categories',
       'Customer Interest',
       'Recent Activity',
       'My Store',
-      'Categories',
     ]
     const positions = order.map((label) => indexOfLabel(html, label))
     positions.forEach((position) => expect(position).toBeGreaterThan(-1))

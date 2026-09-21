@@ -118,6 +118,7 @@ Store ID adalah identifier yang digunakan pada public URL.
 - Store ID wajib saat membuat toko.
 - Store ID harus unique.
 - Store ID dapat diubah seller.
+- Store ID maksimal 50 karakter.
 - Perubahan Store ID hanya dapat dilakukan maksimal satu kali dalam 30 hari.
 - Store ID tidak menggunakan nama toko secara otomatis sebagai satu-satunya identifier yang tidak dapat diubah.
 - Format Store ID: huruf kecil, angka, dan tanda hubung (`-`) saja.
@@ -125,10 +126,12 @@ Store ID adalah identifier yang digunakan pada public URL.
 - Tidak ada tanda hubung berurutan.
 - Store ID di-trim.
 - Availability Store ID diperiksa saat Store ID valid, saat Store ID berubah, dan diperiksa ulang pada saat submit.
+- Identitas database store adalah numeric Store ID (`store.id`); `store_id` adalah identifier publik yang dipakai pada public URL.
+- Frontend tidak menjadikan `store_id` sebagai source of truth ownership; ownership ditentukan backend dari session.
 
 ### Historical Store ID
 
-Jika Store ID berubah, URL lama tetap berlaku:
+Jika Store ID berubah, URL lama tetap berlaku untuk sementara:
 
 ```text
 /arya
@@ -143,13 +146,15 @@ Jika diubah lagi:
 → /toko-arya-bandung
 ```
 
-Semua historical Store ID tetap menjadi valid alias yang menuju store saat ini (redirect).
+Setiap historical Store ID menjadi valid alias yang redirect ke store saat ini selama **90 hari** sejak perubahan, lalu kedaluwarsa.
+
+Historical aliases TIDAK bersifat permanen.
 
 Historical aliases adalah behavior yang dimiliki backend.
 
 Frontend tidak memelihara alias mapping sendiri.
 
-Detail backend (redirect/alias) belum diputuskan — needs backend confirmation.
+Periode 90 hari dan mekanisme kedaluwarsa menjadi tanggung jawab backend — needs backend confirmation untuk detail teknisnya.
 
 ### Create Store
 
@@ -660,9 +665,11 @@ Category dapat memberikan rekomendasi attribute.
 
 Seller tetap dapat menambahkan custom attributes.
 
-Product Details **wajib untuk Publish**.
+Product Details **opsional untuk Publish**.
 
-Namun Draft dapat disimpan walaupun Product Details belum lengkap.
+Customer melihat Product Details dalam format yang clean.
+
+Draft dapat disimpan walaupun Product Details belum lengkap.
 
 Contoh:
 
@@ -718,20 +725,21 @@ UI Auto Archive terletak pada halaman Archive (`/seller/products/archived`), BUK
 
 Nilai yang diperbolehkan:
 
-- Tidak ada (default, menonaktifkan auto archive)
+- Never (default, auto archive nonaktif, direpresentasikan `null`)
 - 1 hari
 - 7 hari
 - 30 hari
 - 90 hari
 - 180 hari
-- 365 hari
-- Never (auto archive nonaktif, tetapi seller tetap bisa manual archive)
+- 360 hari
 
-`Tidak ada` dan `Never` sama-sama menonaktifkan auto archive dan TIDAK memblokir manual archive.
+`Never` (= null) menonaktifkan auto archive dan TIDAK memblokir manual archive.
+
+TIDAK ada opsi "Tidak ada" maupun nilai 365 hari.
 
 Seller tidak boleh memilih nilai lain selain daftar tersebut.
 
-Threshold dihitung dari durasi waktu produk menjadi SOLD_OUT.
+Threshold dihitung dari durasi waktu produk menjadi SOLD_OUT (`sold_out_at`).
 
 Perubahan setting diterapkan terhadap durasi SOLD_OUT yang sudah berjalan.
 
@@ -784,11 +792,15 @@ SOLD_OUT dapat tetap tampil pada katalog/storefront sesuai jendela auto archive.
 
 Reactivation dari SOLD_OUT menghasilkan:
 
-`SOLD_OUT → PUBLISHED`
+`SOLD_OUT → PUBLISHED` (publish kembali langsung)
+
+ATAU
+
+`SOLD_OUT → DRAFT` (untuk diedit sebelum republish)
 
 Label aksi seller untuk reaktivasi SOLD_OUT adalah "Publish Kembali".
 
-Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+Reaktivasi ke PUBLISHED TIDAK mengubah status Product Unggulan (bila masih SOLD_OUT dengan featured, status tetap berlanjut).
 
 SOLD_OUT adalah lifecycle status, bukan availability field.
 
@@ -818,13 +830,15 @@ Bukan Published.
 
 `SOLD_OUT → PUBLISHED`
 
+`SOLD_OUT → DRAFT`
+
+`DRAFT → PUBLISHED`
+
 `PUBLISHED → ARCHIVED`
 
 `DRAFT → ARCHIVED`
 
 `ARCHIVED → DRAFT`
-
-Tidak ada `SOLD_OUT → DRAFT`.
 
 ### Product Status Actions (Seller)
 
@@ -836,7 +850,7 @@ Tindakan yang tersedia per status pada seller management (list Products / Archiv
   - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
 - SOLD_OUT: Lihat Product, Publish Kembali, Archive
   - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
-  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+  - Reaktivasi ke PUBLISHED TIDAK mengubah status Product Unggulan (bila masih SOLD_OUT dengan featured, status tetap berlanjut).
 - ARCHIVED (halaman Archive): Detail Product, Restore
   - Halaman Archive TIDAK memiliki aksi "Lihat Product".
   - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
@@ -908,9 +922,9 @@ Untuk Publish Product:
 Required:
 
 - Product Name
-- Product Photo (1-5)
+- Slug
+- Product Photo (1-5, tepat satu foto utama)
 - Category
-- Product Details
 - Description
 - Condition
 - Price
@@ -918,8 +932,15 @@ Required:
 Optional:
 
 - Brand
+- Product Details / attributes
 - External Product Links
 - Product Unggulan
+
+Catatan:
+
+- Price bernilai 0 (gratis) adalah valid untuk Publish.
+- Product Details / attributes tidak wajib untuk Publish (jangan membuat semua custom attributes wajib).
+- Slug adalah komponen URL kanonik (readable), unique dalam satu store, dan dikelola backend.
 
 Draft dapat disimpan walaupun field publish belum lengkap.
 
@@ -969,11 +990,11 @@ Ordering Product Unggulan:
 
 - Featured Published tampil lebih dahulu daripada Published lainnya.
 
-Product yang berubah menjadi SOLD_OUT otomatis kehilangan status Product Unggulan (`is_featured = false`).
+Product yang berubah menjadi SOLD_OUT TETAP mempertahankan status Product Unggulan (`is_featured` tetap).
 
-Reaktivasi SOLD_OUT ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+Reaktivasi SOLD_OUT ke PUBLISHED TIDAK mengubah status Product Unggulan.
 
-Feature dapat diaktifkan/dinonaktifkan hanya pada product status PUBLISHED.
+Feature dapat diaktifkan/dinonaktifkan hanya pada product status PUBLISHED atau SOLD_OUT.
 
 DRAFT tidak pernah Product Unggulan.
 
@@ -1327,6 +1348,14 @@ Generic browsing
 
 Customer yang melakukan beberapa aktivitas tetap merupakan satu customer.
 
+Customer Interest direkam sebagai **data agregat** (bukan per klik):
+
+- key agregasi: store + customer + product + context + channel
+- field: id, store_id, customer_user_id, product_id (nullable; null untuk context STORE), context (`STORE` | `PRODUCT`), channel, first_activity_at, last_activity_at, total_clicks
+- klik berulang pada segmen yang sama menaikkan `total_clicks`, bukan membuat row baru
+- TIDAK ada field `channel_type`; `channel` adalah representasi destination/action (contoh: "whatsapp", "shopee", "tokopedia")
+- `context` `STORE` = Store Landing; `context` `PRODUCT` = Product Detail
+
 Contoh:
 
 Customer A:
@@ -1351,7 +1380,9 @@ Customer identity display:
 - Email account → email
 - Phone account → phone
 
-Total Interest berarti total record interaksi, bukan jumlah customer unique.
+Total Interest berarti total klik/interaksi (total_clicks), bukan jumlah customer unique.
+
+Redirect/WhatsApp destination hanya dibuka SETELAH pencatatan Customer Interest sukses (response API sukses).
 
 ### Self-Store Exclusion (Owner Activity)
 
@@ -1429,8 +1460,8 @@ Tanpa weekday.
 
 Context field:
 
-- Store Landing
-- Product Detail
+- STORE (Store Landing)
+- PRODUCT (Product Detail)
 
 Membedakan aktivitas yang berasal dari Store Landing dan Product Detail.
 
@@ -1479,11 +1510,15 @@ Recent Activity
 Menampilkan:
 
 Product Published
-Product Edited
+Product Updated
 Product Sold Out
 Product Reactivated
 Product Archived
 Product Restored
+Category Created
+Category Updated
+Announcement Created
+Announcement Updated
 Store Updated
 
 Dashboard menampilkan 4 aktivitas terbaru (newest first).
@@ -1495,7 +1530,6 @@ Marketplace Click
 Product View
 Share
 Login/logout
-Category create/edit/delete
 
 Customer Interest dan Recent Activity ditampilkan berdampingan (side-by-side) pada desktop.
 
@@ -1564,9 +1598,11 @@ Auto archive SOLD_OUT mengikuti setting store (Auto Archive), bukan pilihan per-
 
 Reactivation dari SOLD_OUT:
 
-SOLD_OUT → PUBLISHED
+SOLD_OUT → PUBLISHED (langsung ke PUBLISHED, label "Publish Kembali")
 
-langsung ke PUBLISHED.
+ATAU
+
+SOLD_OUT → DRAFT (untuk diedit sebelum republish).
 
 Layout Seller Products:
 
@@ -1619,7 +1655,8 @@ Archive Detail Product:
 Auto Archive:
 
 - setting level store yang UI-nya terletak pada halaman Archive.
-- nilai: Tidak ada (default) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 365 hari / Never.
+- nilai: Never (default, `null`) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 360 hari.
+- TIDAK ada opsi "Tidak ada" maupun nilai 365 hari.
 - perubahan diterapkan dari popover pada halaman Archive, bukan pada My Store.
 
 Category filter pada seller products menggunakan URL query sebagai source of truth:
@@ -1675,23 +1712,17 @@ Tidak ada:
 
 di dalam Edit Product.
 
-Product Edited activity hanya dibuat ketika:
+Activity Product Updated (PRODUCT_UPDATED) dibuat oleh backend ketika:
 
-- tombol Simpan diklik,
-- dan perubahan berhasil dipersist.
+- product diubah dan berhasil dipersist.
 
-Tidak ada activity untuk:
-
-- membuka form edit,
-- perubahan belum disimpan,
-- Batal/Cancel,
-- validation failure,
-- request API gagal.
+Frontend TIDAK membuat activity sendiri (tidak ada `POST /activities`).
 
 Conceptual implementation:
 
 <ProductForm mode="create" />
 <ProductForm mode="edit" />
+
 36. Seller Navigation
 
 Desktop menggunakan reusable Seller Sidebar.
