@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import EmptyState from '../../components/shared/EmptyState'
+import ChangePasswordSection from '../../components/seller/account/ChangePasswordSection'
 import ProfileForm from '../../components/seller/account/ProfileForm'
+import RecoveryEmailSection from '../../components/seller/account/RecoveryEmailSection'
 import SellerStoreCard from '../../components/seller/account/SellerStoreCard'
 import Toast from '../../components/shared/Toast'
 import { useAuth } from '../../hooks/useAuth'
@@ -14,37 +15,11 @@ function AccountPage() {
     return null
   }
 
-  if (!user.hasStore) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Profile</h1>
-        <EmptyState
-          icon="storefront"
-          title="Kamu belum membuat toko"
-          description="Buat toko terlebih dahulu untuk mengelola informasi dan katalog kamu."
-          action={
-            <a
-              href="/create-store"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-                add
-              </span>
-              Buat Toko
-            </a>
-          }
-        />
-      </div>
-    )
-  }
-
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Profile</h1>
-          <p className="mt-1 text-sm text-secondary">Profil akun dan ringkasan toko kamu.</p>
-        </div>
+      <div className="mb-6 text-center sm:text-left">
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Profile</h1>
+        <p className="mt-1 text-sm text-secondary">Profil akun, keamanan, dan ringkasan toko kamu.</p>
       </div>
 
       <div className="flex flex-col gap-5">
@@ -56,7 +31,12 @@ function AccountPage() {
             setAvatarError('')
           }}
         />
-        <SellerStoreCard />
+        <ChangePasswordSection
+          user={user}
+          onSaved={() => setToast({ type: 'success', message: 'Password berhasil diubah.' })}
+        />
+        <RecoveryEmailSection user={user} />
+        {user.hasStore ? <SellerStoreCard /> : null}
       </div>
 
       {avatarError ? (

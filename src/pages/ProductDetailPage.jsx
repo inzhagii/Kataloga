@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useProductDetail } from '../hooks/useProductDetail'
 import { useAuth } from '../hooks/useAuth'
-import { INTEREST_TYPE } from '../constants/enums'
+import { INTEREST_TYPE, INTEREST_CONTEXT } from '../constants/enums'
 import { recordInterest } from '../services/customerInterestService'
 import { consumePendingAction, setPendingAction } from '../utils/pendingAction'
+import { buildStoreProductUrl, resolveProductSlug } from '../utils/storefrontUrl'
 import StoreNavbar from '../components/storefront/StoreNavbar'
 import StoreFooter from '../components/storefront/StoreFooter'
 import ProductGallery from '../components/storefront/ProductGallery'
@@ -16,20 +17,20 @@ import ShareSheet from '../components/storefront/ShareSheet'
 import EmptyState from '../components/shared/EmptyState'
 
 /**
- * Public product detail for a store (/{storeId}/products/{productId}).
+ * Public product detail for a store (/{storeId}/product/{productId}/{slug}).
  * Route enforces store context. WhatsApp and Marketplace are the only actions
  * that record Customer Interest (product-scoped); guests are routed through
  * Login/Register first and the intended action auto-continues on return.
  * Product viewing and sharing are NOT tracked.
  */
 function ProductDetailPage() {
-  const { storeId, productId } = useParams()
+  const { storeId, productId, slug } = useParams()
   const navigate = useNavigate()
   const { user, authLoaded } = useAuth()
   const { status, store, product, error, reload } = useProductDetail(storeId, productId)
   const [shareTarget, setShareTarget] = useState(null)
 
-  const returnPath = `/${storeId}/products/${productId}`
+  const returnPath = buildStoreProductUrl(storeId, productId, slug)
 
   function buildWhatsAppUrl() {
     return `https://wa.me/${store.whatsapp}?text=${encodeURIComponent(
@@ -66,8 +67,11 @@ function ProductDetailPage() {
       storeId,
       customerName: user.name,
       customerId: user.id,
+      customerEmail: user.email ?? null,
+      customerPhone: user.phone ?? null,
       productId: product.id,
       productName: product.name,
+      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
       channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
     })
@@ -81,8 +85,11 @@ function ProductDetailPage() {
       storeId,
       customerName: user.name,
       customerId: user.id,
+      customerEmail: user.email ?? null,
+      customerPhone: user.phone ?? null,
       productId: product.id,
       productName: product.name,
+      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
       channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: channel.name,
       externalUrl: channel.url,
@@ -106,8 +113,11 @@ function ProductDetailPage() {
         storeId,
         customerName: user.name,
         customerId: user.id,
+        customerEmail: user.email ?? null,
+        customerPhone: user.phone ?? null,
         productId: product.id,
         productName: product.name,
+        context: INTEREST_CONTEXT.PRODUCT_DETAIL,
         channelType: INTEREST_TYPE.WHATSAPP_CLICK,
         channel: 'WhatsApp',
       })
@@ -116,8 +126,11 @@ function ProductDetailPage() {
         storeId,
         customerName: user.name,
         customerId: user.id,
+        customerEmail: user.email ?? null,
+        customerPhone: user.phone ?? null,
         productId: product.id,
         productName: product.name,
+        context: INTEREST_CONTEXT.PRODUCT_DETAIL,
         channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
         channel: action.channel,
         externalUrl: action.externalUrl,
@@ -125,6 +138,21 @@ function ProductDetailPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, authLoaded, user, returnPath])
+
+  /**
+   * Canonicalize a mismatched slug once the product is known. Deterministic,
+   * non-throwing, and never loops: after the replace the URL slug equals the
+   * resolved slug, so a second run is a no-op.
+   */
+  useEffect(() => {
+    if (status !== 'ready' || !store || !product) {
+      return
+    }
+    const expectedSlug = resolveProductSlug(product)
+    if (expectedSlug !== slug) {
+      navigate(buildStoreProductUrl(store.storeId, product.id, expectedSlug), { replace: true })
+    }
+  }, [status, store, product, slug, navigate])
 
   function handleShare() {
     if (!product) {

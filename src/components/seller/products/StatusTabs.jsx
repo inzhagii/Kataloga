@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
+import ArchivedProductsLink from './ArchivedProductsLink'
 
 /**
  * Status tabs for /seller/products: Active (PUBLISHED only), Draft and
- * Sold Out as segmented tabs. Archived lives on its own route and is shown
- * as a count link on the right (locked rule: archived products have a
- * separate page).
+ * Sold Out as segmented tabs. Archive access lives on the right of the tab row
+ * on desktop (and next to Filter on mobile); archived products have their own
+ * page.
  * @param {{
  *   tab: 'active'|'draft'|'soldOut',
  *   onTabChange: (tab: 'active'|'draft'|'soldOut') => void,
@@ -45,18 +45,10 @@ function StatusTabs({ tab, onTabChange, counts, archivedCount }) {
         ))}
       </div>
 
-      <Link
-        to="/seller/products/archived"
-        className="mb-2 inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1.5 text-xs font-semibold text-on-surface transition-colors hover:border-outline"
-      >
-        <span className="material-symbols-outlined text-[16px] text-outline" aria-hidden="true">
-          archive
-        </span>
-        Archived
-        <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs font-semibold text-secondary">
-          {archivedCount}
-        </span>
-      </Link>
+      <ArchivedProductsLink
+        count={archivedCount}
+        className="mb-2 hidden lg:inline-flex"
+      />
     </div>
   )
 }

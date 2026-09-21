@@ -74,32 +74,46 @@ describe('login', () => {
 describe('register', () => {
   it('rejects when password and re-password differ', async () => {
     await expect(
-      register({ emailOrPhone: 'new@kataloga.test', password: 'a', repassword: 'b' }),
+      register({ emailOrPhone: 'new@kataloga.test', password: 'password1', repassword: 'password2' }),
     ).rejects.toThrow('tidak sama')
   })
 
-  it('creates an account from an email and falls back to "-" for the name', async () => {
-    const user = await register({
+  it('starts email verification and does not activate the account yet', async () => {
+    const result = await register({
       emailOrPhone: 'new@kataloga.test',
-      password: 'rahasia',
-      repassword: 'rahasia',
+      password: 'password1',
+      repassword: 'password1',
     })
-    expect(user.email).toBe('new@kataloga.test')
-    expect(user.phone).toBeNull()
-    expect(user.name).toBe('-')
-    expect(user.hasStore).toBe(false)
+    expect(result.requiresVerification).toBe(true)
+    expect(result.channel).toBe('email')
+    expect(result.user.email).toBe('new@kataloga.test')
+    expect(result.user.emailVerified).toBe(false)
+    expect(result.user.hasStore).toBe(false)
+    expect(result.user.name).toBe('-')
   })
 
-  it('creates an account from a phone and normalizes it', async () => {
-    const user = await register({
+  it('activates a phone account immediately, normalizing the number', async () => {
+    const result = await register({
       emailOrPhone: '081298765444',
-      password: 'rahasia',
-      repassword: 'rahasia',
+      password: 'password1',
+      repassword: 'password1',
       name: 'Budi',
     })
-    expect(user.email).toBeNull()
-    expect(user.phone).toBe('6281298765444')
-    expect(user.name).toBe('Budi')
+    expect(result.requiresVerification).toBe(false)
+    expect(result.channel).toBe('phone')
+    expect(result.user.email).toBeNull()
+    expect(result.user.phone).toBe('6281298765444')
+    expect(result.user.name).toBe('Budi')
+  })
+
+  it('rejects a duplicate identifier', async () => {
+    await expect(
+      register({
+        emailOrPhone: 'seller@kataloga.test',
+        password: 'password1',
+        repassword: 'password1',
+      }),
+    ).rejects.toThrow('sudah terdaftar')
   })
 })
 

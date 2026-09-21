@@ -16,9 +16,9 @@ const VARIANTS = {
   },
   search: {
     icon: 'search_off',
-    title: 'Tidak ada hasil',
+    title: 'Tidak ada produk yang ditemukan.',
     description:
-      'Coba ubah kata kunci pencarian atau atur ulang filter untuk hasil lainnya.',
+      'Coba ubah kata kunci pencarian atau reset filter untuk menampilkan produk lainnya.',
   },
   archived: {
     icon: 'archive',

@@ -1,5 +1,20 @@
 # KATALOGA — AI Coding Agent Instructions
 
+## 0. Project Nature & Role
+
+Kataloga repository ini adalah project **frontend-only** (React/TypeScript).
+
+Role AI agent pada repository ini:
+
+- **Senior Frontend Engineer.**
+
+Batasan:
+
+- TIDAK mengubah/menambah/menghapus backend, database, schema, atau API server code di repository ini.
+- TIDAK menginstal dependency tanpa persetujuan.
+- TIDAK mengimplementasikan business logic backend; jika ditemukan gap backend, identifikasi dan dokumentasikan ke `docs/API-CONTRACT.md` sebagai item yang butuh konfirmasi backend, bukan diimplementasikan secara asal.
+- TIDAK mengarang endpoint API baru selain proposal yang sudah tercatat.
+
 ## 1. Project Overview
 
 Kataloga adalah platform katalog/storefront yang membantu seller:
@@ -165,7 +180,7 @@ Public:
 /login
 /register
 /{storeId}
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 
 Seller:
 
@@ -231,13 +246,24 @@ Desktop seller menggunakan satu reusable sidebar.
 
 Gunakan:
 
+Kataloga
+
+(brand link ke Dashboard)
+
 Dashboard
 Products
-Categories
 Customer Interest
+Recent Activity
 My Store
-Profile
+Categories
+[ User / Account Card ]
 Logout
+
+Tidak ada item "Profile" terpisah pada sidebar desktop.
+
+Tidak ada item "Archive" pada sidebar desktop.
+
+User/Account Card merupakan akses ke halaman Profile (/seller/account).
 
 Jangan membuat sidebar berbeda-beda untuk setiap halaman.
 
@@ -250,9 +276,19 @@ Mobile menggunakan:
 BottomNavigation
 MoreMenu / MoreSheet
 
-3 fitur utama berada di bottom navigation.
+Bottom navigation berisi:
 
-Fitur lainnya berada di More.
+Dashboard
+Products
+Customer Interest
+
+Fitur lainnya berada di More:
+
+Recent Activity
+My Store
+Categories
+Profile
+Logout
 
 10. Product Rules
 
@@ -267,31 +303,120 @@ Jangan menggunakan ACTIVE sebagai database status.
 
 Lifecycle:
 
-DRAFT → PUBLISHED → SOLD_OUT → PUBLISHED
+DRAFT → PUBLISHED
+PUBLISHED → SOLD_OUT
+SOLD_OUT → PUBLISHED
 PUBLISHED → ARCHIVED
+DRAFT → ARCHIVED
 ARCHIVED → DRAFT
+
+Tidak ada SOLD_OUT → DRAFT.
+
+Reaktivasi SOLD_OUT langsung ke PUBLISHED.
+
+Tidak ada konsep Product availability (AVAILABLE / SOLD_OUT) pada V1.
 
 SOLD_OUT adalah lifecycle status, BUKAN availability field.
 
-Storefront/catalog aktif hanya berisi produk PUBLISHED.
+SOLD_OUT tidak boleh menampilkan "Always Sold Out permanen" di katalog.
 
-SOLD_OUT dan DRAFT tidak termasuk katalog aktif.
+### Auto Archive (store-level)
+
+Auto Archive adalah setting level store.
+
+UI Auto Archive terletak pada halaman Archive (/seller/products/archived), BUKAN pada My Store.
+
+Nilai yang diperbolehkan:
+
+- Tidak ada (default, menonaktifkan auto archive)
+- 1 hari
+- 7 hari
+- 30 hari
+- 90 hari
+- 180 hari
+- 365 hari
+- Never (auto archive nonaktif, tetapi seller tetap bisa manual archive)
+
+`Tidak ada` dan `Never` sama-sama menonaktifkan auto archive dan TIDAK memblokir manual archive.
+
+Threshold dihitung dari durasi waktu product menjadi SOLD_OUT.
+
+SOLD_OUT yang melewati threshold auto archive menjadi ARCHIVED dan tidak tampil di katalog.
+
+Perubahan setting diterapkan sesuai durasi SOLD_OUT yang sudah berjalan.
+
+Bukan model per-produk yang memilih retention terpisah.
+
+SOLD_OUT yang masih dalam jendela auto archive tetap tampil di katalog aktif dengan indikasi Sold Out.
+
+Auto archive scheduler adalah backend behavior; frontend hanya mengirim nilai setting ini.
+
+### Product Unggulan
+
+Product Unggulan adalah properti boolean terpisah di product.
+
+Maksimum 10 Product Unggulan per store.
+
+Feature dapat diaktifkan/dinonaktifkan hanya pada product status PUBLISHED.
+
+DRAFT tidak pernah Product Unggulan.
+
+Product ARCHIVED tidak pernah Product Unggulan.
+
+Archiving otomatis menghapus status Product Unggulan.
+
+Product yang berubah menjadi SOLD_OUT otomatis kehilangan status Product Unggulan (is_featured = false).
+
+Reaktivasi SOLD_OUT ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+
+Katalog aktif berisi:
+
+PUBLISHED
+SOLD_OUT yang masih dalam jendela auto archive
+
+Urutan katalog:
+
+Featured Published → Published lebih baru → Published lebih lama → Sold Out
+
+DRAFT dan ARCHIVED tidak termasuk katalog aktif.
 
 Dashboard:
 
 Active Products = PUBLISHED
 
-SOLD_OUT count terpisah.
+"Active Products" adalah label dashboard/catalog, bukan status database/lifecycle.
+
+Produk SOLD OUT tetap dapat dilihat pelanggan.
 
 Draft terpisah.
+
+Public catalog visibility:
+
+PUBLISHED tampil publik
+SOLD_OUT yang masih dalam jendela auto archive tampil publik
+ARCHIVED tidak tampil publik
+DRAFT tidak tampil publik
 
 Restore:
 
 ARCHIVED → DRAFT
 
-Bukan:
+### Product Status Actions (Seller)
 
-ARCHIVED → PUBLISHED
+Tindakan yang tersedia per status pada seller management (list Products / Archived):
+
+- PUBLISHED (Active): Lihat Product, Edit, Archive, Feature / Unfeature
+- DRAFT: Edit, Publish, Archive
+  - Tidak ada aksi Lihat Product pada DRAFT.
+  - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
+- SOLD_OUT: Lihat Product, Publish Kembali, Archive
+  - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
+  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+- ARCHIVED (halaman Archive): Detail Product, Restore
+  - Halaman Archive TIDAK memiliki aksi "Lihat Product".
+  - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
+  - Restore tersedia dari menu aksi pada list, mengubah ARCHIVED → DRAFT.
+
 11. Product Publish Validation
 
 Untuk Publish, field berikut wajib:
@@ -308,7 +433,7 @@ Optional:
 
 Brand
 External Product Links
-Featured
+Product Unggulan
 
 Draft boleh incomplete.
 
@@ -337,9 +462,11 @@ lowStock
 
 kecuali requirement baru sudah disetujui.
 
-Jangan memakai perilaku lama "Sold Out tetap ditampilkan" di katalog/storefront.
+Katalog aktif berisi PUBLISHED dan SOLD_OUT yang masih dalam jendela auto archive.
 
-Katalog/catalog aktif hanya berisi produk PUBLISHED.
+Jangan memakai perilaku "Sold Out selalu tampil permanen" di katalog/storefront.
+
+SOLD_OUT yang melewati auto archive menjadi ARCHIVED dan tidak tampil di katalog.
 14. Product Category
 
 Product memiliki tepat satu category pada V1.
@@ -362,11 +489,15 @@ Seller dapat membuat custom category yang scoped ke store.
 
 Seller dapat membuat Kategori Utama baru langsung dari form pembuatan category.
 
-Setiap category memiliki "Lihat Product".
+Setiap category memiliki "Lihat Produk".
 
-"Lihat Product" mengarah ke:
+"Lihat Produk" mengarah ke:
 
 /seller/products?category=...
+
+Brand card pada halaman Categories juga menggunakan aksi "Lihat Produk" yang mengarah ke:
+
+/seller/products?brand=...
 
 Category filter pada seller products menggunakan URL query sebagai source of truth.
 
@@ -375,6 +506,18 @@ Category yang masih digunakan product tidak boleh dihapus.
 Kategori Utama yang masih memiliki child tidak boleh dihapus.
 
 Tidak ada cascade delete.
+
+Hitung penggunaan product kategori:
+
+Kategori Utama count mencakup product di descendant-nya (Sub Kategori).
+
+Contoh:
+
+Computer (5)
+└── Laptop (3)
+└── Desktop (2)
+
+Computer = aggregate usage 5 product.
 
 15. Product Details
 
@@ -465,8 +608,21 @@ SHARE
 LOGIN
 LOGOUT
 CATEGORY_ACTIVITY
+STORE_VISIT
 
 Marketplace activity harus menyimpan channel yang dipilih.
+
+Identitas customer yang direkam:
+
+Email
+Phone
+
+Tidak ada uploaded customer profile photo pada V1.
+
+Activity owner di store miliknya sendiri TIDAK dicatat:
+
+- seller membuka WhatsApp/Marketplace pada storefront miliknya sendiri → bukan Customer Interest.
+- Frontend harus menghindari pencatatan; backend diharapkan menegakkan.
 
 Contoh:
 
@@ -480,6 +636,17 @@ Customer yang sama dapat memiliki beberapa activity.
 Jangan membuat customer record baru untuk setiap activity.
 
 Total Interest berarti total record interaksi, bukan jumlah customer unique.
+
+Customer Interest cards (Dashboard) menggunakan hierarchy:
+
+1. Channel name di atas
+2. Icon channel rata kanan (align right)
+3. Activity count besar dan bold sebagai focal point
+4. Teks pendukung "aktivitas minat" (contoh total, dalam bahasa "aktivitas minat", bukan "7 Minat")
+
+Desktop: card-channel berbagi lebar yang tersedia secara merata (3 card side-by-side) tanpa fixed width memaksa.
+
+Mobile: card boleh horizontal scroll.
 
 Detail Customer Interest menampilkan:
 
@@ -508,15 +675,33 @@ Recent Activity seller hanya mencakup:
 
 Product Published
 Product Edited
+Product Sold Out
+Product Reactivated
+Product Archived
+Product Restored
 Store Updated
 
-Dashboard menampilkan "Lihat Semua".
+Dashboard menampilkan 4 aktivitas terbaru dan "Lihat Semua".
 
 Lihat Semua membuka route:
 
 /seller/activities
 
 Halaman tersebut adalah list Recent Activity lengkap dan menyediakan "Kembali" ke Dashboard.
+
+Filter pada halaman /seller/activities menggunakan TANGGAL TUNGGAL (single date), bukan date range.
+
+Pemilihan tanggal menggunakan date picker, bukan input teks manual.
+
+Date display:
+
+12.09.2026
+
+Datetime display:
+
+12.09.2026 · 18:02
+
+Tanpa weekday.
 
 Customer Interest tidak boleh muncul di Recent Activity.
 
@@ -603,22 +788,35 @@ Store ID tidak ditampilkan secara visual pada Store Landing.
 
 Store Link diturunkan dari Store ID saat ini dan ditampilkan di My Store.
 
+Semua historical Store ID tetap menjadi valid alias yang redirect ke store saat ini.
+
+Historical aliases adalah behavior backend-owned.
+
+Frontend tidak memelihara alias mapping sendiri.
+
 23. Public Store URL
 
 Format:
 
 /{storeId}
 
+Product Listing:
+
+/{storeId}/products
+
 Product:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 
 productId adalah public numeric product ID.
+
+slug adalah URL slug dari Product Name.
 
 Contoh:
 
 /toko-komputer-jaya
-/toko-komputer-jaya/products/20
+/toko-komputer-jaya/products
+/toko-komputer-jaya/product/20/laptop-asus-rog
 24. Store Landing
 
 Store Landing harus:
@@ -628,18 +826,32 @@ clean,
 easy to scan,
 focused on catalog.
 
+Storefront navbar berisi:
+
+Store Logo
+Store Name
+City/Province
+
+Bukan: WhatsApp, Marketplace, atau Full Address di navbar.
+
 Desktop actions:
 
-WhatsApp
+Hubungi via WhatsApp
 Marketplace
 Share
 
 Mobile:
 
-WhatsApp
+Hubungi via WhatsApp
 Marketplace + Share
 
 Store ID tidak ditampilkan.
+
+Store Landing mengarah ke Product Listing:
+
+/{storeId}/products
+
+yang menyediakan search, filter, sort, dan product grid.
 
 25. Store Share
 
@@ -665,6 +877,10 @@ Share bukan Customer Interest.
 Share analytics belum menjadi scope V1.
 
 27. Search / Filter / Sort
+
+Search, filter, dan sort customer berada di Product Listing:
+
+/{storeId}/products
 
 Search hanya mencari dalam current seller store.
 
@@ -704,42 +920,97 @@ Price High → Low
 
 Tidak ada availability ordering/grouping.
 
+Tidak ada route tambahan untuk search/filter/sort.
+
 28. Product Card
 
-Product card menampilkan:
+Product information (urutan):
 
-Condition badge
-Product image
-Product name
-Category
-Price
-Lihat Detail
-Share icon
+1. Product image
+2. Category
+3. Product name
+4. Price
+5. Condition badge
+6. Product Unggulan indicator (jika featured)
+
+Price harus bold dan lebih menonjol dibandingkan nama produk.
+
+Ditampilkan tanpa:
+
+Brand
+SKU
+Availability
+
+Conditional:
+
+SOLD OUT indicator (jika product SOLD_OUT yang masih dalam auto archive)
+
+SOLD OUT card menggunakan visual state GRAY yang jelas berbeda dari card aktif, lebih dari sekadar teks "Sold Out". Sold Out BUKAN state merah/error.
+
+Actions (terpisah dari urutan informasi; posisi mengikuti layout yang sudah disetujui):
+
+- Lihat Detail
+- Share icon
 
 Tidak menampilkan:
 
-Brand
 WhatsApp
 Marketplace
 Contact Seller
-Sold Out state (SOLD_OUT tidak muncul di katalog aktif)
+
+DRAFT dan ARCHIVED tidak pernah menjadi public product card.
 
 29. Product Detail
 
 Hierarchy:
 
+Brand (jika tersedia) dengan format eksplisit "Brand : X"
+Product Unggulan indicator (jika featured)
 Product Name
-Price
-Brand / Category / Condition
+Price (bold)
+Category / Condition (bersebelahan, di bawah Price)
 Actions
 Product Details
 Description
+
+Featured indicator terpisah secara visual dari Brand.
+
+Brand ditampilkan secara eksplisit pada Product Detail. Contoh tampilan penulisan nama brand diikuti colon:
+
+Brand : ASUS
+
+Bagian External Product Links TIDAK ditampilkan pada Product Detail. External Product Links tetap ada sebagai field data product (form product dan API), tetapi tidak dirender di halaman Product Detail customer-facing.
 
 Actions:
 
 WhatsApp
 Marketplace
 Share
+
+Primary action adalah "Hubungi via WhatsApp".
+
+Marketplace dan Share tersedia sebagai secondary actions.
+
+Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+
+Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+
+Product SOLD_OUT (masih dalam auto archive):
+
+tetap dapat dilihat,
+indikasi Sold Out yang jelas,
+WhatsApp tidak tersedia,
+Marketplace tidak tersedia,
+Share tetap tersedia.
+
+Desktop:
+
+image/gallery fixed di kiri, panel info scroll di dalam area tersebut,
+footer di luar area scroll.
+
+Mobile:
+
+images menggunakan swipe-only carousel/slider, info di bawah images.
 
 Tidak menggunakan stock count.
 
@@ -926,6 +1197,16 @@ WhatsApp
 Marketplace channel selection
 
 Browsing storefront dan viewing product tidak membutuhkan login.
+
+### Seller Preview Storefront (akun sudah login)
+
+Ketika seller yang sudah login membuka storefront-nya sendiri (misalnya "Lihat Toko" dari Seller), sesi yang sama digunakan ulang:
+
+- navbar storefront menampilkan icon user-circle untuk customer (bukan tombol Login/Daftar).
+- "Lihat Toko" TIDAK menampilkan Login/Daftar karena user sudah authenticated.
+- Mengakses store URL langsung (direct link) tanpa sesi berarti tampil sebagai guest.
+- Seller boleh membuka WhatsApp/Marketplace pada storefront miliknya sendiri; interaksi tersebut tetap TIDAK dicatat sebagai Customer Interest (lihat §19).
+- Tidak ada konsep role-switching "customer mode" baru; halaman yang sama dirender sesuai sesi auth yang ada.
 
 39. Context Preservation
 
@@ -1151,7 +1432,7 @@ berarti:
 
 Published
 
-SOLD_OUT count terpisah.
+Produk SOLD OUT tetap dapat dilihat pelanggan.
 
 Bukan database status baru.
 
@@ -1159,7 +1440,18 @@ Bukan database status baru.
 
 Kerjakan Kataloga secara incremental.
 
+Urutan kerja mengikuti dokumentasi di:
+
+docs/IMPLEMENTATION-PLAN.md
+
 Urutan umum:
+
+Documentation & AGENTS Alignment
+→ Documentation Verification
+→ Frontend Read-Only Audit
+→ Human Review
+→ Implementation Planning
+→ Incremental Implementation
 
 Foundation
 → Shared Components
@@ -1172,6 +1464,7 @@ Foundation
 → Products
 → Add/Edit Product
 → Categories
+→ Brand Management
 → My Store
 → Customer Interest
 → Recent Activity (incl. /seller/activities)
@@ -1180,6 +1473,10 @@ Foundation
 → Validation
 → Testing
 → Visual QA
+
+Testing dan visual QA dilakukan secara incremental, bukan hanya di akhir.
+
+Jangan mengklaim phase implementation selesai hanya karena dokumentasi sudah diperbarui.
 
 Jangan mencoba membangun seluruh Kataloga dalam satu task.
 

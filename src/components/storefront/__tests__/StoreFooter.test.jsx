@@ -56,7 +56,7 @@ describe('StoreFooter', () => {
   })
 
   it('omits the Alamat section when the store has no full address', () => {
-    const html = render({ name: 'Toko Tanpa Alamat', channels: [] }, {})
+    const html = render({ name: 'Toko Tanpa Lokasi', channels: [] }, {})
     expect(html).not.toContain('Alamat')
     expect(html).toContain('Belum ada saluran marketplace.')
   })

@@ -5,7 +5,7 @@ import DashboardSectionHeading from './DashboardSectionHeading'
  * Dashboard section 1: Catalog Condition.
  * Active Products = PUBLISHED only. Draft, Sold Out and Archived are
  * counted separately. Cards stay white with a subtle semantic accent:
- * blue = Active, amber = Draft, red = Sold Out, gray = Archived.
+ * blue = Active, amber = Draft, gray = Sold Out, gray = Archived.
  * @param {{
  *   activeCount: number,
  *   draftCount: number,
@@ -41,9 +41,9 @@ function CatalogCondition({ activeCount, draftCount, soldOutCount, archivedCount
       count: soldOutCount,
       subtitle: 'SOLD_OUT dihitung terpisah',
       icon: 'block',
-      accentClass: 'border-t-4 border-t-red-200',
-      iconClass: 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white',
-      countClass: 'text-red-600',
+      accentClass: 'border-t-4 border-t-slate-200',
+      iconClass: 'bg-slate-100 text-slate-600 group-hover:bg-slate-500 group-hover:text-white',
+      countClass: 'text-slate-600',
     },
     {
       to: '/seller/products/archived',

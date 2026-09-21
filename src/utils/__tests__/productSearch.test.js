@@ -127,6 +127,36 @@ describe('filterAndSortProducts', () => {
     const result = filterAndSortProducts(catalog, { query: 'mouse', sort: 'relevance' })
     expect(result.map((p) => p.id)).toEqual([2, 4])
   })
+
+  it('keeps the supplied catalog order for relevance without a query (locked catalog order)', () => {
+    const shuffled = [catalog[2], catalog[0], catalog[3], catalog[1]]
+    const result = filterAndSortProducts(shuffled, { sort: 'relevance' })
+    expect(result.map((p) => p.id)).toEqual([3, 1, 4, 2])
+  })
+
+  it('sorts SOLD_OUT below PUBLISHED in every sort option', () => {
+    const mixed = [
+      ...catalog,
+      product('Keyboard Sold Out', {
+        id: 9,
+        status: 'SOLD_OUT',
+        priceValue: 1,
+        createdAt: '2026-02-01T00:00:00.000Z',
+      }),
+    ]
+
+    const newest = filterAndSortProducts(mixed, { sort: 'newest' })
+    expect(newest.map((p) => p.id)).toEqual([4, 3, 2, 1, 9])
+
+    const priceAsc = filterAndSortProducts(mixed, { sort: 'price-asc' })
+    expect(priceAsc.map((p) => p.id)).toEqual([4, 1, 2, 3, 9])
+
+    const priceDesc = filterAndSortProducts(mixed, { sort: 'price-desc' })
+    expect(priceDesc.map((p) => p.id)).toEqual([3, 2, 1, 4, 9])
+
+    const relevance = filterAndSortProducts(mixed, { query: 'keyboard', sort: 'relevance' })
+    expect(relevance.map((p) => p.id)).toEqual([1, 9])
+  })
 })
 
 describe('extractCategories', () => {

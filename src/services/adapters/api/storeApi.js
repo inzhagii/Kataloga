@@ -27,13 +27,20 @@ function storeToDto(store) {
     operatingHours: 'operating_hours',
     whatsapp: 'whatsapp',
     channels: 'channels',
-    announcement: 'announcement',
+    autoArchiveDays: 'auto_archive_days',
   }
   Object.entries(fields).forEach(([frontKey, apiKey]) => {
     if (store[frontKey] !== undefined) {
       dto[apiKey] = store[frontKey]
     }
   })
+  if (store.announcement !== undefined) {
+    dto.announcement = {
+      title: store.announcement.title ?? '',
+      message: store.announcement.message ?? '',
+      is_enabled: Boolean(store.announcement.isEnabled),
+    }
+  }
   return dto
 }
 

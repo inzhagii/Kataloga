@@ -19,6 +19,9 @@ export function toUser(dto) {
     hasStore: Boolean(dto.has_store),
     storeId: dto.store_id ?? null,
     avatarUrl: dto.avatar_url ?? undefined,
+    emailVerified: dto.email_verified === undefined ? true : Boolean(dto.email_verified),
+    recoveryEmail: dto.recovery_email ?? null,
+    recoveryEmailVerified: Boolean(dto.recovery_email_verified),
   }
 }
 
@@ -42,7 +45,17 @@ export function toStore(dto) {
       url: channel.url,
     })),
     verified: Boolean(dto.verified),
-    announcement: dto.announcement ?? undefined,
+    announcement: dto.announcement
+      ? {
+          title: dto.announcement.title ?? '',
+          message: dto.announcement.message ?? '',
+          isEnabled: Boolean(dto.announcement.is_enabled),
+        }
+      : undefined,
+    autoArchiveDays:
+      dto.auto_archive_days === null || dto.auto_archive_days === undefined
+        ? null
+        : Number(dto.auto_archive_days),
     lastStoreIdChange: dto.last_store_id_change ?? undefined,
     createdAt: dto.created_at ?? undefined,
   }
@@ -79,6 +92,7 @@ export function toProduct(dto) {
       : [],
     status: dto.status,
     featured: Boolean(dto.featured),
+    soldOutAt: dto.sold_out_at ?? undefined,
     createdAt: dto.created_at ?? undefined,
     updatedAt: dto.updated_at ?? undefined,
   }
@@ -99,6 +113,21 @@ export function toCategory(dto) {
 }
 
 /**
+ * @param {object} dto - Brand DTO ({ id, name, store_id }).
+ * @returns {import('../../../data/models.js').Brand}
+ */
+export function toBrand(dto) {
+  return {
+    id: dto.id,
+    name: dto.name ?? '',
+    storeId: dto.store_id ?? null,
+  }
+}
+
+/**
+ * Customer interest DTO (snake_case) to frontend model (camelCase).
+ * Identity is preserved as-is: a missing name stays null (never coerced to a
+ * fake placeholder) so the UI can fall back to email/phone when present.
  * @param {object} dto - Customer interest DTO ({ id, store_id, customer_name, ... }).
  * @returns {import('../../../data/models.js').CustomerInterest}
  */
@@ -106,28 +135,52 @@ export function toCustomerInterest(dto) {
   return {
     id: dto.id,
     storeId: dto.store_id,
-    customerName: dto.customer_name ?? '-',
+    customerName: dto.customer_name ?? null,
     customerId: dto.customer_id ?? null,
+    customerEmail: dto.customer_email ?? null,
+    customerPhone: dto.customer_phone ?? null,
     productId: dto.product_id ?? null,
     productName: dto.product_name ?? null,
     channelType: dto.channel_type,
     channel: dto.channel ?? '',
     externalUrl: dto.external_url ?? null,
+    context: dto.context ?? null,
     date: dto.date,
   }
 }
 
 /**
- * @param {object} dto - Recent activity DTO ({ id, type, message, date }).
+ * Recent activity DTO (snake_case) to frontend model (camelCase);
+ * includes store/product context fields. PRODUCT_UPDATED (external contract
+ * alias) maps deterministically to the internal canonical PRODUCT_EDITED.
+ * @param {object} dto - Recent activity DTO ({ id, store_id, type, message, date, ... }).
  * @returns {import('../../../data/models.js').RecentActivity}
  */
 export function toRecentActivity(dto) {
   return {
     id: dto.id,
-    type: dto.type,
+    storeId: dto.store_id ?? null,
+    type: normalizeActivityType(dto.type),
     message: dto.message ?? '',
-    date: dto.date,
+    productId: dto.product_id ?? null,
+    productName: dto.product_name ?? null,
+    date: dto.date ?? dto.created_at,
   }
+}
+
+/**
+ * Map an external API activity type to the internal canonical type.
+ * PRODUCT_UPDATED is the external contract name for the internal
+ * ACTIVITY_TYPE.PRODUCT_EDITED. Unknown values pass through unchanged so
+ * consumers can handle them explicitly instead of silently dropping them.
+ * @param {unknown} type
+ * @returns {string}
+ */
+function normalizeActivityType(type) {
+  if (type === 'PRODUCT_UPDATED') {
+    return 'PRODUCT_EDITED'
+  }
+  return type
 }
 
 /**

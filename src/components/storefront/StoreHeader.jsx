@@ -1,14 +1,5 @@
 import StoreActions from './StoreActions'
-
-function storeLocationLabel(store) {
-  if (store.city && store.province) {
-    return `${store.city}, ${store.province}`
-  }
-  if (store.city) {
-    return store.city
-  }
-  return '-'
-}
+import { storeLocationLabel } from '../../utils/storeLocation'
 
 /**
  * Public store profile header: logo (+ verification badge), name, description,

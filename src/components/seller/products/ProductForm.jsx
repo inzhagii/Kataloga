@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProductForm } from '../../../hooks/useProductForm'
 import { listCategories } from '../../../services/categoryService'
+import { listBrands } from '../../../services/brandService'
 import ProductPhotosSection from './form/ProductPhotosSection'
 import ProductBasicInfoSection from './form/ProductBasicInfoSection'
 import ProductDetailsSection from './form/ProductDetailsSection'
@@ -10,6 +11,7 @@ import ProductConditionSection from './form/ProductConditionSection'
 import ProductExternalLinksSection from './form/ProductExternalLinksSection'
 import ProductCatalogSettingsSection from './form/ProductCatalogSettingsSection'
 import FormActionsBar from './form/FormActionsBar'
+import ConfirmDialog from '../../shared/ConfirmDialog'
 
 /**
  * Reusable product form shared by Add Product (mode 'create') and
@@ -17,6 +19,10 @@ import FormActionsBar from './form/FormActionsBar'
  * follows the locked UI_RULES: Photos, Product Name, Category, Brand,
  * Product Details, Description, Condition, Price, External Product Links,
  * Featured.
+ *
+ * Create mode actions: Batal / Save Draft / Publish Product (with a
+ * confirmation dialog before publishing). Edit mode actions: Batal / Simpan
+ * only — no status buttons — and Simpan keeps the current product status.
  *
  * @param {{
  *   mode: 'create'|'edit',
@@ -26,6 +32,8 @@ import FormActionsBar from './form/FormActionsBar'
 function ProductForm({ mode = 'create', initialProduct = null }) {
   const navigate = useNavigate()
   const [categories, setCategories] = useState([])
+  const [brands, setBrands] = useState([])
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false)
 
   const {
     form,
@@ -60,6 +68,18 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
   }, [])
 
   useEffect(() => {
+    let active = true
+    listBrands().then((value) => {
+      if (active) {
+        setBrands(value)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
     if (Object.keys(errors).length > 0) {
       document
         .querySelector('[data-error="true"]')
@@ -77,6 +97,7 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
   }
 
   async function handlePublish() {
+    setPublishConfirmOpen(false)
     const result = await publish()
     if (result.ok) {
       navigate('/seller/products', { state: { feedback: result.feedback } })
@@ -137,6 +158,7 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
           form={form}
           errors={errors}
           categories={categories}
+          brands={brands}
           setField={setField}
         />
         <ProductDetailsSection
@@ -167,11 +189,25 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
       </form>
 
       <FormActionsBar
+        mode={mode}
         submitting={submitting}
         onCancel={() => navigate('/seller/products')}
         onSaveDraft={handleSaveDraft}
-        onPublish={handlePublish}
+        onPublish={() => setPublishConfirmOpen(true)}
       />
+
+      {!isEdit ? (
+        <ConfirmDialog
+          open={publishConfirmOpen}
+          title="Publikasikan produk?"
+          description="Produk akan langsung tampil di toko kamu setelah melewati validasi field wajib (foto, kategori, detail, deskripsi, kondisi, dan harga)."
+          confirmLabel="Publish Produk"
+          cancelLabel="Batal"
+          isSubmitting={submitting}
+          onConfirm={handlePublish}
+          onCancel={() => setPublishConfirmOpen(false)}
+        />
+      ) : null}
     </div>
   )
 }

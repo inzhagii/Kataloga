@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthShell from '../../components/auth/AuthShell'
+import AuthAlert from '../../components/auth/AuthAlert'
 import TextField from '../../components/auth/TextField'
 import { useAuth } from '../../hooks/useAuth'
 import useReturnPath from '../../hooks/useReturnPath'
 import { isValidIdentifier } from '../../services/authService'
-
-const MIN_PASSWORD_LENGTH = 8
+import { MIN_PASSWORD_LENGTH } from '../../constants/auth'
+import { setAuthFlowIdentifier } from '../../utils/authFlowStorage'
 
 function RegisterPage() {
   const { user, authLoaded, register } = useAuth()
@@ -108,13 +109,18 @@ function RegisterPage() {
     setSubmitting(true)
 
     try {
-      const registered = await register({
+      const result = await register({
         emailOrPhone: trimmedIdentifier,
         password,
         repassword,
         name: trimmedName || null,
       })
-      navigate(destination(registered), { replace: true })
+      if (result.requiresVerification) {
+        setAuthFlowIdentifier(result.identifier)
+        navigate('/verify-email', { replace: true, state: { identifier: result.identifier } })
+        return
+      }
+      navigate(destination(result.user), { replace: true })
     } catch (error) {
       setSubmitting(false)
       setGlobalError(
@@ -129,18 +135,7 @@ function RegisterPage() {
       subtitle="Daftar untuk mulai menggunakan Kataloga."
       backHref={backHref}
     >
-      {globalError ? (
-        <div
-          className="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5"
-          role="alert"
-          aria-live="polite"
-        >
-          <span className="material-symbols-outlined mt-0.5 shrink-0 text-[18px] text-red-600" aria-hidden="true">
-            error
-          </span>
-          <p className="text-xs font-medium leading-relaxed text-red-800">{globalError}</p>
-        </div>
-      ) : null}
+      {globalError ? <AuthAlert tone="error">{globalError}</AuthAlert> : null}
 
       <form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit}>
         <TextField

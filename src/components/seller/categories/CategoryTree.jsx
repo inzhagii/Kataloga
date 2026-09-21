@@ -30,13 +30,13 @@ function CountChip({ count }) {
 
 /**
  * Link to the seller products list pre-filtered by this category.
- * /seller/products?category=... is the source of truth for the filter.
+ * /seller/products?category=<categoryId> is the source of truth for the filter.
  * @param {{ category: import('../../../data/models.js').Category }} props
  */
 function ViewProductsLink({ category }) {
   return (
     <Link
-      to={`/seller/products?category=${encodeURIComponent(category.name)}`}
+      to={`/seller/products?category=${category.id}`}
       className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary-container"
       aria-label={`Lihat Product untuk ${category.name}`}
     >

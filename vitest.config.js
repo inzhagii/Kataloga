@@ -1,9 +1,11 @@
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  plugins: [react()],
   test: {
     environment: 'node',
-    include: ['src/**/__tests__/**/*.test.js'],
+    include: ['src/**/__tests__/**/*.{test,spec}.{js,jsx}'],
     env: { VITE_DATA_SOURCE: 'mock' },
   },
 })

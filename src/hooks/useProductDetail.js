@@ -4,7 +4,8 @@ import { getProduct } from '../services/productService'
 import { PRODUCT_STATUS } from '../constants/enums'
 
 /**
- * Load the public store and a PUBLISHED product scoped to that store.
+ * Load the public store and a PUBLISHED product (or a SOLD_OUT product still
+ * inside its store Auto Archive window) scoped to that store.
  * Handles loading / ready / storeNotFound / productNotFound / error states
  * so the page can render dedicated states instead of assuming data exists.
  * @param {string} storeId
@@ -36,7 +37,11 @@ export function useProductDetail(storeId, productId) {
           setState({ status: 'storeNotFound', store: null, product: null, error: '' })
           return
         }
-        if (!product || product.status !== PRODUCT_STATUS.PUBLISHED) {
+        if (
+          !product ||
+          (product.status !== PRODUCT_STATUS.PUBLISHED &&
+            product.status !== PRODUCT_STATUS.SOLD_OUT)
+        ) {
           setState({ status: 'productNotFound', store, product: null, error: '' })
           return
         }

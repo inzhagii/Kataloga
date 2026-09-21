@@ -1,20 +1,29 @@
 import { useRef, useState } from 'react'
 import { useClickOutside } from '../../../hooks/useClickOutside'
+import { buildCategoryFilterOptions } from '../../../utils/categoryTree'
 
 /**
  * Filter popover triggered from the ProductsToolbar. Immediate-apply style
  * (no Apply button): selecting a filter updates the list in real-time.
- * Filters are limited to Category and Condition; status is handled by the
- * Active/Draft/Sold Out tabs.
+ * Filters are limited to Category, Brand, Condition and Product Unggulan;
+ * status is handled by the Active/Draft/Sold Out tabs.
  * @param {{
- *   filters: { category: string, condition: string },
- *   onChange: (next: { category: string, condition: string }) => void,
+ *   filters: { category: string, condition: string, brand: string, featured: string },
+ *   onChange: (next: { category: string, condition: string, brand: string, featured: string }) => void,
  *   resetFilters: () => void,
  *   categories: { id: number, name: string, parentId: number|null }[],
+ *   brands: { id: number, name: string }[],
  *   activeCount: number,
  * }} props
  */
-function FilterPopover({ filters, onChange, resetFilters, categories, activeCount = 0 }) {
+function FilterPopover({
+  filters,
+  onChange,
+  resetFilters,
+  categories,
+  brands = [],
+  activeCount = 0,
+}) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef(null)
   useClickOutside(panelRef, () => setOpen(false), open)
@@ -23,10 +32,7 @@ function FilterPopover({ filters, onChange, resetFilters, categories, activeCoun
     onChange({ ...filters, [key]: value })
   }
 
-  const leaves = categories.filter(
-    (category) =>
-      !categories.some((other) => other.parentId === category.id),
-  )
+  const categoryOptions = buildCategoryFilterOptions(categories)
 
   return (
     <div ref={panelRef} className="relative w-full lg:w-auto">
@@ -74,9 +80,27 @@ function FilterPopover({ filters, onChange, resetFilters, categories, activeCoun
               className="w-full rounded-lg border border-outline-variant bg-surface-container-low p-2 text-xs font-medium text-on-surface"
             >
               <option value="">Semua Kategori</option>
-              {leaves.map((category) => (
+              {categoryOptions.map((category) => (
                 <option key={category.id} value={category.name}>
-                  {category.name}
+                  {category.parentId === null ? category.name : `— ${category.name}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-3.5">
+            <label className="mb-1.5 block text-xs font-semibold text-on-surface">
+              Brand
+            </label>
+            <select
+              value={filters.brand || ''}
+              onChange={(event) => setFilter('brand', event.target.value)}
+              className="w-full rounded-lg border border-outline-variant bg-surface-container-low p-2 text-xs font-medium text-on-surface"
+            >
+              <option value="">Semua Brand</option>
+              {brands.map((brand) => (
+                <option key={brand.id} value={brand.name}>
+                  {brand.name}
                 </option>
               ))}
             </select>
@@ -94,6 +118,20 @@ function FilterPopover({ filters, onChange, resetFilters, categories, activeCoun
               <option value="">Semua Kondisi</option>
               <option value="NEW">New</option>
               <option value="SECOND">Second</option>
+            </select>
+          </div>
+
+          <div className="mb-3.5">
+            <label className="mb-1.5 block text-xs font-semibold text-on-surface">
+              Product Unggulan
+            </label>
+            <select
+              value={filters.featured || ''}
+              onChange={(event) => setFilter('featured', event.target.value)}
+              className="w-full rounded-lg border border-outline-variant bg-surface-container-low p-2 text-xs font-medium text-on-surface"
+            >
+              <option value="">Semua Produk</option>
+              <option value="featured">Product Unggulan</option>
             </select>
           </div>
 

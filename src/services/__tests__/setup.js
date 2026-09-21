@@ -8,6 +8,7 @@
  */
 
 import {
+  brands,
   categories,
   customerInterests,
   products,
@@ -15,7 +16,7 @@ import {
   stores,
   users,
 } from '../../data/mock'
-import { setActiveUser } from '../authService'
+import { resetAuthFlowState, setActiveUser } from '../authService'
 import { setAccessToken, setMockLatency } from '../apiClient'
 
 export const STORE_A_ID = 'toko-komputer-jaya'
@@ -25,6 +26,7 @@ const seed = {
   products: structuredClone(products),
   stores: structuredClone(stores),
   categories: structuredClone(categories),
+  brands: structuredClone(brands),
   customerInterests: structuredClone(customerInterests),
   recentActivities: structuredClone(recentActivities),
   users: structuredClone(users),
@@ -38,9 +40,11 @@ export function resetDatabase() {
   setMockLatency(0)
   setActiveUser(null)
   setAccessToken(null)
+  resetAuthFlowState()
   restore('products', products)
   restore('stores', stores)
   restore('categories', categories)
+  restore('brands', brands)
   restore('customerInterests', customerInterests)
   restore('recentActivities', recentActivities)
   restore('users', users)
@@ -55,7 +59,12 @@ export const storeB = {
   whatsapp: '6289876543210',
   channels: [{ name: 'Instagram', url: 'https://instagram.com/toko-agung-fashion' }],
   verified: false,
-  announcement: [],
+  announcement: {
+    title: 'Pengumuman Toko Agung',
+    message: 'Stok baru setiap minggu.',
+    isEnabled: false,
+  },
+  autoArchiveDays: 60,
   createdAt: '2026-07-01T00:00:00.000Z',
 }
 
@@ -138,6 +147,12 @@ export const customCategoryB = {
   storeId: STORE_B_ID,
 }
 
+export const brandB = {
+  id: 100,
+  name: 'Zara',
+  storeId: STORE_B_ID,
+}
+
 export const interestB = {
   id: 100,
   storeId: STORE_B_ID,
@@ -156,6 +171,7 @@ export function installFixtures() {
   stores.push(structuredClone(storeB))
   products.push(...productsB.map((item) => structuredClone(item)))
   categories.push(structuredClone(customCategoryB))
+  brands.push(structuredClone(brandB))
   customerInterests.push(structuredClone(interestB))
   return users.find((user) => user.storeId === STORE_A_ID)
 }

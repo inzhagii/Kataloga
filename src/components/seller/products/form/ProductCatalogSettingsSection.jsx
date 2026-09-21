@@ -32,6 +32,7 @@ function ProductCatalogSettingsSection({ form, setField }) {
           type="button"
           role="switch"
           aria-checked={form.featured}
+          aria-label="Featured Product"
           onClick={() => setField('featured', !form.featured)}
           className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
             form.featured ? 'bg-primary' : 'bg-outline-variant/60'

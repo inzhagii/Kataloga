@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthShell from '../../components/auth/AuthShell'
+import AuthAlert from '../../components/auth/AuthAlert'
 import TextField from '../../components/auth/TextField'
 import { useAuth } from '../../hooks/useAuth'
 import useReturnPath from '../../hooks/useReturnPath'
 import { isValidIdentifier } from '../../services/authService'
+import { isAuthError, AUTH_ERROR_CODE } from '../../services/authErrors'
+import { setAuthFlowIdentifier } from '../../utils/authFlowStorage'
 
 function LoginPage() {
   const { user, authLoaded, login } = useAuth()
@@ -64,6 +67,11 @@ function LoginPage() {
       const loggedIn = await login({ emailOrPhone: trimmedIdentifier, password })
       navigate(destination(loggedIn), { replace: true })
     } catch (error) {
+      if (isAuthError(error) && error.code === AUTH_ERROR_CODE.EMAIL_UNVERIFIED) {
+        setAuthFlowIdentifier(trimmedIdentifier)
+        navigate('/verify-email', { state: { identifier: trimmedIdentifier } })
+        return
+      }
       setSubmitting(false)
       setCredentialInvalid(true)
       setGlobalError(
@@ -85,18 +93,7 @@ function LoginPage() {
       subtitle="Masuk untuk melanjutkan ke akun Anda."
       backHref={backHref}
     >
-      {globalError ? (
-        <div
-          className="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5"
-          role="alert"
-          aria-live="polite"
-        >
-          <span className="material-symbols-outlined mt-0.5 shrink-0 text-[18px] text-red-600" aria-hidden="true">
-            error
-          </span>
-          <p className="text-xs font-medium leading-relaxed text-red-800">{globalError}</p>
-        </div>
-      ) : null}
+      {globalError ? <AuthAlert tone="error">{globalError}</AuthAlert> : null}
 
       <form className="space-y-5" noValidate onSubmit={handleSubmit}>
         <TextField
@@ -129,6 +126,15 @@ function LoginPage() {
           placeholder="Masukkan password"
           autoComplete="current-password"
         />
+
+        <div className="-mt-1 text-right">
+          <Link
+            to="/forgot-password"
+            className="text-xs font-semibold text-primary-brand transition hover:underline"
+          >
+            Lupa password?
+          </Link>
+        </div>
 
         <div className="pt-2">
           <button

@@ -5,6 +5,7 @@ import AlertDialog from '../../components/shared/AlertDialog'
 import Toast from '../../components/shared/Toast'
 import CategoryTree from '../../components/seller/categories/CategoryTree'
 import CategoryFormModal from '../../components/seller/categories/CategoryFormModal'
+import BrandManagementSection from '../../components/seller/brands/BrandManagementSection'
 import { useCategories } from '../../hooks/useCategories'
 import { createCategory, updateCategory, deleteCategory } from '../../services/categoryService'
 
@@ -37,9 +38,11 @@ function CategoriesPage() {
     childrenByParent,
     productCounts,
     reload,
+    refresh,
   } = useCategories()
 
   const [search, setSearch] = useState('')
+  const [view, setView] = useState('categories')
   const [collapsed, setCollapsed] = useState(() => new Set())
   const [modal, setModal] = useState({ open: false, mode: 'create', category: null })
   const [deleteCandidate, setDeleteCandidate] = useState(null)
@@ -98,16 +101,84 @@ function CategoriesPage() {
     }
   }, [categories, products])
 
+  const pageHeader = (
+    <div className="mb-5">
+      <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Categories
+          </h1>
+          <p className="mt-1 text-sm text-secondary">
+            {view === 'brand'
+              ? 'Kelola brand yang digunakan produk di katalog kamu.'
+              : 'Kelola Kategori Utama & Sub Kategori untuk katalog kamu (maksimal dua level).'}
+          </p>
+        </div>
+
+        {view === 'categories' ? (
+          <button
+            type="button"
+            onClick={() => setModal({ open: true, mode: 'create', category: null })}
+            className="hidden shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:inline-flex"
+          >
+            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+              add
+            </span>
+            Tambah Kategori
+          </button>
+        ) : null}
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-1 rounded-xl bg-surface-container-low p-1 sm:w-80">
+        <button
+          type="button"
+          aria-pressed={view === 'categories'}
+          onClick={() => setView('categories')}
+          className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+            view === 'categories'
+              ? 'bg-primary text-on-primary shadow-sm'
+              : 'text-secondary hover:bg-surface-container-low'
+          }`}
+        >
+          Kategori
+        </button>
+        <button
+          type="button"
+          aria-pressed={view === 'brand'}
+          onClick={() => setView('brand')}
+          className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+            view === 'brand'
+              ? 'bg-primary text-on-primary shadow-sm'
+              : 'text-secondary hover:bg-surface-container-low'
+          }`}
+        >
+          Brand
+        </button>
+      </div>
+    </div>
+  )
+
+  if (view === 'brand') {
+    return (
+      <div>
+        {pageHeader}
+        <BrandManagementSection />
+      </div>
+    )
+  }
+
   if (status === 'loading') {
     return (
-      <div className="space-y-4" aria-busy="true">
-        <div className="h-10 w-56 animate-pulse rounded-xl bg-surface-container-high/60" />
-        <div className="grid grid-cols-3 gap-3">
-          {[0, 1, 2].map((item) => (
-            <div key={item} className="h-20 animate-pulse rounded-xl bg-surface-container-high/60" />
-          ))}
+      <div>
+        {pageHeader}
+        <div className="space-y-4" aria-busy="true">
+          <div className="grid grid-cols-3 gap-3">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="h-20 animate-pulse rounded-xl bg-surface-container-high/60" />
+            ))}
+          </div>
+          <div className="h-64 w-full animate-pulse rounded-2xl bg-surface-container-high/60" />
         </div>
-        <div className="h-64 w-full animate-pulse rounded-2xl bg-surface-container-high/60" />
       </div>
     )
   }
@@ -115,11 +186,7 @@ function CategoriesPage() {
   if (status === 'error') {
     return (
       <div>
-        <div className="text-center sm:text-left">
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-            Categories
-          </h1>
-        </div>
+        {pageHeader}
         <EmptyState
           icon="error"
           title="Gagal memuat category"
@@ -139,10 +206,12 @@ function CategoriesPage() {
   }
 
   async function handleSave(payload) {
-    if (modal.mode === 'edit') {
-      return updateCategory(modal.category.id, payload)
-    }
-    return createCategory(payload)
+    const saved =
+      modal.mode === 'edit'
+        ? await updateCategory(modal.category.id, payload)
+        : await createCategory(payload)
+    await refresh()
+    return saved
   }
 
   async function handleConfirmDelete() {
@@ -153,6 +222,7 @@ function CategoriesPage() {
       await deleteCategory(deleteCandidate.id)
       setToast({ type: 'success', message: `Category "${deleteCandidate.name}" dihapus.` })
       setDeleteCandidate(null)
+      await refresh()
     } catch (deleteError) {
       setDeleteCandidate(null)
       setNoticed(deleteError instanceof Error ? deleteError.message : 'Category tidak dapat dihapus.')
@@ -178,29 +248,7 @@ function CategoriesPage() {
 
   return (
     <div>
-      <div className="mb-5">
-        <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-              Categories
-            </h1>
-            <p className="mt-1 text-sm text-secondary">
-              Kelola Kategori Utama &amp; Sub Kategori untuk katalog kamu (maksimal dua level).
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setModal({ open: true, mode: 'create', category: null })}
-            className="hidden shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110 sm:inline-flex"
-          >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-              add
-            </span>
-            Tambah Kategori
-          </button>
-        </div>
-      </div>
+      {pageHeader}
 
       <div className="mb-3 grid grid-cols-3 gap-3">
         <StatCard label="Kategori Utama" value={stats.utama} icon="account_tree" />
@@ -312,11 +360,16 @@ function CategoriesPage() {
       <ConfirmDialog
         open={Boolean(deleteCandidate)}
         title="Hapus Kategori?"
-        message={deleteCandidate ? `"${deleteCandidate.name}" akan dihapus secara permanen. Tindakan ini tidak bisa dibatalkan.` : ''}
+        description={
+          deleteCandidate
+            ? `"${deleteCandidate.name}" akan dihapus secara permanen. Tindakan ini tidak bisa dibatalkan.`
+            : ''
+        }
         confirmLabel="Hapus"
-        danger
+        cancelLabel="Batal"
+        tone="danger"
         onConfirm={handleConfirmDelete}
-        onClose={() => setDeleteCandidate(null)}
+        onCancel={() => setDeleteCandidate(null)}
       />
 
       <AlertDialog

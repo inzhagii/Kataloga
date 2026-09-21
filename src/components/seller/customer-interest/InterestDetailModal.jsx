@@ -1,8 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { formatDateTime } from '../../../utils/datetime'
+import { buildStoreProductUrl, resolveProductSlug } from '../../../utils/storefrontUrl'
 import {
-  customerActivities,
   countCustomerActivities,
+  customerDisplayName,
+  customerSupportingIdentity,
+  groupCustomerActivitiesByDate,
   productContextOf,
 } from '../../../utils/customerInterest'
 import ChannelBadge from './ChannelBadge'
@@ -10,10 +13,11 @@ import CustomerAvatar from './CustomerAvatar'
 
 /**
  * Desktop modal / mobile bottom-sheet for a customer interest detail.
- * Shows customer, product, activity, timestamp and the customer's
- * interaction history. Actions open the customer-facing product detail only
- * ("Lihat Product"); there is no contact CTA — recording an interest does not
- * capture the customer's WhatsApp number.
+ * Shows customer identity, related product, activity, time and storefront
+ * context, plus the customer's interaction history grouped by date. Clicking a
+ * history entry switches the active detail to that record. Actions open the
+ * customer-facing product detail only ("Lihat Product"); there is no contact
+ * CTA — recording an interest does not mean the customer can be contacted.
  *
  * @param {{
  *   record: import('../../../data/models.js').CustomerInterest | null,
@@ -23,6 +27,8 @@ import CustomerAvatar from './CustomerAvatar'
  * }} props
  */
 function InterestDetailModal({ record, interests, productById, onClose }) {
+  const [activeRecord, setActiveRecord] = useState(record)
+
   useEffect(() => {
     if (!record) {
       return undefined
@@ -38,13 +44,14 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [record, onClose])
 
-  if (!record) {
+  if (!record || !activeRecord) {
     return null
   }
 
+  const current = activeRecord
   const count = countCustomerActivities(interests, record)
-  const history = customerActivities(interests, record)
-  const { product, name: productName, icon: productIcon } = productContextOf(record, productById)
+  const groups = groupCustomerActivitiesByDate(interests, record)
+  const { product, name: productName, icon: productIcon } = productContextOf(current, productById)
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-4">
@@ -76,7 +83,7 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
                 Customer Interest Detail
               </h2>
               <p className="text-[11px] text-on-surface-variant">
-                INT-{record.id} &middot; Log Minat
+                INT-{current.id} &middot; Log Minat
               </p>
             </div>
           </div>
@@ -94,10 +101,17 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
 
         <div className="space-y-3 overflow-y-auto px-4 py-4 md:px-5 md:py-5">
           <div className="flex items-center justify-between rounded-xl bg-surface-container-low p-3">
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <CustomerAvatar className="h-10 w-10 md:h-11 md:w-11" iconClassName="h-5 w-5" />
-              <div>
-                <p className="text-sm font-semibold text-on-surface">{record.customerName}</p>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-on-surface">
+                  {customerDisplayName(current)}
+                </p>
+                {customerSupportingIdentity(current) ? (
+                  <p className="truncate text-[11px] text-on-surface-variant">
+                    {customerSupportingIdentity(current)}
+                  </p>
+                ) : null}
                 <p className="text-[11px] text-primary">
                   {count}x aktivitas minat di katalog toko kamu
                 </p>
@@ -127,13 +141,13 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-outline-variant/40 bg-surface p-3">
               <span className="text-[11px] font-medium uppercase tracking-wider text-outline">
                 Aktivitas
               </span>
               <div className="mt-2">
-                <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                <ChannelBadge channelType={current.channelType} channel={current.channel} />
               </div>
             </div>
             <div className="rounded-xl border border-outline-variant/40 bg-surface p-3">
@@ -141,7 +155,15 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
                 Waktu
               </span>
               <p className="mt-2 text-sm font-semibold text-on-surface">
-                {formatDateTime(record.date)}
+                {formatDateTime(current.date)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-outline-variant/40 bg-surface p-3">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-outline">
+                Konteks
+              </span>
+              <p className="mt-2 text-sm font-semibold text-on-surface">
+                {current.context || '\u2014'}
               </p>
             </div>
           </div>
@@ -150,46 +172,59 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
             <div className="mb-2 flex items-center justify-between">
               <span className="text-[13px] font-semibold text-on-surface">Riwayat Customer</span>
               <span className="text-[11px] text-primary">
-                {count}x interaksi &middot; {history.length} aktivitas terdata
+                {count}x interaksi &middot; {groups.reduce((sum, g) => sum + g.items.length, 0)}{' '}
+                aktivitas terdata
               </span>
             </div>
-            <div className="space-y-2">
-              {history.map((act) => {
-                const ctx = productContextOf(act, productById)
-                return (
-                  <div
-                    key={act.id}
-                    className={`rounded-lg p-2 text-xs ${
-                      act.id === record.id
-                        ? 'border border-primary/20 bg-primary/10'
-                        : 'bg-surface-container-low/70'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="min-w-0 truncate font-medium text-on-surface">
-                        <span
-                          className="material-symbols-outlined align-middle text-[16px] text-outline"
-                          aria-hidden="true"
+            <div className="max-h-[18rem] space-y-3 overflow-y-auto pr-1">
+              {groups.map((group) => (
+                <div key={group.dateKey}>
+                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-outline">
+                    {group.label}
+                  </p>
+                  <div className="space-y-1.5">
+                    {group.items.map((act) => {
+                      const ctx = productContextOf(act, productById)
+                      const isActive = act.id === current.id
+                      return (
+                        <button
+                          type="button"
+                          key={act.id}
+                          onClick={() => setActiveRecord(act)}
+                          className={`flex w-full flex-col gap-1 rounded-lg p-2 text-left transition-colors ${
+                            isActive
+                              ? 'border border-primary/20 bg-primary/10'
+                              : 'bg-surface-container-low/70 hover:bg-surface-container/70'
+                          }`}
                         >
-                          {ctx.icon}
-                        </span>{' '}
-                        {ctx.name}
-                      </span>
-                      <span className="flex shrink-0 items-center gap-1.5">
-                        {act.id === record.id ? (
-                          <span className="rounded bg-primary px-1 py-0.5 text-[10px] font-semibold text-on-primary">
-                            Aktif
-                          </span>
-                        ) : null}
-                        <ChannelBadge channelType={act.channelType} channel={act.channel} />
-                      </span>
-                    </div>
-                    <p className="mt-1 text-[11px] text-on-surface-variant">
-                      {formatDateTime(act.date)}
-                    </p>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="min-w-0 truncate text-xs font-medium text-on-surface">
+                              <span
+                                className="material-symbols-outlined align-middle text-[16px] text-outline"
+                                aria-hidden="true"
+                              >
+                                {ctx.icon}
+                              </span>{' '}
+                              {ctx.name}
+                            </span>
+                            <span className="flex shrink-0 items-center gap-1.5">
+                              {isActive ? (
+                                <span className="rounded bg-primary px-1 py-0.5 text-[10px] font-semibold text-on-primary">
+                                  Aktif
+                                </span>
+                              ) : null}
+                              <ChannelBadge channelType={act.channelType} channel={act.channel} />
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-on-surface-variant">
+                            {formatDateTime(act.date)}
+                          </p>
+                        </button>
+                      )
+                    })}
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -197,7 +232,7 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
         <div className="flex items-center justify-end gap-2 border-t border-outline-variant/30 bg-surface-container-low px-4 py-3 md:px-5 md:py-4">
           {product ? (
             <a
-              href={`/${product.storeId}/products/${product.id}`}
+              href={buildStoreProductUrl(product.storeId, product.id, resolveProductSlug(product))}
               target="_blank"
               rel="noreferrer"
               className="inline-flex h-10 items-center gap-2 rounded-lg border border-outline-variant/50 px-4 text-[13px] font-semibold text-on-surface transition-colors hover:bg-surface-container hover:text-on-surface md:px-5"

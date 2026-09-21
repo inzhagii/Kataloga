@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import BottomSheet from '../storefront/BottomSheet'
 import { SELLER_MORE_ITEMS } from '../../constants/sellerNav'
 
@@ -10,8 +10,6 @@ import { SELLER_MORE_ITEMS } from '../../constants/sellerNav'
  * @param {{ open: boolean, onClose: () => void, onLogoutRequest: () => void }} props
  */
 function SellerMoreSheet({ open, onClose, onLogoutRequest }) {
-  const navigate = useNavigate()
-
   function handleLogout() {
     onClose()
     onLogoutRequest()
@@ -23,19 +21,16 @@ function SellerMoreSheet({ open, onClose, onLogoutRequest }) {
         <ul className="flex flex-col">
           {SELLER_MORE_ITEMS.map((item) => (
             <li key={item.to}>
-              <button
-                type="button"
-                onClick={() => {
-                  navigate(item.to)
-                  onClose()
-                }}
+              <Link
+                to={item.to}
+                onClick={onClose}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-secondary transition-colors hover:bg-surface-container hover:text-on-surface"
               >
                 <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
-              </button>
+              </Link>
             </li>
           ))}
           <li>

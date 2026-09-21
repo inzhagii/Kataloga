@@ -7,8 +7,10 @@
  * - Komponen Komputer: Processor, RAM, Storage
  * - Networking: Router, Switch
  * Lifecycle statuses cover PUBLISHED / DRAFT / SOLD_OUT / ARCHIVED so the
- * seller Dashboard demonstrates every Catalog Overview card, while the public
- * catalog only exposes PUBLISHED products.
+ * seller Dashboard demonstrates every Catalog Overview card. The public
+ * catalog exposes PUBLISHED plus SOLD_OUT still within the store-level Auto
+ * Archive window (`soldOutAt` + store `autoArchiveDays`); expired SOLD_OUT
+ * (id 17 vs. store A's 30-day window) and ARCHIVED stay out of the storefront.
  */
 
 import product1 from '../../assets/mock/Product1.png'
@@ -366,8 +368,58 @@ export const products = [
     externalLinks: [{ name: 'Shopee', url: shopee }],
     status: 'SOLD_OUT',
     featured: false,
+    soldOutAt: '2026-09-05T00:00:00.000Z',
     createdAt: '2026-06-20T00:00:00.000Z',
-    updatedAt: '2026-07-10T00:00:00.000Z',
+    updatedAt: '2026-09-05T00:00:00.000Z',
+  },
+  {
+    id: 16,
+    storeId: 'toko-komputer-jaya',
+    name: 'Apple Watch SE GPS',
+    images: [product5],
+    mainImage: product5,
+    category: 'Aksesoris',
+    brand: 'Apple',
+    condition: 'SECOND',
+    price: 'Rp 2.400.000',
+    priceValue: 2400000,
+    details: [
+      { label: 'Ukuran', value: '44 mm' },
+      { label: 'Roading', value: 'GPS' },
+      { label: 'Baterai', value: 'All-day 18 jam' },
+    ],
+    description:
+      'Smartwatch Apple Watch SE unit bekas dengan kondisi mulus, lengkap dengan strap tambahan dan garansi toko.',
+    externalLinks: [{ name: 'Tokopedia', url: tokopedia }],
+    status: 'SOLD_OUT',
+    featured: true,
+    soldOutAt: '2026-09-10T00:00:00.000Z',
+    createdAt: '2026-08-15T00:00:00.000Z',
+    updatedAt: '2026-09-10T00:00:00.000Z',
+  },
+  {
+    id: 17,
+    storeId: 'toko-komputer-jaya',
+    name: 'TP-Link TL-WR840N',
+    images: [product4],
+    mainImage: product4,
+    category: 'Router',
+    brand: 'TP-Link',
+    condition: 'SECOND',
+    price: 'Rp 250.000',
+    priceValue: 250000,
+    details: [
+      { label: 'Standar', value: 'Wi-Fi 4 300Mbps' },
+      { label: 'Antena', value: '4 x 5 dBi' },
+    ],
+    description:
+      'Router bekas yang masih berfungsi normal untuk kebutuhan jaringan rumah sederhana.',
+    externalLinks: [],
+    status: 'SOLD_OUT',
+    featured: false,
+    soldOutAt: '2026-05-15T00:00:00.000Z',
+    createdAt: '2026-04-10T00:00:00.000Z',
+    updatedAt: '2026-05-15T00:00:00.000Z',
   },
   {
     id: 15,

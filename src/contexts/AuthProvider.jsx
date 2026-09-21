@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as authService from '../services/authService'
+import { setUnauthorizedHandler } from '../services/apiClient'
 import { AuthContext } from './authContext'
 
 export function AuthProvider({ children }) {
@@ -19,15 +20,35 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     let active = true
-    authService.getCurrentUser().then((value) => {
-      if (active) {
-        applyUser(value ?? null)
-        setAuthLoaded(true)
-      }
-    })
+    authService
+      .getCurrentUser()
+      .then((value) => {
+        if (active) {
+          applyUser(value ?? null)
+        }
+      })
+      .catch(() => {
+        // An expired/invalid session resolves to guest instead of hanging the
+        // app on an unresolved auth state.
+        if (active) {
+          applyUser(null)
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setAuthLoaded(true)
+        }
+      })
     return () => {
       active = false
     }
+  }, [])
+
+  useEffect(() => {
+    // A 401 from any API call means the session is gone: clear local auth state
+    // so RequireAuth redirects to /login instead of showing stale data.
+    setUnauthorizedHandler(() => applyUser(null))
+    return () => setUnauthorizedHandler(null)
   }, [])
 
   async function login(payload) {
@@ -36,13 +57,53 @@ export function AuthProvider({ children }) {
     return loggedIn
   }
 
+  /**
+   * Register an account. Email signups require OTP verification first, so the
+   * user is only authenticated once `requiresVerification` is false.
+   * @param {{ emailOrPhone: string, password: string, repassword: string, name?: string }} payload
+   */
   async function register(payload) {
-    const registered = await authService.register(payload)
-    applyUser(registered)
-    return registered
+    const result = await authService.register(payload)
+    if (!result.requiresVerification) {
+      applyUser(result.user)
+    }
+    return result
   }
 
-  function logout() {
+  /**
+   * Verify an email-registration code and sign the account in.
+   * @param {{ identifier: string, code: string }} payload
+   */
+  async function verifyEmail({ identifier, code }) {
+    const verified = await authService.verifyRegistration({ identifier, code })
+    applyUser(verified)
+    return verified
+  }
+
+  /**
+   * Resend the email-registration code (cooldown is enforced by the service).
+   * @param {string} identifier
+   */
+  function resendVerification(identifier) {
+    return authService.resendRegistrationOtp({ identifier })
+  }
+
+  /**
+   * Verify a recovery email and reflect the updated account in context.
+   * @param {{ email: string, code: string }} payload
+   */
+  async function verifyRecoveryEmail({ email, code }) {
+    const updated = await authService.verifyRecoveryEmail({ email, code })
+    applyUser(updated)
+    return updated
+  }
+
+  async function logout() {
+    try {
+      await authService.logout()
+    } catch {
+      // Local logout must succeed even if the server session close fails.
+    }
     applyUser(null)
   }
 
@@ -73,7 +134,18 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, authLoaded, login, register, logout, attachStore, updateUser }}
+      value={{
+        user,
+        authLoaded,
+        login,
+        register,
+        verifyEmail,
+        resendVerification,
+        verifyRecoveryEmail,
+        logout,
+        attachStore,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

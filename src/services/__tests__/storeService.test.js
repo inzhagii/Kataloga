@@ -196,3 +196,73 @@ describe('Store location updates are isolated per store', () => {
     expect(storeA.fullAddress).toBe('Jl. Asia Afrika No. 10, Bandung')
   })
 })
+
+describe('Announcement object', () => {
+  it('persists title/message/isEnabled as a single object', async () => {
+    actAsStoreA()
+    await updateStore(STORE_A_ID, {
+      announcement: { title: 'Judul Baru', message: 'Isi pengumuman.', isEnabled: true },
+    })
+    expect((await getStore(STORE_A_ID)).announcement).toEqual({
+      title: 'Judul Baru',
+      message: 'Isi pengumuman.',
+      isEnabled: true,
+    })
+  })
+
+  it('retains announcement data while disabled', async () => {
+    actAsStoreA()
+    await updateStore(STORE_A_ID, {
+      announcement: { title: 'Tetap Tersimpan', message: 'Data tidak hilang.', isEnabled: false },
+    })
+    const stored = await getStore(STORE_A_ID)
+    expect(stored.announcement).toMatchObject({
+      title: 'Tetap Tersimpan',
+      message: 'Data tidak hilang.',
+      isEnabled: false,
+    })
+  })
+})
+
+describe('Auto Archive setting (store-level)', () => {
+  it('updates only the owning store', async () => {
+    actAsStoreA()
+    await updateStore(STORE_A_ID, { autoArchiveDays: 15 })
+    expect((await getStore(STORE_A_ID)).autoArchiveDays).toBe(15)
+    expect((await getStore(STORE_B_ID)).autoArchiveDays).toBe(60)
+  })
+
+  it('persists null as Never (disabled)', async () => {
+    actAsStoreA()
+    await updateStore(STORE_A_ID, { autoArchiveDays: null })
+    expect((await getStore(STORE_A_ID)).autoArchiveDays).toBeNull()
+  })
+
+  it('accepts the 1 and 365 boundary values', async () => {
+    actAsStoreA()
+    await updateStore(STORE_A_ID, { autoArchiveDays: 1 })
+    expect((await getStore(STORE_A_ID)).autoArchiveDays).toBe(1)
+    await updateStore(STORE_A_ID, { autoArchiveDays: 365 })
+    expect((await getStore(STORE_A_ID)).autoArchiveDays).toBe(365)
+  })
+})
+
+describe('mock mode separation', () => {
+  it('never reaches the API client while VITE_DATA_SOURCE=mock', async () => {
+    const originalFetch = globalThis.fetch
+    globalThis.fetch = () => Promise.reject(new Error('Unexpected API call in mock mode.'))
+    try {
+      const mine = await getMyStore()
+      expect(mine.storeId).toBe(STORE_A_ID)
+      await updateStore(STORE_A_ID, {
+        announcement: { title: 'Mock', message: 'Data', isEnabled: true },
+        autoArchiveDays: 45,
+      })
+      const stored = await getStore(STORE_A_ID)
+      expect(stored.announcement).toMatchObject({ title: 'Mock', isEnabled: true })
+      expect(stored.autoArchiveDays).toBe(45)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+})

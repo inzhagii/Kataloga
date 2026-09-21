@@ -30,7 +30,7 @@ import { buildCatalogCategoryTree, filterAndSortProducts } from '../../utils/pro
 import { PRODUCT_STATUS, CONDITION, INTEREST_TYPE, ACTIVITY_TYPE } from '../../constants/enums'
 import { products, customerInterests, recentActivities } from '../../data/mock'
 import { isApiMode } from '../apiConfig'
-import { STORE_A_ID, actAsStoreA, beforeEachScenario } from './setup'
+import { STORE_A_ID, actAsStoreA, actAsStoreB, beforeEachScenario } from './setup'
 
 beforeEach(() => {
   beforeEachScenario()
@@ -88,7 +88,12 @@ describe('demo data source mode', () => {
   it('provides a rich published catalog that fills the public storefront', async () => {
     const published = await listPublicProducts(STORE_A_ID)
     expect(published.length).toBeGreaterThanOrEqual(10)
-    expect(published.every((p) => p.status === PRODUCT_STATUS.PUBLISHED)).toBe(true)
+    expect(
+      published.every((p) => [PRODUCT_STATUS.PUBLISHED, PRODUCT_STATUS.SOLD_OUT].includes(p.status)),
+    ).toBe(true)
+    expect(
+      published.some((p) => p.status === PRODUCT_STATUS.SOLD_OUT),
+    ).toBe(true)
     expect(new Set(published.map((p) => p.category)).size).toBeGreaterThanOrEqual(6)
     expect(published.filter((p) => p.featured).length).toBeGreaterThanOrEqual(3)
   })
@@ -201,8 +206,8 @@ describe('demo data respects locked data models', () => {
   })
 
   it('records demo marketplace interest with the chosen store channel', async () => {
-    actAsStoreA()
-    const storeA = await getMyStore()
+    actAsStoreB()
+    const storeA = await getStore(STORE_A_ID)
     const chosen = storeA.channels[0]
 
     await recordInterest({

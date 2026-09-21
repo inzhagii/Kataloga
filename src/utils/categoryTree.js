@@ -26,6 +26,43 @@ export function buildCategoryTree(categories) {
 }
 
 /**
+ * Resolve the product-category names covered by a selected category.
+ * Selecting a Kategori Utama includes its descendant Sub Kategori products;
+ * selecting a Sub Kategori covers only itself. Unknown names fall back to an
+ * exact match so an invalid URL id never fabricates a category.
+ * @param {import('../data/models.js').Category[]} categories
+ * @param {string} name - Selected category name.
+ * @returns {string[]} Category names to include.
+ */
+export function resolveCategoryScope(categories, name) {
+  if (!name) {
+    return []
+  }
+  const selected = categories.find((category) => category.name === name)
+  if (!selected) {
+    return [name]
+  }
+  const children = categories
+    .filter((category) => category.parentId === selected.id)
+    .map((category) => category.name)
+  return [selected.name, ...children]
+}
+
+/**
+ * Ordered category options for the Products filter: each Kategori Utama
+ * followed by its Sub Kategori (max two levels).
+ * @param {import('../data/models.js').Category[]} categories
+ * @returns {import('../data/models.js').Category[]}
+ */
+export function buildCategoryFilterOptions(categories) {
+  const parents = categories.filter((category) => category.parentId === null)
+  return parents.flatMap((parent) => [
+    parent,
+    ...categories.filter((category) => category.parentId === parent.id),
+  ])
+}
+
+/**
  * Count products per category name.
  * @param {import('../data/models.js').Product[]} products
  * @returns {Record<string, number>}

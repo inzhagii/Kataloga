@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { listCategories } from '../services/categoryService'
 import { listSellerProducts } from '../services/productService'
 import { buildCategoryTree, countProductsByCategory } from '../utils/categoryTree'
@@ -51,6 +51,25 @@ export function useCategories() {
     }
   }, [reloadKey])
 
+  /**
+   * Re-fetch without flipping to the loading state. Used after a create/edit/
+   * delete so the list reflects the change while an open modal (e.g. the
+   * "Buat Kategori Utama Baru" sub-flow) stays mounted. On failure the current
+   * data is kept because the mutation itself already succeeded and was
+   * surfaced to the user.
+   */
+  const refresh = useCallback(async () => {
+    try {
+      const [categories, products] = await Promise.all([
+        listCategories(),
+        listSellerProducts(),
+      ])
+      setState({ status: 'ready', categories, products, error: '' })
+    } catch {
+      // Keep the last known data; the next full reload / navigation retries.
+    }
+  }, [])
+
   const tree = useMemo(
     () => buildCategoryTree(state.categories),
     [state.categories],
@@ -70,5 +89,6 @@ export function useCategories() {
     childrenByParent: tree.childrenByParent,
     productCounts,
     reload: () => setReloadKey((value) => value + 1),
+    refresh,
   }
 }

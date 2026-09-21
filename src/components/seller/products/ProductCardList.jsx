@@ -16,6 +16,7 @@ const CONDITION_LABEL = { NEW: 'New', SECOND: 'Second' }
  *   onMarkSoldOut: (product: import('../../../data/models.js').Product) => void,
  *   onReactivate: (product: import('../../../data/models.js').Product) => void,
  *   onRestore: (product: import('../../../data/models.js').Product) => void,
+ *   onDetail?: (product: import('../../../data/models.js').Product) => void,
  * }} props
  */
 function ProductCardList({
@@ -26,6 +27,7 @@ function ProductCardList({
   onMarkSoldOut,
   onReactivate,
   onRestore,
+  onDetail,
 }) {
   return (
     <div className="space-y-3 bg-surface-container-low/40 p-3.5 md:hidden">
@@ -43,18 +45,33 @@ function ProductCardList({
               />
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <Link
-                    to={`/seller/products/${product.id}/edit`}
-                    className="block truncate text-sm font-bold text-on-surface hover:text-primary"
-                  >
-                    {product.name}
-                  </Link>
+                  {onDetail ? (
+                    <button
+                      type="button"
+                      onClick={() => onDetail(product)}
+                      className="block truncate text-sm font-bold text-on-surface hover:text-primary"
+                    >
+                      {product.name}
+                    </button>
+                  ) : (
+                    <Link
+                      to={`/seller/products/${product.id}/edit`}
+                      className="block truncate text-sm font-bold text-on-surface hover:text-primary"
+                    >
+                      {product.name}
+                    </Link>
+                  )}
                   {product.featured ? <FeaturedTag /> : null}
                 </div>
-                <div className="mt-1 flex items-center gap-1.5">
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
                   <span className="rounded bg-surface-container-low px-2 py-0.5 text-[10px] font-semibold text-on-surface">
                     {product.category}
                   </span>
+                  {product.brand ? (
+                    <span className="rounded bg-surface-container-low px-2 py-0.5 text-[10px] font-semibold text-secondary">
+                      {product.brand}
+                    </span>
+                  ) : null}
                   <span className="text-[11px] text-outline">
                     • {CONDITION_LABEL[product.condition] || product.condition}
                   </span>
@@ -69,6 +86,7 @@ function ProductCardList({
               onMarkSoldOut={onMarkSoldOut}
               onReactivate={onReactivate}
               onRestore={onRestore}
+              onDetail={onDetail}
             />
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-outline-variant/30 pt-2.5">

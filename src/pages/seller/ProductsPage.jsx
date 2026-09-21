@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSellerProducts } from '../../hooks/useSellerProducts'
 import { listCategories } from '../../services/categoryService'
+import { listBrands } from '../../services/brandService'
 import {
   archiveProduct,
   markSoldOut,
@@ -9,13 +10,19 @@ import {
   reactivateProduct,
   toggleFeatured,
 } from '../../services/productService'
-import { recordProductPublished } from '../../services/activityService'
+import {
+  recordProductPublished,
+  recordProductArchived,
+  recordProductSoldOut,
+  recordProductReactivated,
+} from '../../services/activityService'
 import { validateProductForPublish } from '../../utils/productValidation'
 import ProductsToolbar from '../../components/seller/products/ProductsToolbar'
 import StatusTabs from '../../components/seller/products/StatusTabs'
 import ProductTable from '../../components/seller/products/ProductTable'
 import ProductCardList from '../../components/seller/products/ProductCardList'
 import EmptyProducts from '../../components/seller/products/EmptyProducts'
+import ArchivedProductsLink from '../../components/seller/products/ArchivedProductsLink'
 import EmptyState from '../../components/shared/EmptyState'
 import Toast from '../../components/shared/Toast'
 import ConfirmDialog from '../../components/shared/ConfirmDialog'
@@ -23,7 +30,8 @@ import ConfirmDialog from '../../components/shared/ConfirmDialog'
 /**
  * Seller Products: seller-management list (PUBLISHED, DRAFT and SOLD_OUT)
  * with per-row actions (edit, publish, sold-out, reactivate, featured,
- * archive), search/filter/sort and the Active/Draft/Sold Out tabs.
+ * archive), search/filter and the Active/Draft/Sold Out tabs. The locked
+ * layout has no Sort on the seller Products list.
  * Archived products live on /seller/products/archived. Active Products =
  * PUBLISHED only.
  */
@@ -31,7 +39,35 @@ function ProductsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const categoryFromUrl = searchParams.get('category') || ''
+  const categoryIdFromUrl = searchParams.get('category') || ''
+  const brandIdFromUrl = searchParams.get('brand') || ''
+
+  const [categories, setCategories] = useState([])
+  const [brands, setBrands] = useState([])
+  const [toast, setToast] = useState(location.state?.feedback ?? null)
+  const [productToArchive, setProductToArchive] = useState(null)
+  const [archiveSubmitting, setArchiveSubmitting] = useState(false)
+  const [productToSoldOut, setProductToSoldOut] = useState(null)
+  const [soldOutSubmitting, setSoldOutSubmitting] = useState(false)
+
+  // ?category= carries the category ID; the filter itself works on the category
+  // NAME (the product join key), mirroring the M7 brand filter.
+  const categoryFromUrl = useMemo(() => {
+    if (!categoryIdFromUrl) {
+      return ''
+    }
+    const match = categories.find((category) => String(category.id) === categoryIdFromUrl)
+    return match ? match.name : ''
+  }, [categoryIdFromUrl, categories])
+
+  const brandFromUrl = useMemo(() => {
+    if (!brandIdFromUrl) {
+      return ''
+    }
+    const match = brands.find((brand) => String(brand.id) === brandIdFromUrl)
+    return match ? match.name : ''
+  }, [brandIdFromUrl, brands])
+
   const {
     status,
     products,
@@ -45,24 +81,27 @@ function ProductsPage() {
     setSearch,
     filters,
     setFilters,
-    sort,
-    setSort,
     hasActiveFilters,
     resetFilters,
-  } = useSellerProducts({ initialCategory: categoryFromUrl })
-
-  const [categories, setCategories] = useState([])
-  const [toast, setToast] = useState(location.state?.feedback ?? null)
-  const [productToArchive, setProductToArchive] = useState(null)
-  const [archiveSubmitting, setArchiveSubmitting] = useState(false)
-  const [productToSoldOut, setProductToSoldOut] = useState(null)
-  const [soldOutSubmitting, setSoldOutSubmitting] = useState(false)
+  } = useSellerProducts({ initialCategory: categoryFromUrl, categories })
 
   useEffect(() => {
     let active = true
     listCategories().then((value) => {
       if (active) {
         setCategories(value)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    listBrands().then((value) => {
+      if (active) {
+        setBrands(value)
       }
     })
     return () => {
@@ -78,19 +117,28 @@ function ProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ?category=... is the source of truth for the category filter (deep link
-  // from the Categories page). Keep local filter state in sync with the URL.
+  // ?category=... and ?brand=... are the source of truth for the deep-linked
+  // filters (from the Categories / Brand Management pages). Keep local filter
+  // state in sync with the URL. `?brand=` carries the brand ID; the brand
+  // filter itself works on the brand NAME (the product join key).
   useEffect(() => {
     setFilters((current) =>
       current.category === categoryFromUrl ? current : { ...current, category: categoryFromUrl },
     )
   }, [categoryFromUrl, setFilters])
 
+  useEffect(() => {
+    setFilters((current) =>
+      current.brand === brandFromUrl ? current : { ...current, brand: brandFromUrl },
+    )
+  }, [brandFromUrl, setFilters])
+
   function handleResetFilters() {
     resetFilters()
-    if (categoryFromUrl) {
+    if (categoryIdFromUrl || brandIdFromUrl) {
       const nextParams = new URLSearchParams(searchParams)
       nextParams.delete('category')
+      nextParams.delete('brand')
       setSearchParams(nextParams, { replace: true })
     }
   }
@@ -110,7 +158,7 @@ function ProductsPage() {
     }
     try {
       await publishProduct(product.id)
-      await recordProductPublished(product.name)
+      await recordProductPublished(product.name, { productId: product.id })
       reload()
       setToast({ type: 'success', message: `${product.name} berhasil dipublikasi.` })
     } catch (publishError) {
@@ -152,6 +200,7 @@ function ProductsPage() {
     setArchiveSubmitting(true)
     try {
       await archiveProduct(productToArchive.id)
+      await recordProductArchived(productToArchive.name, { productId: productToArchive.id })
       setToast({ type: 'success', message: `${productToArchive.name} diarsipkan.` })
       setProductToArchive(null)
       reload()
@@ -175,6 +224,7 @@ function ProductsPage() {
     setSoldOutSubmitting(true)
     try {
       await markSoldOut(productToSoldOut.id)
+      await recordProductSoldOut(productToSoldOut.name, { productId: productToSoldOut.id })
       setToast({ type: 'success', message: `${productToSoldOut.name} ditandai Sold Out.` })
       setProductToSoldOut(null)
       reload()
@@ -194,6 +244,7 @@ function ProductsPage() {
   async function handleReactivate(product) {
     try {
       const updated = await reactivateProduct(product.id)
+      await recordProductReactivated(updated.name, { productId: updated.id })
       setToast({
         type: 'success',
         message: `${updated.name} diaktifkan kembali sebagai Published.`,
@@ -209,6 +260,19 @@ function ProductsPage() {
       })
     }
   }
+
+  const filteredEmptyAction = (
+    <button
+      type="button"
+      onClick={handleResetFilters}
+      className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant px-5 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
+    >
+      <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        refresh
+      </span>
+      Reset Filter
+    </button>
+  )
 
   if (status === 'loading') {
     return (
@@ -248,11 +312,22 @@ function ProductsPage() {
 
   return (
     <div>
-      <div className="mb-5 text-center sm:text-left">
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-          Products
-        </h1>
-        <p className="mt-1 text-sm text-secondary">Kelola produk dan katalog kamu.</p>
+      <div className="mb-5 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Products
+          </h1>
+          <p className="mt-1 text-sm text-secondary">Kelola produk dan katalog kamu.</p>
+        </div>
+        <Link
+          to="/seller/products/new"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:brightness-110"
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            add
+          </span>
+          Tambah Produk
+        </Link>
       </div>
 
       <ProductsToolbar
@@ -262,10 +337,9 @@ function ProductsPage() {
         onFilterChange={setFilters}
         resetFilters={handleResetFilters}
         hasActiveFilters={hasActiveFilters}
-        sort={sort}
-        onSort={setSort}
         categories={categories}
-        addHref="/seller/products/new"
+        brands={brands}
+        archiveLink={<ArchivedProductsLink count={archivedCount} className="lg:hidden" />}
       />
 
       <StatusTabs
@@ -277,7 +351,7 @@ function ProductsPage() {
 
       {products.length === 0 ? (
         hasActiveFilters ? (
-          <EmptyProducts variant="search" />
+          <EmptyProducts variant="search" action={filteredEmptyAction} />
         ) : (
           <EmptyProducts variant={tab === 'draft' ? 'draft' : 'none'} />
         )
@@ -319,7 +393,7 @@ function ProductsPage() {
       <ConfirmDialog
         open={Boolean(productToSoldOut)}
         title={`Tandai "${productToSoldOut?.name}" sebagai Sold Out?`}
-        description="Produk akan tidak tampil di katalog aktif dan hanya terlihat di area Sold Out. Kamu bisa mengaktifkannya kembali kapan saja."
+        description="Produk ditandai Sold Out dan tetap tampil di katalog (dengan indikasi Sold Out) selama masih dalam jendela Auto Archive toko. Kamu bisa mengaktifkannya kembali kapan saja."
         confirmLabel="Sold Out"
         cancelLabel="Batal"
         tone="danger"

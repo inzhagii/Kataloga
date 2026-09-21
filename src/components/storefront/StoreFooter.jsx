@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import WhatsAppIcon from '../ui/WhatsAppIcon'
+import { buildMapsSearchUrl } from '../../utils/storeLocation'
 
 /**
  * Shared styling for footer section headings (consistent in every block).
@@ -27,6 +28,7 @@ function storeInitial(store) {
 function StoreFooter({ store = {}, onWhatsApp, onSelectChannel }) {
   const channels = store.channels ?? []
   const hasChannels = channels.length > 0
+  const mapsUrl = store.fullAddress ? buildMapsSearchUrl(store.fullAddress) : null
 
   const itemClass =
     'inline-flex max-w-full items-center gap-2.5 text-sm text-on-surface-variant transition-colors hover:text-primary'
@@ -108,7 +110,14 @@ function StoreFooter({ store = {}, onWhatsApp, onSelectChannel }) {
                 >
                   location_on
                 </span>
-                <span className="min-w-0">{store.fullAddress}</span>
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-w-0 transition-colors hover:text-primary hover:underline"
+                >
+                  {store.fullAddress}
+                </a>
               </p>
             </div>
           ) : null}

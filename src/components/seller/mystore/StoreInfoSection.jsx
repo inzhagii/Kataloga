@@ -52,7 +52,7 @@ function StoreInfoSection({
             htmlFor="store-name"
             className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
           >
-            Nama Toko <span className="text-error">*</span>
+            Nama Toko
           </label>
           <input
             id="store-name"
@@ -78,8 +78,7 @@ function StoreInfoSection({
             htmlFor="store-description"
             className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
           >
-            Deskripsi / Bio{' '}
-            <span className="font-normal lowercase text-secondary">(opsional)</span>
+            Deskripsi / Bio
           </label>
           <textarea
             id="store-description"
@@ -97,7 +96,7 @@ function StoreInfoSection({
               htmlFor="store-province"
               className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
             >
-              Provinsi <span className="text-error">*</span>
+              Provinsi
             </label>
             <div className="relative">
               <select
@@ -149,7 +148,7 @@ function StoreInfoSection({
               htmlFor="store-city"
               className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
             >
-              Kota / Kabupaten <span className="text-error">*</span>
+              Kota / Kabupaten
             </label>
             <div className="relative">
               <select
@@ -226,8 +225,7 @@ function StoreInfoSection({
               htmlFor="store-hours"
               className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
             >
-              Jam Operasional{' '}
-              <span className="font-normal lowercase text-secondary">(opsional)</span>
+              Jam Operasional
             </label>
             <input
               id="store-hours"

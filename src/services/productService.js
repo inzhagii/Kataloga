@@ -8,18 +8,29 @@
  * API calls without changing the caller contract.
  */
 
-import { products } from '../data/mock'
+import { products, stores } from '../data/mock'
 import { PRODUCT_STATUS } from '../constants/enums'
 import { withLatency } from './apiClient'
 import { isApiMode } from './apiConfig'
 import * as productApi from './adapters/api/productApi'
 import { getCurrentStoreId } from './storeService'
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
 const ARCHIVED_PUBLISH_MESSAGE =
   'Product yang diarsipkan tidak dapat dipublikasikan langsung. Pulihkan (Restore) terlebih dahulu, lalu publikasikan.'
 
 const SOLD_OUT_FROM_GUARD_MESSAGE =
   'Product yang berstatus DRAFT atau ARCHIVED tidak dapat ditandai Sold Out. Hanya product PUBLISHED yang dapat menjadi Sold Out.'
+
+const STATUS_CHANGE_GUARD_MESSAGE =
+  'Status produk tidak dapat diubah melalui form. Gunakan aksi product (Publish, Sold Out, Archive, Restore, Aktifkan Kembali).'
+
+const ARCHIVED_FEATURED_MESSAGE =
+  'Product yang diarsipkan tidak dapat menjadi Featured. Restore ke draft terlebih dahulu.'
+
+const FEATURED_LIMIT_MESSAGE =
+  'Maksimal 10 Product Unggulan per toko. Hapus salah satu Featured terlebih dahulu.'
 
 /**
  * Find a product by public numeric ID within the current seller's store.
@@ -41,7 +52,96 @@ function nextProductId() {
 }
 
 /**
- * List public products for a store (PUBLISHED only).
+ * Featured guard: Product ARCHIVED is never Product Unggulan, and a store is
+ * capped at 10 Product Unggulan across PUBLISHED / DRAFT / SOLD_OUT (inside
+ * or outside the Auto Archive window). Returns the conflict message, or null
+ * when the target state is allowed. Pass `productId === null` for creation.
+ * @param {string} storeId
+ * @param {number | null} productId
+ * @param {boolean} nextFeatured
+ * @returns {string | null}
+ */
+function featuredGuardMessage(storeId, productId, nextFeatured) {
+  if (!nextFeatured) {
+    return null
+  }
+  const product = productId == null ? null : findProduct(productId)
+  if (product) {
+    if (product.status === PRODUCT_STATUS.ARCHIVED) {
+      return ARCHIVED_FEATURED_MESSAGE
+    }
+    if (product.featured) {
+      return null
+    }
+  }
+  const featuredCount = products.filter(
+    (item) =>
+      item.storeId === storeId &&
+      item.id !== productId &&
+      item.status !== PRODUCT_STATUS.ARCHIVED &&
+      item.featured,
+  ).length
+  return featuredCount >= 10 ? FEATURED_LIMIT_MESSAGE : null
+}
+
+/**
+ * Whether a SOLD_OUT product is still inside its store's Auto Archive window.
+ * `null` on the store disables Auto Archive ("Never"), so any SOLD_OUT stays
+ * public-visible. Without a `soldOutAt` timestamp the duration is unknown and
+ * the product is kept visible (conservative). This is a lazy mock simulation:
+ * the real backend owns the scheduled SOLD_OUT -> ARCHIVED transition.
+ * @param {import('../data/models.js').Product} product
+ * @returns {boolean}
+ */
+function isSoldOutWithinWindow(product) {
+  if (product.status !== PRODUCT_STATUS.SOLD_OUT) {
+    return false
+  }
+  const store = stores.find((item) => item.storeId === product.storeId)
+  const autoArchiveDays = store?.autoArchiveDays ?? null
+  if (autoArchiveDays === null) {
+    return true
+  }
+  if (!product.soldOutAt) {
+    return true
+  }
+  const elapsed = Date.now() - new Date(product.soldOutAt).getTime()
+  return elapsed < autoArchiveDays * DAY_MS
+}
+
+/**
+ * Public catalog visibility: PUBLISHED, plus SOLD_OUT still within the store
+ * Auto Archive window. DRAFT, ARCHIVED and expired SOLD_OUT are never public.
+ * @param {import('../data/models.js').Product} product
+ * @returns {boolean}
+ */
+function isPubliclyVisible(product) {
+  return product.status === PRODUCT_STATUS.PUBLISHED || isSoldOutWithinWindow(product)
+}
+
+/**
+ * Locked public catalog order (docs/UI_RULES.md):
+ * Featured Published -> newer Published -> older Published -> Sold Out.
+ * Within a group newest first.
+ * @param {import('../data/models.js').Product} a
+ * @param {import('../data/models.js').Product} b
+ * @returns {number}
+ */
+function publicCatalogOrder(a, b) {
+  const rank = (product) =>
+    product.status === PRODUCT_STATUS.SOLD_OUT ? 2 : product.featured ? 0 : 1
+  const rankDiff = rank(a) - rank(b)
+  if (rankDiff !== 0) {
+    return rankDiff
+  }
+  return new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
+}
+
+/**
+ * List public products for a store: PUBLISHED plus SOLD_OUT still within the
+ * store-level Auto Archive window, ordered Featured Published -> newer
+ * Published -> older Published -> Sold Out. ARCHIVED, DRAFT and expired
+ * SOLD_OUT are excluded.
  * @param {string} storeId
  * @returns {Promise<import('../data/models.js').Product[]>}
  */
@@ -49,15 +149,17 @@ export function listPublicProducts(storeId) {
   if (isApiMode()) {
     return productApi.listPublicProducts(storeId)
   }
-  const result = products.filter(
-    (product) => product.storeId === storeId && product.status === PRODUCT_STATUS.PUBLISHED,
-  )
+  const result = products
+    .filter((product) => product.storeId === storeId && isPubliclyVisible(product))
+    .sort(publicCatalogOrder)
   return withLatency(result)
 }
 
 /**
- * Get a product scoped to a store by public product ID.
- * Requires the store context: a product must belong to the store.
+ * Get a public product scoped to a store by public product ID.
+ * Only returns products the storefront may expose: PUBLISHED or SOLD_OUT still
+ * within the Auto Archive window. DRAFT, ARCHIVED and expired SOLD_OUT resolve
+ * to undefined. Requires the store context: a product must belong to the store.
  * @param {string} storeId
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product | undefined>}
@@ -69,7 +171,7 @@ export function getProduct(storeId, productId) {
   const product = products.find(
     (item) => item.id === Number(productId) && item.storeId === storeId,
   )
-  return withLatency(product)
+  return withLatency(product && isPubliclyVisible(product) ? product : undefined)
 }
 
 /**
@@ -142,6 +244,10 @@ export function createProduct(payload) {
     createdAt: now,
     updatedAt: now,
   }
+  const conflict = featuredGuardMessage(product.storeId, null, product.featured)
+  if (conflict) {
+    return Promise.reject(new Error(conflict))
+  }
   products.push(product)
   return withLatency(product)
 }
@@ -169,9 +275,19 @@ export function updateProduct(productId, payload) {
   }
   if (
     payload.status === PRODUCT_STATUS.SOLD_OUT &&
+    payload.status !== product.status &&
     product.status !== PRODUCT_STATUS.PUBLISHED
   ) {
     return Promise.reject(new Error(SOLD_OUT_FROM_GUARD_MESSAGE))
+  }
+  if (payload.status !== undefined && payload.status !== product.status) {
+    return Promise.reject(new Error(STATUS_CHANGE_GUARD_MESSAGE))
+  }
+  if (payload.featured !== undefined && payload.featured !== product.featured) {
+    const conflict = featuredGuardMessage(product.storeId, productId, payload.featured)
+    if (conflict) {
+      return Promise.reject(new Error(conflict))
+    }
   }
   Object.assign(product, {
     ...payload,
@@ -205,7 +321,9 @@ export function publishProduct(productId) {
 }
 
 /**
- * Toggle the featured flag on an active product.
+ * Toggle the featured flag on a product. Enforces the max-10 Product Unggulan
+ * limit per store (backend remains the final authority) and never promotes an
+ * ARCHIVED product (archiving already clears featured).
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */
@@ -217,14 +335,19 @@ export function toggleFeatured(productId) {
   if (!product) {
     return Promise.reject(new Error('Product tidak ditemukan.'))
   }
+  const conflict = featuredGuardMessage(product.storeId, productId, !product.featured)
+  if (conflict) {
+    return Promise.reject(new Error(conflict))
+  }
   product.featured = !product.featured
   product.updatedAt = new Date().toISOString()
   return withLatency(product)
 }
 
 /**
- * Archive a product.
- * Archive never publishes a product back; restore always returns to DRAFT.
+ * Archive a product. Always returns to a non-published state and clears the
+ * Featured status (Product ARCHIVED is never Product Unggulan). Archive never
+ * publishes a product back; restore always returns to DRAFT.
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */
@@ -237,6 +360,7 @@ export function archiveProduct(productId) {
     return Promise.reject(new Error('Product tidak ditemukan.'))
   }
   product.status = PRODUCT_STATUS.ARCHIVED
+  product.featured = false
   product.updatedAt = new Date().toISOString()
   return withLatency(product)
 }
@@ -255,13 +379,15 @@ export function restoreProduct(productId) {
     return Promise.reject(new Error('Product tidak ditemukan.'))
   }
   product.status = PRODUCT_STATUS.DRAFT
+  product.soldOutAt = undefined
   product.updatedAt = new Date().toISOString()
   return withLatency(product)
 }
 
 /**
  * Mark a PUBLISHED product as SOLD_OUT (PUBLISHED -> SOLD_OUT).
- * DRAFT and ARCHIVED products are never marked Sold Out directly.
+ * DRAFT and ARCHIVED products are never marked Sold Out directly. Records the
+ * SOLD_OUT timestamp used by the mock Auto Archive simulation.
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */
@@ -277,12 +403,15 @@ export function markSoldOut(productId) {
     return Promise.reject(new Error(SOLD_OUT_FROM_GUARD_MESSAGE))
   }
   product.status = PRODUCT_STATUS.SOLD_OUT
+  product.soldOutAt = new Date().toISOString()
   product.updatedAt = new Date().toISOString()
   return withLatency(product)
 }
 
 /**
  * Bring a SOLD_OUT product back to PUBLISHED (SOLD_OUT -> PUBLISHED).
+ * Never SOLD_OUT -> DRAFT. Clears the SOLD_OUT timestamp so the Auto Archive
+ * window is reset.
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */
@@ -298,6 +427,7 @@ export function reactivateProduct(productId) {
     return Promise.reject(new Error('Product tidak berstatus Sold Out dan tidak dapat diaktifkan kembali.'))
   }
   product.status = PRODUCT_STATUS.PUBLISHED
+  product.soldOutAt = undefined
   product.updatedAt = new Date().toISOString()
   return withLatency(product)
 }

@@ -1,19 +1,32 @@
 import SectionCard from '../products/form/SectionCard'
 
+const TITLE_MAX = 60
+const MESSAGE_MAX = 200
+
 /**
- * Announcement banner: single announcement shown on the storefront. Toggled
- * off keeps local text (no data loss) and saves an empty array so the
- * storefront hides the banner.
+ * Announcement: single announcement (title + message) shown on the
+ * storefront. Toggled off keeps the local title/message (no data loss) and
+ * saves isEnabled=false so the storefront hides the banner.
  *
  * @param {{
+ *   title: string,
+ *   message: string,
  *   enabled: boolean,
- *   text: string,
  *   onToggle: (value: boolean) => void,
- *   onTextChange: (value: string) => void,
+ *   onTitleChange: (value: string) => void,
+ *   onMessageChange: (value: string) => void,
  *   children: React.ReactNode,
  * }} props
  */
-function AnnouncementSection({ enabled, text, onToggle, onTextChange, children }) {
+function AnnouncementSection({
+  title,
+  message,
+  enabled,
+  onToggle,
+  onTitleChange,
+  onMessageChange,
+  children,
+}) {
   return (
     <SectionCard
       icon="campaign"
@@ -48,23 +61,47 @@ function AnnouncementSection({ enabled, text, onToggle, onTextChange, children }
         </div>
 
         {enabled ? (
-          <div>
-            <label
-              htmlFor="store-announcement"
-              className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
-            >
-              Isi Pengumuman
-            </label>
-            <textarea
-              id="store-announcement"
-              value={text}
-              onChange={(event) => onTextChange(event.target.value)}
-              placeholder="Contoh: Gratis ongkir untuk pembelian hari ini hingga pukul 17.00 WIB."
-              rows={3}
-              maxLength={200}
-              className="w-full resize-y rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
-            />
-            <p className="mt-2 text-right text-[11px] text-secondary">{text.length}/200</p>
+          <div className="flex flex-col gap-5">
+            <div>
+              <label
+                htmlFor="store-announcement-title"
+                className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
+              >
+                Judul Pengumuman
+              </label>
+              <input
+                id="store-announcement-title"
+                type="text"
+                value={title}
+                onChange={(event) => onTitleChange(event.target.value)}
+                placeholder="Contoh: Promo Akhir Tahun"
+                maxLength={TITLE_MAX}
+                className="w-full rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
+              />
+              <p className="mt-2 text-right text-[11px] text-secondary">
+                {title.length}/{TITLE_MAX}
+              </p>
+            </div>
+            <div>
+              <label
+                htmlFor="store-announcement-message"
+                className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
+              >
+                Isi Pengumuman
+              </label>
+              <textarea
+                id="store-announcement-message"
+                value={message}
+                onChange={(event) => onMessageChange(event.target.value)}
+                placeholder="Contoh: Gratis ongkir untuk pembelian hari ini hingga pukul 17.00 WIB."
+                rows={3}
+                maxLength={MESSAGE_MAX}
+                className="w-full resize-y rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20"
+              />
+              <p className="mt-2 text-right text-[11px] text-secondary">
+                {message.length}/{MESSAGE_MAX}
+              </p>
+            </div>
           </div>
         ) : null}
       </div>

@@ -1,16 +1,19 @@
 import { useNavigate } from 'react-router-dom'
-import { CONDITION } from '../../constants/enums'
+import { CONDITION, PRODUCT_STATUS } from '../../constants/enums'
+import { buildStoreProductUrl, resolveProductSlug } from '../../utils/storefrontUrl'
 
 /**
  * Public product card used on the Store Landing (grid + featured tracks).
- * Shows condition badge, image, name, category, price, "Lihat Detail" and a
- * share action. Does NOT show brand, WhatsApp or marketplace actions, and has
- * no availability/sold-out state (the active catalog only contains PUBLISHED).
+ * Shows condition badge, Product Unggulan indicator (if featured), SOLD OUT
+ * indicator (if SOLD_OUT still within its store Auto Archive window), image,
+ * name, category, price, "Lihat Detail" and a share action. Does NOT show
+ * brand, WhatsApp, marketplace or contact-seller actions.
  */
 function ProductCard({ product, storeId, storeName, variant = 'grid', onShare }) {
   const navigate = useNavigate()
   const conditionLabel = product.condition === CONDITION.SECOND ? 'SECOND' : 'NEW'
-  const detailUrl = `/${storeId}/products/${product.id}`
+  const isSoldOut = product.status === PRODUCT_STATUS.SOLD_OUT
+  const detailUrl = buildStoreProductUrl(storeId, product.id, resolveProductSlug(product))
 
   function handleShare(event) {
     event.stopPropagation()
@@ -47,12 +50,31 @@ function ProductCard({ product, storeId, storeName, variant = 'grid', onShare })
             {conditionLabel}
           </span>
 
+          {product.featured ? (
+            <span
+              className="absolute right-3 top-3 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-amber-950 shadow-sm"
+              role="img"
+              aria-label="Product Unggulan"
+              title="Product Unggulan"
+            >
+              <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                star
+              </span>
+            </span>
+          ) : null}
+
           <img
             src={product.mainImage ?? product.images?.[0]}
             alt={`Foto ${product.name} — ${storeName ?? 'Toko Kataloga'}`}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-300 group-hover/text:scale-105"
           />
+
+          {isSoldOut ? (
+            <span className="absolute bottom-3 left-3 z-20 rounded-md bg-neutral-900/85 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur-sm">
+              SOLD OUT
+            </span>
+          ) : null}
         </div>
       </button>
 

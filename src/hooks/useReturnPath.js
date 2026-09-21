@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom'
+import { sanitizeReturnPath } from '../utils/returnUrl'
 
 /**
  * Resolves the authentication return context.
@@ -8,30 +9,19 @@ import { useLocation } from 'react-router-dom'
  * and falls back to `location.state.from` for in-app navigations that pass
  * router state instead.
  *
- * Only internal paths (starting with a single "/") are accepted so the page
- * never redirects to an external URL.
+ * Sanitization rejects external URLs, protocol-relative paths, script/data
+ * URLs and control characters so the page never performs an open redirect.
  */
 export function useReturnPath() {
   const location = useLocation()
 
-  function sanitize(value) {
-    if (!value || typeof value !== 'string') {
-      return null
-    }
-    const trimmed = value.trim()
-    if (!trimmed.startsWith('/') || trimmed.startsWith('//')) {
-      return null
-    }
-    return trimmed
-  }
-
   const queryReturn = new URLSearchParams(location.search).get('returnUrl')
   const stateFrom =
     location.state && typeof location.state.from === 'object' && location.state.from !== null
-      ? location.state.from.pathname + (location.state.from.search ?? '')
+      ? `${location.state.from.pathname ?? ''}${location.state.from.search ?? ''}`
       : null
 
-  const returnPath = sanitize(queryReturn) ?? sanitize(stateFrom)
+  const returnPath = sanitizeReturnPath(queryReturn) ?? sanitizeReturnPath(stateFrom)
 
   /**
    * Build a target href that carries the return context along.

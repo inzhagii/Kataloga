@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { filterAndSortProducts, buildCatalogCategoryTree } from '../../utils/productSearch'
 import SearchBar from './SearchBar'
 import CategoryChips from './CategoryChips'
@@ -9,12 +10,13 @@ import EmptyState from '../shared/EmptyState'
 
 /**
  * "Semua Produk" catalog block: search, filter, sort, product grid and the
- * empty/empty-search recovery states. All state stays local to the Store
- * Landing page (no separate routes). The category filter is two-level:
+ * empty/empty-search recovery states. All state stays local to the page
+ * (no separate query-string routes). The category filter is two-level:
  * Kategori Utama (chips + filter step 1) → Sub Kategori (filter step 2),
- * scoped to the selected Kategori Utama.
+ * scoped to the selected Kategori Utama. An optional `listingHref` renders
+ * a "Lihat Semua" link to the dedicated product listing route.
  */
-function CatalogSection({ storeId, storeName, products, categories = [], onShare }) {
+function CatalogSection({ storeId, storeName, products, categories = [], onShare, listingHref }) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [condition, setCondition] = useState('all')
@@ -53,12 +55,25 @@ function CatalogSection({ storeId, storeName, products, categories = [], onShare
         <h2 id="catalog-heading" className="text-lg font-bold tracking-tight text-on-surface md:text-2xl">
           Semua Produk
         </h2>
-        <span
-          className="rounded-full bg-surface-container-high px-3 py-1 text-xs text-on-surface-variant"
-          aria-live="polite"
-        >
-          {filtered.length} Produk
-        </span>
+        <div className="flex items-center gap-3">
+          <span
+            className="rounded-full bg-surface-container-high px-3 py-1 text-xs text-on-surface-variant"
+            aria-live="polite"
+          >
+            {filtered.length} Produk
+          </span>
+          {listingHref ? (
+            <Link
+              to={listingHref}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-blue-700 sm:text-sm"
+            >
+              Lihat Semua
+              <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                chevron_right
+              </span>
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       <SearchBar value={query} onChange={setQuery} placeholder="Cari produk di toko ini..." />

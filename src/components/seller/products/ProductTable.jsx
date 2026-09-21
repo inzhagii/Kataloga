@@ -16,6 +16,7 @@ const CONDITION_LABEL = { NEW: 'New', SECOND: 'Second' }
  *   onMarkSoldOut: (product: import('../../../data/models.js').Product) => void,
  *   onReactivate: (product: import('../../../data/models.js').Product) => void,
  *   onRestore: (product: import('../../../data/models.js').Product) => void,
+ *   onDetail?: (product: import('../../../data/models.js').Product) => void,
  * }} props
  */
 function ProductTable({
@@ -26,6 +27,7 @@ function ProductTable({
   onMarkSoldOut,
   onReactivate,
   onRestore,
+  onDetail,
 }) {
   return (
     <div className="hidden overflow-x-auto md:block">
@@ -37,6 +39,9 @@ function ProductTable({
             </th>
             <th scope="col" className="px-4 py-3.5">
               Kategori
+            </th>
+            <th scope="col" className="px-4 py-3.5">
+              Brand
             </th>
             <th scope="col" className="px-4 py-3.5">
               Status
@@ -58,12 +63,22 @@ function ProductTable({
                   />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <Link
-                        to={`/seller/products/${product.id}/edit`}
-                        className="block max-w-[240px] truncate font-bold text-on-surface transition-colors hover:text-primary"
-                      >
-                        {product.name}
-                      </Link>
+                      {onDetail ? (
+                        <button
+                          type="button"
+                          onClick={() => onDetail(product)}
+                          className="block max-w-[240px] truncate font-bold text-on-surface transition-colors hover:text-primary"
+                        >
+                          {product.name}
+                        </button>
+                      ) : (
+                        <Link
+                          to={`/seller/products/${product.id}/edit`}
+                          className="block max-w-[240px] truncate font-bold text-on-surface transition-colors hover:text-primary"
+                        >
+                          {product.name}
+                        </Link>
+                      )}
                       {product.featured ? <FeaturedTag /> : null}
                     </div>
                     <div className="mt-0.5 flex items-center gap-2">
@@ -83,6 +98,11 @@ function ProductTable({
                 </span>
               </td>
               <td className="px-4 py-3.5">
+                <span className="text-xs font-medium text-secondary">
+                  {product.brand || '—'}
+                </span>
+              </td>
+              <td className="px-4 py-3.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <ProductStatusBadge status={product.status} />
                 </div>
@@ -96,6 +116,7 @@ function ProductTable({
                   onMarkSoldOut={onMarkSoldOut}
                   onReactivate={onReactivate}
                   onRestore={onRestore}
+                  onDetail={onDetail}
                 />
               </td>
             </tr>

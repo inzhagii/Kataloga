@@ -39,14 +39,18 @@ function SellerHeader({ title, onLogoutRequest }) {
   return (
     <header className="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4 sm:px-6 lg:left-sidebar-width lg:px-8">
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 lg:hidden">
+        <Link
+          to="/seller/dashboard"
+          className="flex items-center gap-2 lg:hidden"
+          aria-label="Kataloga Dashboard"
+        >
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-white">
             <span className="material-symbols-outlined text-[17px]" aria-hidden="true">
               auto_stories
             </span>
           </div>
           <span className="text-base font-bold tracking-tight text-on-surface">Kataloga</span>
-        </div>
+        </Link>
         <p className="hidden text-sm font-semibold text-on-surface lg:block">{title}</p>
       </div>
 

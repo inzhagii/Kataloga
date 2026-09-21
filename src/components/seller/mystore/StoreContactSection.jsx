@@ -37,8 +37,7 @@ function StoreContactSection({
               htmlFor="store-whatsapp"
               className="block text-xs font-bold uppercase tracking-wider text-on-surface"
             >
-              Nomor WhatsApp{' '}
-              <span className="font-normal lowercase text-secondary">(opsional)</span>
+              Nomor WhatsApp
             </label>
             <span
               className="material-symbols-outlined text-[18px] text-emerald-600"

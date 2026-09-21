@@ -46,4 +46,14 @@ describe('ConfirmDialog', () => {
     expect(html).toContain('role="dialog"')
     expect(html).toContain('aria-modal="true"')
   })
+
+  it('applies the danger treatment only for tone="danger"', () => {
+    const danger = render({ open: true, tone: 'danger' })
+    expect(danger).toContain('warning')
+    expect(danger).toContain('bg-error')
+
+    const neutral = render({ open: true, tone: 'default' })
+    expect(neutral).toContain('help_outline')
+    expect(neutral).not.toContain('bg-error')
+  })
 })

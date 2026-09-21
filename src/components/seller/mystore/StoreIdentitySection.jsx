@@ -44,7 +44,7 @@ function LogoPicker({ logoUrl, error, onLogoChange, onLogoRemove, onLogoError })
   return (
     <div>
       <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface">
-        Logo Toko <span className="font-normal lowercase text-secondary">(opsional)</span>
+        Logo Toko
       </span>
       <div className="flex items-center gap-4">
         <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-low">

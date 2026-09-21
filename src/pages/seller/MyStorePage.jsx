@@ -10,12 +10,9 @@ import { useMyStore } from '../../hooks/useMyStore'
 import { useRegionData } from '../../hooks/useRegionData'
 import { canChangeStoreId, checkStoreIdAvailable, updateStore } from '../../services/storeService'
 import { recordStoreUpdated } from '../../services/activityService'
-import {
-  isValidPhone,
-  normalizePhone,
-} from '../../services/authService'
+import { normalizePhone } from '../../services/authService'
 import { normalizeStoreId, validateStoreId } from '../../utils/storeId'
-import { validateStoreLocation } from '../../utils/storeValidation'
+import { validateStoreInformation } from '../../utils/storeValidation'
 
 function SectionToggleButton({ open, onToggle }) {
   return (
@@ -84,10 +81,13 @@ function MyStoreEditor({ store, onSaved }) {
     })),
   )
   const [announcementEnabled, setAnnouncementEnabled] = useState(
-    Boolean(store.announcement && store.announcement.length > 0),
+    Boolean(store.announcement?.isEnabled),
   )
-  const [announcementText, setAnnouncementText] = useState(
-    (store.announcement || []).join('\n'),
+  const [announcementTitle, setAnnouncementTitle] = useState(
+    store.announcement?.title ?? '',
+  )
+  const [announcementMessage, setAnnouncementMessage] = useState(
+    store.announcement?.message ?? '',
   )
   const [errors, setErrors] = useState({})
   const [logoError, setLogoError] = useState('')
@@ -133,25 +133,7 @@ function MyStoreEditor({ store, onSaved }) {
   }
 
   function validate() {
-    const next = {}
-    if (!form.storeId.trim()) {
-      next.storeId = 'Store ID wajib diisi.'
-    } else {
-      const validation = validateStoreId(form.storeId)
-      if (!validation.valid) {
-        next.storeId = validation.message
-      }
-    }
-    if (!form.name.trim()) {
-      next.name = 'Nama toko wajib diisi.'
-    }
-    const locationValidation = validateStoreLocation(form)
-    Object.assign(next, locationValidation.errors)
-    if (form.whatsapp.trim() && !isValidPhone(form.whatsapp.trim())) {
-      next.whatsapp = 'Format nomor WhatsApp tidak valid.'
-    }
-    setErrors(next)
-    return Object.keys(next).length === 0
+    return validateStoreInformation(form).valid
   }
 
   async function handleSave() {
@@ -194,12 +176,11 @@ function MyStoreEditor({ store, onSaved }) {
         channels: channels
           .map((channel) => ({ name: channel.name.trim(), url: channel.url.trim() }))
           .filter((channel) => Boolean(channel.name) && Boolean(channel.url)),
-        announcement: announcementEnabled
-          ? announcementText
-              .split('\n')
-              .map((line) => line.trim())
-              .filter(Boolean)
-          : [],
+        announcement: {
+          title: announcementTitle.trim(),
+          message: announcementMessage.trim(),
+          isEnabled: announcementEnabled,
+        },
         logoUrl: form.logoUrl || undefined,
       }
       if (!cooldown.locked) {
@@ -228,7 +209,7 @@ function MyStoreEditor({ store, onSaved }) {
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">My Store</h1>
           <p className="mt-1 text-sm text-secondary">
@@ -314,10 +295,12 @@ function MyStoreEditor({ store, onSaved }) {
 
         <section>
           <AnnouncementSection
+            title={announcementTitle}
+            message={announcementMessage}
             enabled={announcementEnabled}
-            text={announcementText}
             onToggle={setAnnouncementEnabled}
-            onTextChange={setAnnouncementText}
+            onTitleChange={setAnnouncementTitle}
+            onMessageChange={setAnnouncementMessage}
           >
             <SectionToggleButton {...toggleProps('announcement')} />
           </AnnouncementSection>
@@ -382,7 +365,7 @@ function MyStorePage() {
 
   if (status === 'error' || !store) {
     return (
-      <div>
+      <div className="text-center sm:text-left">
         <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">My Store</h1>
         <EmptyState
           icon="error"

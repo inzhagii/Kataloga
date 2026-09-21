@@ -28,11 +28,31 @@ Customer melihat katalog di Kataloga, kemudian diarahkan ke channel penjualan se
 
 # 2. Account Model
 
-Satu account dapat memiliki maksimal satu store pada V1.
+Satu account dapat:
 
-Satu account tidak memiliki role permanen sebagai "customer" atau "seller".
+- memiliki maksimal satu store pada V1,
+- bertindak sebagai seller untuk store miliknya sendiri,
+- menjadi customer ketika mengunjungi store lain.
 
-Account yang memiliki store dapat bertindak sebagai seller untuk tokonya sendiri dan tetap dapat menjadi customer ketika mengunjungi store lain.
+Tidak ada sistem account "customer" / "seller" yang terpisah.
+
+Tidak ada role-switching login flow.
+
+Seller tetap menggunakan session/account yang sama ketika membuka storefront miliknya sendiri melalui:
+
+`Seller Dashboard → Lihat Toko`
+
+Lihat Toko membuka storefront customer-facing menggunakan session/account yang sudah authenticated.
+
+Tidak diperlukan login kedua.
+
+Ketika storefront dibuka dalam sesi authenticated:
+
+- navbar storefront menampilkan icon user-circle untuk customer (bukan tombol Login/Daftar).
+- "Lihat Toko" TIDAK menampilkan Login/Daftar.
+- Mengakses store URL langsung (direct link) tanpa sesi berarti tampil sebagai guest.
+- Seller boleh membuka WhatsApp/Marketplace pada storefront miliknya sendiri; interaksi tersebut tetap TIDAK dicatat sebagai Customer Interest (lihat Customer Interest).
+- Tidak ada konsep role-switching "customer mode" baru; halaman yang sama dirender sesuai sesi auth yang ada.
 
 ### Authentication
 
@@ -41,14 +61,43 @@ Login menggunakan:
 - Email atau phone number
 - Password
 
+Tidak menggunakan username.
+
 Register menggunakan:
+
+- Email, atau
+- Phone
+
+Field register:
 
 - Email/phone
 - Password
 - Re-password
 - Customer name bersifat optional
 
-Tidak menggunakan username.
+### Email Registration
+
+Register menggunakan email:
+
+- email verification wajib.
+
+### Phone Registration
+
+Register menggunakan phone:
+
+- account dapat menjadi active tanpa registration verification.
+
+Customer yang register menggunakan phone harus memiliki recovery email untuk password recovery / change-password flow.
+
+### Change Password
+
+Change-password flow (termasuk seller) membutuhkan input email terlebih dahulu.
+
+Dokumen ini menetapkan business requirement saja.
+
+Mekanisme teknis OTP/token tidak ditentukan di sini jika belum diputuskan di tempat lain / oleh backend.
+
+Jika mekanisme verifikasi/recovery belum diputuskan backend, tandai sebagai needs backend confirmation.
 
 ---
 
@@ -77,6 +126,31 @@ Store ID adalah identifier yang digunakan pada public URL.
 - Store ID di-trim.
 - Availability Store ID diperiksa saat Store ID valid, saat Store ID berubah, dan diperiksa ulang pada saat submit.
 
+### Historical Store ID
+
+Jika Store ID berubah, URL lama tetap berlaku:
+
+```text
+/arya
+→ /toko-arya
+```
+
+Jika diubah lagi:
+
+```text
+/arya
+→ /toko-arya
+→ /toko-arya-bandung
+```
+
+Semua historical Store ID tetap menjadi valid alias yang menuju store saat ini (redirect).
+
+Historical aliases adalah behavior yang dimiliki backend.
+
+Frontend tidak memelihara alias mapping sendiri.
+
+Detail backend (redirect/alias) belum diputuskan — needs backend confirmation.
+
 ### Create Store
 
 Saat account belum memiliki store, seller dapat membuat store.
@@ -92,7 +166,7 @@ Setelah store berhasil dibuat, seller **langsung diarahkan ke My Store** untuk m
 
 Flow:
 
-`Create Store → My Store → Dashboard`
+`Login/Register → Create Store → My Store`
 
 ---
 
@@ -118,11 +192,46 @@ Customer tidak melihat Store ID sebagai informasi visual pada Store Landing. Sto
 
 Store Link diturunkan dari Store ID saat ini dan ditampilkan di My Store.
 
+### Required / Optional Store Profile
+
+Required pada penyimpanan store profile:
+
+- Store ID
+- Store Logo
+- Store Name
+- Description / Bio
+- Province
+- City / Regency
+- Operating Hours
+- WhatsApp
+
+Optional:
+
+- Full Address
+- External Sales Channels
+- Announcement
+
+Tidak diperlukan label "wajib" pada UI.
+
+Validation harus mengkomunikasikan field yang wajib ketika user mencoba Save.
+
+Create Store tetap hanya membutuhkan Store Name dan Store ID.
+
+### Location
+
 Location dipilih dengan urutan: Province dahulu, kemudian City/Regency yang scoped ke province tersebut.
+
+City/Regency options dibatasi oleh Province yang dipilih.
 
 Store Landing menampilkan lokasi dengan format kota terlebih dahulu, kemudian province, misalnya:
 
 `Kota Bandung, Jawa Barat`
+
+Full Address adalah opsional.
+
+Full Address digunakan untuk membangun Google Maps search action.
+
+Tidak ada requirement latitude/longitude.
 
 ---
 
@@ -152,7 +261,7 @@ Navbar:
 
 - Store Logo
 - Store Name
-- Address (opsional, compact)
+- City/Province (compact)
 - Login
 - Daftar
 
@@ -162,17 +271,20 @@ Navbar:
 
 - Store Logo
 - Store Name
-- Address (opsional, compact)
+- City/Province (compact)
 - Generic User Circle
 - Profile controls
 
 WhatsApp/Contact dan Marketplace BUKAN action navbar pada Store Landing maupun Product Detail.
 
-WhatsApp dan Marketplace tetap tersedia pada area konten/footer storefront yang sesuai.
+Full Address BUKAN bagian dari storefront navbar.
 
-Address navbar:
+WhatsApp, Marketplace, dan Full Address tetap tersedia pada area konten/footer storefront yang sesuai.
 
-- menggunakan optional Full Address
+City/Province navbar:
+
+- format: City dahulu, kemudian Province
+- contoh: Kota Bandung, Jawa Barat
 - compact
 - natural truncation/wrapping jika diperlukan
 - bukan card besar
@@ -253,27 +365,58 @@ Urutan:
 
 # 8. Store Actions
 
+Jika store memiliki marketplace/external sales channels:
+
 Desktop:
 
-`[WhatsApp] [Marketplace] [Share]`
+`[Hubungi via WhatsApp] [Marketplace] [Share]`
 
 Mobile:
 
-`[WhatsApp]`
+`[Hubungi via WhatsApp]`
 
 `[Marketplace] [Share]`
+
+Jika store tidak memiliki marketplace:
+
+Desktop:
+
+`[Hubungi via WhatsApp] [Share]`
+
+Mobile:
+
+`[Hubungi via WhatsApp] [Share]`
+
+Mobile tanpa marketplace menggunakan rasio lebar 3:2:
+
+`Hubungi via WhatsApp` = 3
+`Share` = 2
+
+Label action WhatsApp selalu `Hubungi via WhatsApp`, jangan disingkat menjadi "WhatsApp".
+
+WhatsApp adalah primary contact action.
 
 ### WhatsApp
 
 Customer dapat menghubungi seller melalui WhatsApp.
 
+Label action:
+
+`Hubungi via WhatsApp`
+
 Jika guest:
 
 `WhatsApp → Login/Register → kembali ke context sebelumnya → record Customer Interest → buka WhatsApp`
 
-Jika authenticated:
+Jika authenticated customer:
 
 `WhatsApp → record Customer Interest → buka WhatsApp`
+
+Jika seller membuka store miliknya sendiri:
+
+`WhatsApp → buka WhatsApp (TANPA Customer Interest)`
+
+Activity owner di storefront miliknya sendiri TIDAK membuat Customer Interest.
 
 ---
 
@@ -316,6 +459,12 @@ Setelah channel dipilih:
 
 Customer Interest menyimpan channel yang benar-benar dipilih.
 
+Jika seller membuka store miliknya sendiri:
+
+`Marketplace → pilih channel → buka URL (TANPA Customer Interest)`
+
+Activity owner di storefront miliknya sendiri TIDAK membuat Customer Interest.
+
 ---
 
 # 10. Share
@@ -348,9 +497,22 @@ Share analytics ditunda/deferred untuk V1.
 
 # 11. Announcement
 
-Store dapat memiliki satu active announcement pada satu waktu.
+Store memiliki satu object announcement:
 
-Announcement dapat berisi beberapa informasi.
+```ts
+type Announcement = {
+  title: string;
+  message: string;
+  is_enabled: boolean;
+}
+```
+
+Bukan array.
+
+Jika announcement disabled:
+
+- data announcement tetap tersimpan,
+- customer storefront tidak merender announcement.
 
 UI:
 
@@ -377,7 +539,7 @@ Product fields:
 - Price
 - External Product Links
 - Status
-- Featured Product
+- Product Unggulan
 
 ---
 
@@ -418,7 +580,7 @@ Seller dapat menggunakan default/built-in categories dan custom categories milik
 
 Seller dapat membuat Kategori Utama baru langsung dari form pembuatan category.
 
-Setiap category memiliki "Lihat Product" yang mengarah ke:
+Setiap category memiliki "Lihat Produk" yang mengarah ke:
 
 `/seller/products?category=...`
 
@@ -430,15 +592,63 @@ Kategori Utama yang masih memiliki child tidak boleh dihapus.
 
 Tidak ada cascade delete.
 
+Hitung penggunaan product kategori:
+
+Kategori Utama count mencakup seluruh product di descendant-nya (Sub Kategori).
+
+Contoh:
+
+```
+Computer (5)
+└── Laptop (3)
+└── Desktop (2)
+```
+
+Computer = aggregate usage 5 product.
+
 ---
 
 # 15. Brand
 
 Brand bersifat optional.
 
+Brand terpisah dari Category.
+
 Brand tidak ditampilkan pada Product Card.
 
 Brand ditampilkan pada Product Detail.
+
+### Brand Management
+
+Brand Management adalah halaman seller untuk mengelola daftar brand store.
+
+Layout:
+
+- Desktop: card grid 4 kolom × 4 baris
+- Mobile: card grid 2 kolom
+
+Setiap brand card berisi:
+
+- Nama brand
+- Product usage count
+- Edit
+- Lihat Produk
+
+Tidak perlu decorative icon per brand.
+
+"Lihat Produk" menerapkan filter brand pada `/seller/products`.
+
+### Hapus Brand
+
+Brand dengan 0 product usage boleh dihapus.
+
+Brand yang masih digunakan oleh product tidak boleh dihapus.
+
+Tidak ada cascade delete ke product.
+
+### Tambah Brand
+
+Seller dapat membuat brand baru langsung dari Add/Edit Product.
 
 ---
 
@@ -494,15 +704,52 @@ Sold Out adalah product lifecycle status, bukan availability field.
 
 Tidak ada field Product availability (AVAILABLE / SOLD_OUT) pada V1.
 
-Katalog/storefront aktif hanya berisi produk PUBLISHED.
-
-Produk SOLD_OUT tidak termasuk katalog aktif.
-
 Kataloga V1 tidak menggunakan stock quantity.
 
 Tidak ada stock count seperti:
 
 `Stock: 10`
+
+### Sold Out Auto Archive
+
+Auto Archive adalah setting level store, bukan pilihan per-product.
+
+UI Auto Archive terletak pada halaman Archive (`/seller/products/archived`), BUKAN pada My Store.
+
+Nilai yang diperbolehkan:
+
+- Tidak ada (default, menonaktifkan auto archive)
+- 1 hari
+- 7 hari
+- 30 hari
+- 90 hari
+- 180 hari
+- 365 hari
+- Never (auto archive nonaktif, tetapi seller tetap bisa manual archive)
+
+`Tidak ada` dan `Never` sama-sama menonaktifkan auto archive dan TIDAK memblokir manual archive.
+
+Seller tidak boleh memilih nilai lain selain daftar tersebut.
+
+Threshold dihitung dari durasi waktu produk menjadi SOLD_OUT.
+
+Perubahan setting diterapkan terhadap durasi SOLD_OUT yang sudah berjalan.
+
+Jika SOLD_OUT melewati threshold auto archive:
+
+`SOLD_OUT → ARCHIVED`
+
+Product masa-ojak SOLD_OUT otomatis menjadi ARCHIVED oleh backend dan tidak tampil di katalog.
+
+Jika seller mereactivate sebelum melewati threshold:
+
+`SOLD_OUT → PUBLISHED`
+
+SOLD_OUT yang masih dalam jendela auto archive tetap tampil di katalog aktif dengan indikasi Sold Out.
+
+Frontend mendeskripsikan behavior ini.
+
+Mekanisme scheduling/mekanisme penerapan auto archive di backend tidak ditentukan di dokumen ini — needs backend confirmation.
 
 ---
 
@@ -533,15 +780,27 @@ Status lifecycle setelah product kehabisan/terjual.
 
 SOLD_OUT adalah area seller management yang terpisah dari katalog aktif.
 
-SOLD_OUT tidak ditampilkan pada katalog/storefront aktif.
+SOLD_OUT dapat tetap tampil pada katalog/storefront sesuai jendela auto archive.
 
-Seller dapat mengembalikan product SOLD_OUT menjadi PUBLISHED.
+Reactivation dari SOLD_OUT menghasilkan:
+
+`SOLD_OUT → PUBLISHED`
+
+Label aksi seller untuk reaktivasi SOLD_OUT adalah "Publish Kembali".
+
+Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+
+SOLD_OUT adalah lifecycle status, bukan availability field.
+
+SOLD_OUT tidak menampilkan "Always Sold Out permanen" di katalog.
 
 ### Archived
 
 Product tidak ditampilkan pada Store Landing.
 
 Archive terpisah dari Active Products.
+
+Archiving otomatis menghapus status Product Unggulan.
 
 ### Restore
 
@@ -553,15 +812,67 @@ Bukan Published.
 
 ### Lifecycle
 
-`DRAFT → PUBLISHED → SOLD_OUT → PUBLISHED`
+`DRAFT → PUBLISHED`
+
+`PUBLISHED → SOLD_OUT`
+
+`SOLD_OUT → PUBLISHED`
+
 `PUBLISHED → ARCHIVED`
+
+`DRAFT → ARCHIVED`
+
 `ARCHIVED → DRAFT`
+
+Tidak ada `SOLD_OUT → DRAFT`.
+
+### Product Status Actions (Seller)
+
+Tindakan yang tersedia per status pada seller management (list Products / Archived):
+
+- PUBLISHED (Active): Lihat Product, Edit, Archive, Feature / Unfeature
+- DRAFT: Edit, Publish, Archive
+  - Tidak ada aksi Lihat Product pada DRAFT.
+  - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
+- SOLD_OUT: Lihat Product, Publish Kembali, Archive
+  - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
+  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+- ARCHIVED (halaman Archive): Detail Product, Restore
+  - Halaman Archive TIDAK memiliki aksi "Lihat Product".
+  - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
+  - Restore tersedia dari menu aksi pada list, mengubah `ARCHIVED → DRAFT`.
+
+### Product Timestamps
+
+Backend-managed timestamps:
+
+- created_at
+- updated_at
+- published_at
+- sold_out_at
+- archived_at
+
+`sold_out_until` tidak lagi menjadi field per-product; batas auto archive diturunkan dari setting store (Auto Archive) dan durasi SOLD_OUT yang sudah berjalan.
+
+Frontend display menggunakan date-only formatting:
+
+`12.09.2026`
+
+Date dan waktu:
+
+`12.09.2026 · 18:02`
+
+Tanpa weekday.
+
+Jangan berimplikasi bahwa backend harus membuang presisi timestamp.
 
 ---
 
 # 21. Active Products
 
 "Active Products" adalah konsep statistik/dashboard, bukan status database.
+
+Artinya "Active Products" adalah label dashboard/catalog yang merepresentasikan produk PUBLISHED, bukan lifecycle status tambahan.
 
 Active Products terdiri dari:
 
@@ -571,13 +882,22 @@ Jadi:
 
 `Active Products = PUBLISHED`
 
-SOLD_OUT dihitung secara terpisah.
+Produk SOLD OUT tetap dapat dilihat pelanggan.
 
 Draft dihitung secara terpisah.
 
 Archived dihitung secara terpisah.
 
 SOLD_OUT tidak termasuk Active Products.
+
+### Public Catalog Visibility
+
+"Active Products" adalah metrik dashboard/catalog; visibilitas katalog publik dibedakan secara terpisah:
+
+- PUBLISHED → tampil publik.
+- SOLD_OUT yang masih dalam jendela auto archive → tetap tampil publik.
+- ARCHIVED → tidak tampil publik.
+- DRAFT → tidak tampil publik.
 
 ---
 
@@ -588,7 +908,7 @@ Untuk Publish Product:
 Required:
 
 - Product Name
-- Minimum 1 Product Photo
+- Product Photo (1-5)
 - Category
 - Product Details
 - Description
@@ -599,7 +919,7 @@ Optional:
 
 - Brand
 - External Product Links
-- Featured Product
+- Product Unggulan
 
 Draft dapat disimpan walaupun field publish belum lengkap.
 
@@ -633,17 +953,35 @@ API integration
 
 untuk V1.
 
-24. Featured Product
+24. Product Unggulan
 
-Seller dapat menandai product sebagai Featured.
+Product Unggulan adalah properti boolean terpisah di product, BUKAN lifecycle status.
 
-Featured product ditampilkan pada section:
+Maksimum 10 Product Unggulan per store.
 
-Produk Unggulan
+Product Unggulan ditampilkan pada section:
+
+Product Unggulan
 
 di Store Landing.
 
-Featured products:
+Ordering Product Unggulan:
+
+- Featured Published tampil lebih dahulu daripada Published lainnya.
+
+Product yang berubah menjadi SOLD_OUT otomatis kehilangan status Product Unggulan (`is_featured = false`).
+
+Reaktivasi SOLD_OUT ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+
+Feature dapat diaktifkan/dinonaktifkan hanya pada product status PUBLISHED.
+
+DRAFT tidak pernah Product Unggulan.
+
+Product ARCHIVED tidak pernah Product Unggulan.
+
+Archiving otomatis menghapus status Product Unggulan.
+
+Product Unggulan:
 
 Horizontal scrolling
 Tidak menggunakan auto-slide
@@ -651,19 +989,36 @@ Desktop dapat menggunakan subtle navigation arrows
 Mobile menggunakan swipe
 25. Product Card
 
-Product Card menampilkan:
+Product information (urutan):
 
-Condition badge pada bagian kiri atas image
-Product image
-Product name
-Category
-Price
-Lihat Detail
-Share icon
+1. Product image
+2. Category
+3. Product name
+4. Price
+5. Condition
+6. Product Unggulan indicator (ketika featured)
+
+Price harus bold dan lebih menonjol dibandingkan nama produk.
+
+Ditampilkan tanpa:
+
+- Brand
+- SKU
+- Availability
+
+Conditional:
+
+- SOLD OUT indicator untuk produk SOLD_OUT yang masih dalam jendela auto archive
+
+SOLD OUT card menggunakan visual state GRAY yang jelas berbeda dari card aktif, lebih dari sekadar teks "Sold Out". Sold Out BUKAN state merah/error.
+
+Actions (terpisah dari urutan informasi; posisi mengikuti layout yang sudah disetujui):
+
+- Lihat Detail
+- Share icon
 
 Tidak menampilkan:
 
-Brand
 WhatsApp
 Marketplace
 Contact Seller
@@ -673,13 +1028,47 @@ Product card memiliki:
 Desktop: 3 columns
 Mobile: 2 columns
 
-Katalog aktif hanya berisi produk PUBLISHED.
+Katalog aktif hanya berisi produk PUBLISHED dan SOLD_OUT yang masih dalam jendela auto archive.
 
-Produk SOLD_OUT tidak termasuk katalog aktif.
+Produk DRAFT dan ARCHIVED tidak termasuk katalog aktif.
 
-Tidak ada sold-out visual state pada Product Card.
+SOLD OUT indicator hanya tampil untuk produk SOLD_OUT yang masih dalam jendela auto archive.
 
-26. Product Search
+26. Product Listing
+
+Route:
+
+`/{storeId}/products`
+
+Product Listing menyediakan:
+
+Search
+Category filter
+Filter
+Sort
+Product grid
+
+Menggunakan reusable:
+
+ProductCard
+ProductGrid
+
+### Ordering
+
+Urutan katalog/listing customer:
+
+Featured Published
+→ Published lebih baru
+→ Published lebih lama
+→ Sold Out
+
+Search/filter diterapkan pada current store/result set terlebih dahulu, kemudian ordering diterapkan.
+
+Sold Out yang masih dalam jendela auto archive dapat muncul pada listing results tetapi diurutkan di bawah Published aktif.
+
+Archived bukan public catalog product.
+
+### Product Search
 
 Search hanya mencari product pada current store.
 
@@ -743,6 +1132,8 @@ Sub Kategori
 
 Hanya Sub Kategori milik Kategori Utama yang dipilih yang ditampilkan.
 
+Memilih Kategori Utama mencakup produk pada descendant categories-nya (Sub Kategori).
+
 Terminology user-facing:
 
 Kategori
@@ -803,22 +1194,26 @@ Sort diterapkan langsung pada seluruh product di katalog aktif.
 
 Route:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 
 Contoh:
 
-/toko-komputer-jaya/products/20
+/toko-komputer-jaya/product/20/laptop-asus-rog
 
 productId adalah public numeric database-style ID.
+
+slug adalah URL slug dari Product Name.
 
 Desktop:
 
 Gallery di kiri
 Product information di kanan
+Formulir info panel scroll di dalam area tersebut
+Footer di luar area scroll
 
 Mobile:
 
-Gallery
+Gallery (images menggunakan swipe-only carousel/slider)
 Product information
 Price
 Actions
@@ -827,16 +1222,52 @@ Description
 
 Hierarchy:
 
+Brand (jika tersedia) dengan format eksplisit "Brand : X"
+Product Unggulan indicator (jika featured)
 Product Name
-Price
-Brand / Category / Condition / short description
+Price (bold)
+Category / Condition (bersebelahan, di bawah Price)
 Actions
 Product Details
 Description
 
+Product Detail mengandung:
+
+- Product Name
+- Brand (jika tersedia)
+- Category
+- Price
+- Product Unggulan indicator
+- Condition
+- Product Details
+- Description
+- Actions
+
+Featured indicator terpisah secara visual dari Brand.
+
+Brand ditampilkan secara eksplisit pada Product Detail. Contoh tampilan penulisan nama brand diikuti colon:
+
+`Brand : ASUS`
+
+Bagian External Product Links TIDAK ditampilkan pada Product Detail.
+
+External Product Links tetap ada sebagai field data product (form product dan API), tetapi tidak dirender di halaman Product Detail customer-facing.
+
 Tidak ada tampilan availability (Tersedia / Sold Out) pada Product Detail.
 
 Tidak menggunakan "Stok Siap Kirim".
+
+### Sold Out pada Product Detail
+
+Jika product SOLD_OUT (masih dalam jendela auto archive):
+
+- indikasi "Sold Out" yang jelas,
+- product tetap dapat dilihat jika masih dalam jendela auto archive,
+- WhatsApp tidak tersedia,
+- Marketplace tidak tersedia,
+- Share tetap tersedia.
+
+Tidak ada section availability.
 
 30. Product Detail Actions
 
@@ -846,9 +1277,23 @@ WhatsApp
 Marketplace
 Share
 
+Primary action adalah "Hubungi via WhatsApp".
+
+Marketplace dan Share tersedia sebagai secondary actions.
+
+Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+
+Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+
 WhatsApp dan Marketplace mengikuti authentication + Customer Interest rules.
 
 Share tidak membutuhkan authentication dan tidak membuat Customer Interest.
+
+Untuk product SOLD_OUT:
+
+- WhatsApp tidak tersedia,
+- Marketplace tidak tersedia,
+- Share tetap tersedia.
 
 Navbar Product Detail tidak mengandung:
 
@@ -876,6 +1321,9 @@ Login/logout
 Search
 Filter
 Sort
+Store Visit
+Category interaction
+Generic browsing
 
 Customer yang melakukan beberapa aktivitas tetap merupakan satu customer.
 
@@ -898,7 +1346,30 @@ Date/time
 
 Customer profile photo tidak digunakan. Gunakan generic User Circle icon.
 
+Customer identity display:
+
+- Email account → email
+- Phone account → phone
+
 Total Interest berarti total record interaksi, bukan jumlah customer unique.
+
+### Self-Store Exclusion (Owner Activity)
+
+Ketika seller membuka store miliknya sendiri:
+
+- seller tetap authenticated menggunakan account yang sama,
+- setiap activity owner di storefront miliknya sendiri TIDAK membuat Customer Interest.
+
+Contoh:
+
+- seller klik WhatsApp store sendiri → TIDAK ada Customer Interest
+- seller klik Marketplace store sendiri → TIDAK ada Customer Interest
+- seller buka Product Detail store sendiri → TIDAK ada Customer Interest
+- seller share store/product sendiri → TIDAK ada Customer Interest
+
+Frontend harus menghindari pencatatan activity owner.
+
+Backend diharapkan juga menegakkan rule ownership.
 
 Detail Customer Interest menampilkan:
 
@@ -921,6 +1392,50 @@ Buka WhatsApp Customer
 Buka Marketplace
 Buka Channel
 
+### Layout Customer Interest
+
+Channel cards berisi WhatsApp dan channel external yang dikonfigurasi seller.
+
+Jumlah channel tidak hardcoded; mengikuti konfigurasi store saat ini.
+
+Card hierarchy per channel:
+
+1. Channel name di atas
+2. Icon channel rata kanan (align right)
+3. Activity count besar dan bold sebagai focal point
+4. Teks pendukung "aktivitas minat" (contoh total, dalam bahasa "aktivitas minat", bukan "7 Minat")
+
+Desktop: card-channel berbagi lebar yang tersedia secara merata (contoh 3 card side-by-side) tanpa fixed width memaksa.
+
+Mobile: channel cards boleh horizontal scroll.
+
+Posisi Total Interest:
+
+- Jika channel < 4: Total Interest dapat berada pada baris yang sama dengan channel cards.
+- Jika channel ≥ 4: Total Interest berada di sebelah heading.
+
+Search dan Filter berada di bawah channel cards.
+
+Filter:
+
+- Activity type (WhatsApp / Marketplace)
+- Date TANGGAL TUNGGAL (single date), bukan date range.
+
+Date display:
+
+12.09.2026
+
+Tanpa weekday.
+
+Context field:
+
+- Store Landing
+- Product Detail
+
+Membedakan aktivitas yang berasal dari Store Landing dan Product Detail.
+
+Records tetap tampil meskipun channel dihapus dari konfigurasi store.
+
 32. Seller Dashboard
 
 Dashboard berfungsi sebagai pusat informasi dan shortcut seller.
@@ -941,18 +1456,17 @@ Customer Interest        Recent Activity
 
 Catalog Overview
 
-Menampilkan:
+Menampilkan dalam SATU BARIS horizontal:
 
-Active
-Draft
-Sold Out
-Archived
+Active    Draft    Sold Out    Archive
 
 Active Products = Published.
 
-SOLD_OUT dihitung terpisah.
+Produk SOLD OUT tetap dapat dilihat pelanggan.
 
 Draft dihitung terpisah.
+
+Setiap kartu Catalog Overview menggunakan icon tertentu sebagai visual anchor.
 
 Customer Interest
 
@@ -962,11 +1476,17 @@ Dashboard Customer Interest dan dedicated Customer Interest menggunakan halaman 
 
 Recent Activity
 
-Hanya menampilkan:
+Menampilkan:
 
 Product Published
 Product Edited
+Product Sold Out
+Product Reactivated
+Product Archived
+Product Restored
 Store Updated
+
+Dashboard menampilkan 4 aktivitas terbaru (newest first).
 
 Tidak menampilkan:
 
@@ -977,6 +1497,10 @@ Share
 Login/logout
 Category create/edit/delete
 
+Customer Interest dan Recent Activity ditampilkan berdampingan (side-by-side) pada desktop.
+
+Setiap section memiliki "Lihat Semua" di kanan atas heading-nya.
+
 Dashboard menampilkan "Lihat Semua".
 
 Lihat Semua membuka route:
@@ -985,9 +1509,36 @@ Lihat Semua membuka route:
 
 Halaman tersebut adalah list Recent Activity lengkap dan menyediakan "Kembali" ke Dashboard.
 
+Halaman /seller/activities menyediakan filter:
+
+- activity type
+- date TANGGAL TUNGGAL (single date), bukan date range
+
+Pemilihan tanggal menggunakan date picker, bukan input teks manual.
+
+Date display:
+
+12.09.2026
+
+Datetime display:
+
+12.09.2026 · 18:02
+
+Tanpa weekday.
+
 Quick Actions
 
 Digunakan sebagai shortcut untuk pekerjaan seller yang paling sering digunakan.
+
+Termasuk:
+
+Lihat Toko
+
+Lihat Toko membuka storefront customer-facing store milik sendiri menggunakan session/account yang sama.
+
+Tidak diperlukan login kedua.
+
+Activity owner di store miliknya sendiri TIDAK membuat Customer Interest.
 
 33. Seller Products
 
@@ -995,15 +1546,46 @@ Seller dapat:
 
 Melihat products
 Search products
-Filter/sort sesuai kebutuhan UI
+Filter sesuai kebutuhan UI
 Add Product
 Edit Product
 Archive Product
 Restore Product
-Mengatur Featured
+Mengatur Product Unggulan
 Melihat status (DRAFT / PUBLISHED / SOLD_OUT / ARCHIVED)
 
+Tidak ada Sort pada halaman Seller Products.
+
+Status tab "Active" pada halaman Seller Products menggunakan label dashboard (Active Products) dan berarti produk PUBLISHED, bukan status lifecycle baru.
+
 Status SOLD_OUT merupakan area seller management terpisah dari katalog aktif.
+
+Auto archive SOLD_OUT mengikuti setting store (Auto Archive), bukan pilihan per-product.
+
+Reactivation dari SOLD_OUT:
+
+SOLD_OUT → PUBLISHED
+
+langsung ke PUBLISHED.
+
+Layout Seller Products:
+
+Desktop:
+
+- Baris atas: Judul halaman + tombol Add Product di kanan.
+- Baris kedua: Search dan Filter sejajar horizontal.
+- Status tab: Active | Draft | Sold Out.
+- Archive adalah aksi terpisah pada baris yang sama dengan tindakan product.
+
+Mobile:
+
+- Search penuh lebar terlebih dahulu.
+- Lalu Filter dan tombol Archive.
+- Lalu status tab: Active | Draft | Sold Out.
+
+Seller management product ordering:
+
+Product Unggulan terlebih dahulu, kemudian produk yang lebih baru sebelum produk yang lebih lama.
 
 Routes konseptual:
 
@@ -1019,6 +1601,26 @@ Kembali
 Kembali → /seller/products
 
 Tidak membuat route baru.
+
+Tindakan per product pada list Archived:
+
+- Detail Product → membuka tampilan read-only product archived.
+- Restore → tersedia dari menu aksi pada list, mengubah ARCHIVED → DRAFT.
+
+Halaman Archive TIDAK memiliki aksi "Lihat Product".
+
+Archive Detail Product:
+
+- tampilan read-only product yang menampilkan seluruh informasi product, termasuk Product Catalog Settings, gambar, Brand, Category, Condition, Price, Description, status Product Unggulan, dan status (ARCHIVED).
+- tidak ada field editable, tidak ada tombol Save/Edit/Restore di dalam tampilan ini.
+- hanya menyediakan navigasi Kembali (ke halaman Archive).
+- restore hanya dilakukan dari menu aksi pada list Archived.
+
+Auto Archive:
+
+- setting level store yang UI-nya terletak pada halaman Archive.
+- nilai: Tidak ada (default) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 365 hari / Never.
+- perubahan diterapkan dari popover pada halaman Archive, bukan pada My Store.
 
 Category filter pada seller products menggunakan URL query sebagai source of truth:
 
@@ -1038,7 +1640,7 @@ Description
 Condition
 Price
 External Product Links
-Featured Product
+Product Unggulan
 
 Actions:
 
@@ -1061,6 +1663,31 @@ Save/update behavior menyesuaikan existing product
 
 Tidak membuat desain/form Edit Product terpisah.
 
+Actions Edit Product hanya:
+
+Batal
+Simpan
+
+Tidak ada:
+
+- Publish Product
+- Save Draft
+
+di dalam Edit Product.
+
+Product Edited activity hanya dibuat ketika:
+
+- tombol Simpan diklik,
+- dan perubahan berhasil dipersist.
+
+Tidak ada activity untuk:
+
+- membuka form edit,
+- perubahan belum disimpan,
+- Batal/Cancel,
+- validation failure,
+- request API gagal.
+
 Conceptual implementation:
 
 <ProductForm mode="create" />
@@ -1071,17 +1698,24 @@ Desktop menggunakan reusable Seller Sidebar.
 
 Menu utama:
 
+Kataloga
+
+(brand link ke Dashboard)
+
 Dashboard
 Products
-Categories
 Customer Interest
+Recent Activity
 My Store
+Categories
 
 [ User / Account Card ]
 
 Logout
 
 Tidak ada item "Profile" terpisah pada sidebar utama.
+
+Tidak ada item "Archive" pada sidebar desktop.
 
 User/Account Card pada bagian bawah sidebar adalah akses ke halaman Profile.
 
@@ -1100,14 +1734,19 @@ Ringkasan Toko tetap ada dan tidak diduplikasi.
 
 Mobile menggunakan reusable Bottom Navigation dengan:
 
-3 main features
+Dashboard
+Products
+Customer Interest
+
 More
 
 More berisi:
 
-Categories
+Recent Activity
 My Store
+Categories
 Profile
+Logout
 
 Seller navigation harus konsisten di seluruh seller pages.
 
@@ -1135,7 +1774,52 @@ Seller dapat membuka My Store kapan saja melalui Seller Navigation untuk mengedi
 
 My Store menampilkan Store Link yang diturunkan dari Store ID saat ini.
 
+Store Link ditampilkan di bawah Store ID.
+
+Actions Store Link:
+
+Salin
+Bagikan
+
+Tidak ada QR Code.
+
+Jika Store ID berubah, Store Link ikut berubah.
+
+Store ID lama tetap menjadi alias yang redirect ke Store ID saat ini (behavior backend-owned).
+
 Tidak membuat halaman onboarding toko terpisah.
+
+My Store menyediakan setting:
+
+Auto Archive TIDAK berada di My Store. Auto Archive terletak pada halaman Archive (lihat Sold Out Auto Archive).
+
+### Operating Hours
+
+Operating Hours menggunakan field terstruktur:
+
+- Hari Mulai
+- Hari Selesai
+- Jam Buka
+- Jam Tutup
+
+Contoh:
+
+- Hari Mulai: Senin
+- Hari Selesai: Minggu
+- Jam Buka: 08:00
+- Jam Tutup: 17:00
+
+TIDAK menggunakan input teks bebas untuk Operating Hours.
+
+### Draft & Navigation Confirmation
+
+Perubahan pada My Store bersifat draft sampai tombol Simpan diklik.
+
+Jika ada perubahan yang belum disimpan dan seller mencoba navigasi keluar, tampilkan konfirmasi sebelum keluar.
+
+### Mobile My Store Title
+
+Pada mobile, judul halaman My Store ditampilkan centered.
 
 38. Marketing Landing
 
@@ -1191,7 +1875,9 @@ Public/customer routes:
   
 /{storeId}
 
-/{storeId}/products/{productId}
+/{storeId}/products
+
+/{storeId}/product/{productId}/{slug}
 
 /login
 
@@ -1207,7 +1893,7 @@ Share
 WhatsApp
 Announcement
 
-Fitur tersebut merupakan interaction/state pada halaman yang sudah ada.
+Search, filter, dan sort merupakan state/interaction di dalam halaman Product Listing yang sudah ada.
 
 41. Authentication Context Preservation
 
@@ -1247,6 +1933,7 @@ Fitur yang termasuk V1:
 Customer
 Marketing Landing
 Store Landing
+Product Listing
 Product Detail
 Search
 Filter
@@ -1266,6 +1953,7 @@ Customer Interest
 My Store
 Profile
 Archive/Restore Product
+Sold Out (lifecycle + auto archive + reactivation)
 
 Tidak termasuk V1:
 

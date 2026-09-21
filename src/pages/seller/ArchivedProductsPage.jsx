@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSellerProducts } from '../../hooks/useSellerProducts'
+import { useMyStore } from '../../hooks/useMyStore'
 import { listCategories } from '../../services/categoryService'
 import { restoreProduct } from '../../services/productService'
+import { updateStore } from '../../services/storeService'
+import { recordProductRestored, recordStoreUpdated } from '../../services/activityService'
 import ProductsToolbar from '../../components/seller/products/ProductsToolbar'
+import AutoArchivePopover from '../../components/seller/products/AutoArchivePopover'
+import ArchivedProductDetail from '../../components/seller/products/ArchivedProductDetail'
 import ProductTable from '../../components/seller/products/ProductTable'
 import ProductCardList from '../../components/seller/products/ProductCardList'
 import EmptyProducts from '../../components/seller/products/EmptyProducts'
@@ -12,8 +17,10 @@ import Toast from '../../components/shared/Toast'
 
 /**
  * Archived Products: list of ARCHIVED products on their own route
- * (/seller/products/archived). Restore always returns a product to DRAFT and
- * navigates back to the active products list.
+ * (/seller/products/archived). Hosts the store-level Auto Archive setting
+ * (store-level, not per product). Restore always returns a product to DRAFT
+ * and navigates back to the active products list. "Detail Product" opens a
+ * read-only internal product detail (no customer-facing actions).
  */
 function ArchivedProductsPage() {
   const navigate = useNavigate()
@@ -26,14 +33,15 @@ function ArchivedProductsPage() {
     setSearch,
     filters,
     setFilters,
-    sort,
-    setSort,
     hasActiveFilters,
     resetFilters,
   } = useSellerProducts({ archived: true })
 
+  const { store, reload: reloadStore } = useMyStore()
   const [categories, setCategories] = useState([])
   const [toast, setToast] = useState(null)
+  const [detailProduct, setDetailProduct] = useState(null)
+  const [savingAutoArchive, setSavingAutoArchive] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -47,9 +55,34 @@ function ArchivedProductsPage() {
     }
   }, [])
 
+  async function handleAutoArchiveSave(autoArchiveDays) {
+    if (!store) {
+      return
+    }
+    setSavingAutoArchive(true)
+    try {
+      await updateStore(store.storeId, { autoArchiveDays })
+      await recordStoreUpdated()
+      await reloadStore()
+      setToast({ type: 'success', message: 'Setelan Auto Archive berhasil disimpan.' })
+    } catch (saveError) {
+      setToast({
+        type: 'error',
+        message:
+          saveError instanceof Error
+            ? saveError.message
+            : 'Gagal menyimpan setelan Auto Archive. Silakan coba lagi.',
+      })
+    } finally {
+      setSavingAutoArchive(false)
+    }
+  }
+
   async function handleRestore(product) {
     try {
       const restored = await restoreProduct(product.id)
+      await recordProductRestored(restored.name, { productId: restored.id })
+      setDetailProduct(null)
       navigate('/seller/products', {
         state: {
           feedback: {
@@ -103,9 +136,22 @@ function ArchivedProductsPage() {
     )
   }
 
+  if (detailProduct) {
+    return (
+      <div>
+        <ArchivedProductDetail
+          product={detailProduct}
+          storeName={store?.name}
+          onBack={() => setDetailProduct(null)}
+        />
+        <Toast toast={toast} onClose={() => setToast(null)} />
+      </div>
+    )
+  }
+
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
             Archived Products
@@ -132,14 +178,33 @@ function ArchivedProductsPage() {
         onFilterChange={setFilters}
         resetFilters={resetFilters}
         hasActiveFilters={hasActiveFilters}
-        sort={sort}
-        onSort={setSort}
         categories={categories}
+        autoArchive={
+          <AutoArchivePopover
+            autoArchiveDays={store?.autoArchiveDays ?? null}
+            onSave={handleAutoArchiveSave}
+            disabled={savingAutoArchive}
+          />
+        }
       />
 
       {products.length === 0 ? (
         hasActiveFilters ? (
-          <EmptyProducts variant="search" />
+          <EmptyProducts
+            variant="search"
+            action={
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant px-5 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                  refresh
+                </span>
+                Reset Filter
+              </button>
+            }
+          />
         ) : (
           <EmptyProducts variant="archived" />
         )
@@ -153,6 +218,7 @@ function ArchivedProductsPage() {
             onMarkSoldOut={() => {}}
             onReactivate={() => {}}
             onRestore={handleRestore}
+            onDetail={setDetailProduct}
           />
           <ProductCardList
             products={products}
@@ -162,6 +228,7 @@ function ArchivedProductsPage() {
             onMarkSoldOut={() => {}}
             onReactivate={() => {}}
             onRestore={handleRestore}
+            onDetail={setDetailProduct}
           />
         </div>
       )}

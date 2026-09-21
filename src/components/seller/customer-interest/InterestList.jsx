@@ -1,6 +1,8 @@
 import { formatDateTime } from '../../../utils/datetime'
 import {
   countCustomerActivities,
+  customerDisplayName,
+  customerSupportingIdentity,
   productContextOf,
 } from '../../../utils/customerInterest'
 import ChannelBadge from './ChannelBadge'
@@ -48,13 +50,17 @@ function InterestList({ interests, allInterests, productById, onSelect }) {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-[13px] font-semibold text-on-surface">
-                            {record.customerName}
+                            {customerDisplayName(record)}
                           </span>
                           <span className="rounded bg-surface-container px-1.5 py-0.5 text-[11px] font-medium text-on-surface-variant">
                             {count}x interaksi
                           </span>
                         </div>
-                        <span className="text-[11px] text-outline">Entitas Customer</span>
+                        {customerSupportingIdentity(record) ? (
+                          <span className="text-[11px] text-on-surface-variant">
+                            {customerSupportingIdentity(record)}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                   </td>
@@ -75,7 +81,14 @@ function InterestList({ interests, allInterests, productById, onSelect }) {
                     </div>
                   </td>
                   <td className="px-4 py-3.5">
-                    <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                    <div className="flex flex-col items-start gap-1">
+                      <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                      {record.context ? (
+                        <span className="text-[11px] text-on-surface-variant">
+                          {record.context}
+                        </span>
+                      ) : null}
+                    </div>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3.5 text-[13px] text-on-surface-variant">
                     {formatDateTime(record.date)}
@@ -110,13 +123,17 @@ function InterestList({ interests, allInterests, productById, onSelect }) {
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="truncate text-[13px] font-semibold text-on-surface">
-                      {record.customerName}
+                      {customerDisplayName(record)}
                     </span>
                     <span className="shrink-0 rounded bg-surface-container px-1.5 py-0.5 text-[11px] font-medium text-on-surface-variant">
                       ({count}x interaksi)
                     </span>
                   </div>
-                  <span className="text-[11px] text-outline">Entitas Customer</span>
+                  {customerSupportingIdentity(record) ? (
+                    <span className="truncate text-[11px] text-on-surface-variant">
+                      {customerSupportingIdentity(record)}
+                    </span>
+                  ) : null}
                 </div>
               </div>
 
@@ -135,7 +152,12 @@ function InterestList({ interests, allInterests, productById, onSelect }) {
                     ) : null}
                   </div>
                 </div>
-                <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                  {record.context ? (
+                    <span className="text-[10px] text-on-surface-variant">{record.context}</span>
+                  ) : null}
+                </div>
               </div>
 
               <div className="mt-3 flex items-center justify-between border-t border-outline-variant/30 pt-3">

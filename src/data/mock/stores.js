@@ -23,7 +23,12 @@ export const stores = [
       { name: 'Tokopedia', url: 'https://www.tokopedia.com/toko-komputer-jaya' },
     ],
     verified: true,
-    announcement: ['Promo dan stok produk terbaru tersedia di katalog kami.'],
+    announcement: {
+      title: 'Promo Berlangsung',
+      message: 'Promo dan stok produk terbaru tersedia di katalog kami.',
+      isEnabled: true,
+    },
+    autoArchiveDays: 30,
     lastStoreIdChange: '2026-01-15T00:00:00.000Z',
     createdAt: '2025-06-01T00:00:00.000Z',
   },

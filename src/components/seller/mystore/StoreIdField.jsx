@@ -61,7 +61,7 @@ function StoreIdField({
         htmlFor="store-id"
         className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-on-surface"
       >
-        Store ID <span className="text-error">*</span>
+        Store ID
         <span className="font-normal lowercase text-secondary">&nbsp;/&nbsp;{storeId ? buildStoreUrl(storeId.trim()) : ''}</span>
       </label>
       {cooldown.locked ? (

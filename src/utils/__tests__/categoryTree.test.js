@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildCategoryFilterOptions,
   buildCategoryTree,
   countProductsByCategory,
   hasDuplicateCategoryName,
+  resolveCategoryScope,
 } from '../categoryTree'
 
 const categories = [
@@ -46,5 +48,35 @@ describe('hasDuplicateCategoryName', () => {
   it('compares only against the given level', () => {
     expect(hasDuplicateCategoryName(categories, 'Gaming', null)).toBe(true)
     expect(hasDuplicateCategoryName(categories, 'Gaming', 1)).toBe(false)
+  })
+})
+
+describe('resolveCategoryScope', () => {
+  it('includes descendant subcategories when a Kategori Utama is selected', () => {
+    expect(resolveCategoryScope(categories, 'Elektronik')).toEqual(['Elektronik', 'Laptop'])
+  })
+
+  it('covers only the subcategory itself when a Sub Kategori is selected', () => {
+    expect(resolveCategoryScope(categories, 'Laptop')).toEqual(['Laptop'])
+  })
+
+  it('falls back to an exact match for an unknown name', () => {
+    expect(resolveCategoryScope(categories, 'Tidak Ada')).toEqual(['Tidak Ada'])
+  })
+
+  it('returns nothing for an empty selection', () => {
+    expect(resolveCategoryScope(categories, '')).toEqual([])
+  })
+})
+
+describe('buildCategoryFilterOptions', () => {
+  it('lists each Kategori Utama followed by its Sub Kategori', () => {
+    expect(buildCategoryFilterOptions(categories).map((category) => category.name)).toEqual([
+      'Elektronik',
+      'Laptop',
+      'Fashion',
+      'Gaming',
+      'Gadget Gaming',
+    ])
   })
 })

@@ -1,58 +1,100 @@
 /**
  * Customer Interest page.
  * Displays meaningful customer activities (WhatsApp Click, Marketplace Click)
- * with informational summary cards, search, activity filter, and a display-only
- * detail modal that groups history by customer identity.
- * This is an activity list — not a CRM.
+ * as an activity list — not a CRM.
+ *
+ * Layout per docs/UI_RULES.md §31/§56:
+ * - Channel cards reflect WhatsApp + the store's configured external channels.
+ * - Total Interest is inline when channels < 4, in the header when >= 4.
+ * - Search + filters (Aktivitas, Channel, single Tanggal, Kategori, Brand,
+ *   Produk) compose; Total always follows the active filter result.
+ * - Lihat Detail opens a modal with the customer's grouped interaction history.
  */
 
 import { useMemo, useState } from 'react'
 import { useCustomerInterest } from '../../hooks/useCustomerInterest'
+import { ACTIVITY_FILTERS } from '../../components/seller/customer-interest/activityFilters'
 import EmptyState from '../../components/shared/EmptyState'
 import InterestFilters from '../../components/seller/customer-interest/InterestFilters'
-import InterestSummary from '../../components/seller/customer-interest/InterestSummary'
+import InterestChannelCards from '../../components/seller/customer-interest/InterestChannelCards'
 import InterestList from '../../components/seller/customer-interest/InterestList'
 import InterestDetailModal from '../../components/seller/customer-interest/InterestDetailModal'
+import {
+  countByChannel,
+  FILTER_ALL,
+} from '../../utils/customerInterestChannels'
+import { filterCustomerInterests } from '../../utils/customerInterestFilter'
+
+const DEFAULT_FILTERS = {
+  activity: 'ALL',
+  channel: FILTER_ALL,
+  date: '',
+  category: FILTER_ALL,
+  brand: FILTER_ALL,
+  productId: null,
+}
 
 function CustomerInterestPage() {
-  const { status, error, interests, summary, productById, reload } = useCustomerInterest()
+  const { status, error, interests, productById, categories, channelOptions, filterOptions, reload } =
+    useCustomerInterest()
   const [query, setQuery] = useState('')
-  const [activityFilter, setActivityFilter] = useState('ALL')
+  const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [selected, setSelected] = useState(null)
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return interests
-      .filter((record) => {
-        if (activityFilter !== 'ALL' && record.channelType !== activityFilter) {
-          return false
-        }
-        if (!q) {
-          return true
-        }
-        return (
-          record.customerName.toLowerCase().includes(q) ||
-          (record.productName || '').toLowerCase().includes(q) ||
-          record.channel.toLowerCase().includes(q)
-        )
-      })
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-  }, [interests, query, activityFilter])
+    const result = filterCustomerInterests(interests, {
+      query,
+      activity: filters.activity,
+      channel: filters.channel,
+      date: filters.date,
+      category: filters.category,
+      brand: filters.brand,
+      productId: filters.productId,
+      productById,
+      categories,
+      productCategories: filterOptions.categories,
+    })
+    return [...result].sort((a, b) => new Date(b.date) - new Date(a.date))
+  }, [interests, query, filters, productById, filterOptions, categories])
 
-  const canReset = query.trim() !== '' || activityFilter !== 'ALL'
+  const currentChannels = channelOptions.current
+  const channelCounts = {}
+  for (const channel of currentChannels) {
+    channelCounts[channel.name] = countByChannel(interests, channel.name)
+  }
+
+  const activeFilterCount = [
+    filters.activity !== 'ALL',
+    filters.channel !== FILTER_ALL,
+    filters.date !== '',
+    filters.category !== FILTER_ALL,
+    filters.brand !== FILTER_ALL,
+    filters.productId != null,
+  ].filter(Boolean).length
+
+  const canReset = query.trim() !== '' || activeFilterCount > 0
+  const hasChannels = channelOptions.current.length >= 4
+
+  function setFilter(key, value) {
+    setFilters((current) => ({ ...current, [key]: value }))
+  }
+
+  function handleSelectChannel(channelName) {
+    setFilter('channel', filters.channel === channelName ? FILTER_ALL : channelName)
+  }
 
   function handleReset() {
     setQuery('')
-    setActivityFilter('ALL')
+    setFilters(DEFAULT_FILTERS)
   }
 
   if (status === 'loading') {
     return (
       <div className="space-y-4" aria-busy="true">
         <div className="h-10 w-56 animate-pulse rounded-xl bg-surface-container-high/60" />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex gap-3 overflow-hidden">
           {[0, 1, 2].map((item) => (
-            <div key={item} className="h-28 animate-pulse rounded-xl bg-surface-container-high/60" />
+            <div key={item} className="h-28 w-36 shrink-0 animate-pulse rounded-xl bg-surface-container-high/60" />
           ))}
         </div>
         <div className="h-12 w-full animate-pulse rounded-xl bg-surface-container-high/60" />
@@ -96,36 +138,61 @@ function CustomerInterestPage() {
           </h1>
           <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
         </div>
+
         <div className="mt-6">
-          <InterestSummary
-            totalInterest={summary.totalInterest}
-            whatsappClicks={summary.whatsappClicks}
-            marketplaceClicks={summary.marketplaceClicks}
+          <InterestChannelCards
+            channels={channelOptions.current}
+            counts={channelCounts}
+            activeChannel={filters.channel}
+            onSelectChannel={handleSelectChannel}
+            total={0}
           />
         </div>
-        <EmptyState
-          icon="favorite_border"
-          title="Belum ada minat pelanggan"
-          description="Customer yang menekan WhatsApp atau memilih kanal marketplace akan muncul di sini."
-        />
+
+        <div className="mt-6">
+          <EmptyState
+            icon="favorite_border"
+            title="Belum ada minat pelanggan"
+            description="Customer yang menekan WhatsApp atau memilih kanal marketplace akan muncul di sini."
+          />
+        </div>
       </div>
     )
   }
 
   return (
     <div>
-      <div className="text-center sm:text-left">
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-          Customer Interest
-        </h1>
-        <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
+      <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-start sm:justify-between sm:text-left">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+            Customer Interest
+          </h1>
+          <p className="mt-1 text-sm text-secondary">Data prospek dan minat pelanggan.</p>
+        </div>
+        {hasChannels ? (
+          <div className="flex shrink-0 items-center gap-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest px-4 py-3 shadow-sm">
+            <span className="material-symbols-outlined text-[20px] text-secondary" aria-hidden="true">
+              favorite_border
+            </span>
+            <div>
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-secondary">
+                Total Interest
+              </span>
+              <span className="text-xl font-extrabold leading-tight text-on-surface">
+                {filtered.length}
+              </span>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-6">
-        <InterestSummary
-          totalInterest={summary.totalInterest}
-          whatsappClicks={summary.whatsappClicks}
-          marketplaceClicks={summary.marketplaceClicks}
+        <InterestChannelCards
+          channels={channelOptions.current}
+          counts={channelCounts}
+          activeChannel={filters.channel}
+          onSelectChannel={handleSelectChannel}
+          total={filtered.length}
         />
       </div>
 
@@ -133,23 +200,30 @@ function CustomerInterestPage() {
         <InterestFilters
           query={query}
           onQueryChange={setQuery}
-          activityFilter={activityFilter}
-          onActivityFilterChange={setActivityFilter}
+          filters={filters}
+          onFilterChange={setFilter}
           onReset={handleReset}
           canReset={canReset}
+          activeFilterCount={activeFilterCount}
+          activityFilterOptions={ACTIVITY_FILTERS}
+          channelOptions={channelOptions.all}
+          categoryOptions={filterOptions.categoryOptions}
+          brands={filterOptions.brands}
+          products={filterOptions.products}
         />
       </div>
 
       <p className="mb-4 mt-4 text-xs text-on-surface-variant sm:text-right">
         Menampilkan <span className="font-semibold text-on-surface">{filtered.length}</span>{' '}
         aktivitas
+        {canReset ? ' sesuai filter saat ini' : ''}
       </p>
 
       {filtered.length === 0 ? (
         <EmptyState
           icon="filter_list_off"
           title="Tidak ada aktivitas yang cocok"
-          description="Coba gunakan kata kunci lain atau ubah filter aktivitas untuk menemukan log customer."
+          description="Coba gunakan kata kunci lain atau ubah filter untuk menemukan log customer."
           action={
             <button
               type="button"
@@ -172,12 +246,14 @@ function CustomerInterestPage() {
         />
       )}
 
-      <InterestDetailModal
-        record={selected}
-        interests={interests}
-        productById={productById}
-        onClose={() => setSelected(null)}
-      />
+      {selected ? (
+        <InterestDetailModal
+          record={selected}
+          interests={interests}
+          productById={productById}
+          onClose={() => setSelected(null)}
+        />
+      ) : null}
     </div>
   )
 }

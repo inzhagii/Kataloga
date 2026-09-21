@@ -1,23 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getCurrentStoreId } from '../services/storeService'
+import { getCurrentStoreId, getStore } from '../services/storeService'
 import { listCustomerInterests } from '../services/customerInterestService'
 import { listSellerProducts } from '../services/productService'
+import { listCategories } from '../services/categoryService'
 import { INTEREST_TYPE } from '../constants/enums'
+import { buildChannelOptions } from '../utils/customerInterestChannels'
+import { buildFilterOptions } from '../utils/customerInterestFilter'
 
 /**
- * Load the store's customer interest records and the seller product list for
- * the Customer Interest page. Interests are always returned as an array (even
- * while loading or on error) so callers can rely on `interests.length` instead
- * of guarding undefined.
+ * Load everything the Customer Interest page needs in one place:
+ * the store's interest records, the seller product list, the current store
+ * (configured external channels -> channel cards) and the store categories
+ * (Kategori Utama -> Sub Kategori resolution for the category filter).
  *
- * The summary counts (total / WhatsApp / marketplace) are derived here — not in
- * the page — so every consumer reads the same numbers.
+ * Interests/products always return as arrays (even while loading or on error)
+ * so callers can rely on `.length` without guarding undefined.
  */
 export function useCustomerInterest() {
   const [state, setState] = useState({
     status: 'loading',
     interests: [],
     products: [],
+    store: undefined,
+    categories: [],
     error: '',
   })
   const [reloadKey, setReloadKey] = useState(0)
@@ -26,16 +31,26 @@ export function useCustomerInterest() {
     let active = true
 
     async function load() {
-      setState({ status: 'loading', interests: [], products: [], error: '' })
+      setState({
+        status: 'loading',
+        interests: [],
+        products: [],
+        store: undefined,
+        categories: [],
+        error: '',
+      })
       try {
-        const [interests, products] = await Promise.all([
-          listCustomerInterests(getCurrentStoreId()),
+        const storeId = getCurrentStoreId()
+        const [interests, products, store, categories] = await Promise.all([
+          listCustomerInterests(storeId),
           listSellerProducts(),
+          getStore(storeId),
+          listCategories(),
         ])
         if (!active) {
           return
         }
-        setState({ status: 'ready', interests, products, error: '' })
+        setState({ status: 'ready', interests, products, store, categories, error: '' })
       } catch (error) {
         if (!active) {
           return
@@ -44,8 +59,12 @@ export function useCustomerInterest() {
           status: 'error',
           interests: [],
           products: [],
+          store: undefined,
+          categories: [],
           error:
-            error instanceof Error ? error.message : 'Gagal memuat customer interest. Silakan coba lagi.',
+            error instanceof Error
+              ? error.message
+              : 'Gagal memuat customer interest. Silakan coba lagi.',
         })
       }
     }
@@ -65,6 +84,22 @@ export function useCustomerInterest() {
     return map
   }, [state.products])
 
+  const channelOptions = useMemo(
+    () =>
+      buildChannelOptions({ interests: state.interests, channels: state.store?.channels ?? [] }),
+    [state.interests, state.store],
+  )
+
+  const filterOptions = useMemo(
+    () =>
+      buildFilterOptions({
+        interests: state.interests,
+        productById,
+        categories: state.categories,
+      }),
+    [state.interests, productById, state.categories],
+  )
+
   const summary = useMemo(() => {
     const whatsappClicks = state.interests.filter(
       (interest) => interest.channelType === INTEREST_TYPE.WHATSAPP_CLICK,
@@ -80,8 +115,12 @@ export function useCustomerInterest() {
     status: state.status,
     error: state.error,
     interests: state.interests,
+    store: state.store,
+    categories: state.categories,
     summary,
     productById,
+    channelOptions,
+    filterOptions,
     reload: () => setReloadKey((value) => value + 1),
   }
 }

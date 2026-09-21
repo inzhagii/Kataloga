@@ -4,14 +4,14 @@ import RecentActivityList from '../activities/RecentActivityList'
 
 /**
  * Dashboard section 3: Recent Activity timeline — a compact preview, not the
- * full list. Only PRODUCT_PUBLISHED, PRODUCT_EDITED and STORE_UPDATED events.
- * It shows the same number of latest items as the Customer Interest preview
- * so the two sections stay visually balanced; "Lihat Semua" opens the full
- * activity list on /seller/activities.
+ * full list. Shows the 4 most recent activities (docs/UI_RULES.md §20), the
+ * same count as the Customer Interest preview so the two sections stay
+ * visually balanced; "Lihat Semua" opens the full activity list on
+ * /seller/activities.
  * @param {{ activities: import('../../../data/models.js').RecentActivity[] }} props
  */
 function RecentActivity({ activities }) {
-  const latest = (activities ?? []).slice(0, 3)
+  const latest = (activities ?? []).slice(0, 4)
 
   return (
     <section

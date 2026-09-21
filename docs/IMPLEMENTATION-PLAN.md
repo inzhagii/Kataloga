@@ -17,9 +17,13 @@ Dokumen ini merupakan roadmap tingkat tinggi.
 
 Detail implementasi setiap task harus direncanakan menggunakan OpenCode Plan Mode sebelum coding untuk task yang non-trivial.
 
+Testing dan visual QA dilakukan secara incremental di sepanjang implementation, bukan hanya di akhir.
+
+Jangan mengklaim suatu phase implementation selesai hanya karena dokumentasi sudah diperbarui.
+
 ---
 
-# 2. Source of Truth
+## 2. Source of Truth
 
 Urutan acuan:
 
@@ -32,7 +36,7 @@ UX-FLOW.md
         ↓
 ROUTES.md
         ↓
-UI-RULES.md
+UI_RULES.md
         ↓
 IMPLEMENTATION-PLAN.md
         ↓
@@ -49,10 +53,11 @@ Digunakan sebagai implementation reference.
 
 Bukan production code.
 
-3. Implementation Principles
-3.1 Incremental Development
+## 3. Implementation Principles
 
-Jangan meminta OpenCode membangun seluruh Kataloga dalam satu task.
+### 3.1 Incremental Development
+
+Jangan meminta agent membangun seluruh Kataloga dalam satu task.
 
 Gunakan:
 
@@ -67,7 +72,10 @@ Fix
 Commit
    ↓
 Next Task
-3.2 UI First, Logic Second
+
+Setiap task kecil menjalankan verification (TypeScript, build, routing, responsive, lint) sebelum dianggap selesai.
+
+### 3.2 UI First, Logic Second
 
 Untuk page yang memiliki screenshot final:
 
@@ -85,7 +93,7 @@ API Integration
 
 Jangan langsung menggabungkan seluruh UI + backend logic dalam satu task besar.
 
-3.3 Reusable Components
+### 3.3 Reusable Components
 
 Prioritaskan component reusable.
 
@@ -105,455 +113,368 @@ ShareButton
 EmptyState
 LoadingState
 ErrorState
-4. Phase Overview
-Phase 0  → Project Foundation
-Phase 1  → Design System & Shared Components
-Phase 2  → Marketing Landing
-Phase 3  → Authentication
-Phase 4  → Public Storefront
-Phase 5  → Product Detail
-Phase 6  → Seller Layout
-Phase 7  → Seller Dashboard
-Phase 8  → Products CRUD
-Phase 9  → Categories
-Phase 10 → My Store
-Phase 11 → Customer Interest
-Phase 12 → Profile
-Phase 13 → Functional Integration
-Phase 14 → API Integration
-Phase 15 → Validation & Testing
-Phase 16 → Final Polish
-5. Phase 0 — Project Foundation
-Goal
 
-Menyiapkan React project agar siap dikembangkan.
+### 3.4 Document-Driven
 
-Scope
-React project
-TypeScript
-package manager
-linting
-formatting
-basic folder structure
-routing foundation
-environment configuration
-Git setup
-Expected Structure
-src/
-├── app/
-├── components/
-├── layouts/
-├── pages/
-├── features/
-├── hooks/
-├── lib/
-├── services/
-├── types/
-├── utils/
-└── assets/
+Setiap task dimulai dari dokumen.
 
-Struktur final boleh menyesuaikan architecture yang dipilih setelah inspeksi project.
+Keterlibatan agent dimulai dengan:
+
+Read Relevant Docs
+        ↓
+Inspect Existing Code
+        ↓
+Inspect Screenshot
+        ↓
+Plan Mode
+        ↓
+Review Plan (finalisasi bersama user)
+        ↓
+Implementation
+        ↓
+Run Checks
+        ↓
+Visual Verification
+        ↓
+Fix
+        ↓
+Commit
+
+### 3.5 No False Completion
+
+Testing dan visual QA tidak hanya dilakukan di tahap akhir.
+
+Setiap phase implementation harus diverifikasi secara incremental:
+
+- TypeScript
+- Build
+- Routing
+- Responsive behavior
+- Existing functionality
+
+Memperbarui dokumentasi bukan pengganti implementasi dan verification.
+
+---
+
+## 4. Phase Overview
+
+Struktur phase disusun agar setiap phase dapat diverifikasi sebelum lanjut.
+
+```text
+Phase 0      → Documentation & AGENTS Alignment
+Phase 0.1    → Documentation Verification
+Phase 1      → Frontend Read-Only Audit
+Phase 1 Review → Human review of audit results
+Phase 2      → Implementation Planning
+Phase 3+     → Incremental Implementation
+```
+
+Prinsip:
+
+- Phase 0 sampai Phase 2 bersifat persiapan dan TIDAK mengubah production code.
+- Phase 3+ baru menyentuh `src/`.
+- Urutan phase harus dipertahankan.
+- Jangan menggabungkan beberapa phase dalam satu task kecuali disetujui.
+
+---
+
+## 5. Phase 0 — Documentation & AGENTS Alignment
+
+### Goal
+
+Memastikan seluruh dokumentasi frontend Kataloga selaras dengan locked requirements sebelum membangun production code.
+
+Dokumentasi frontend adalah pekerjaan documentation-only.
+
+### Scope
+
+Selaraskan terhadap source of truth:
+
+`docs/PRODUCT.md`
+`docs/UX-FLOW.md`
+`docs/ROUTES.md`
+`docs/UI_RULES.md`
+`docs/API-CONTRACT.md`
+`AGENTS.md`
+
+Item yang diselaraskan pada Phase 0:
+
+Account model (email verification vs. phone)
+Store model
+Store ID rules + historical aliases
+Store Landing / Navbar / Footer
+Store Actions (dengan / tanpa marketplace; label `Hubungi via WhatsApp`)
+Public Store URL pattern
+Product Lifecycle (DRAFT / PUBLISHED / SOLD_OUT / ARCHIVED; tidak ada SOLD_OUT → DRAFT)
+Auto Archive store-level (nilai: Tidak ada default / 1 / 7 / 30 / 90 / 180 / 365 hari / Never; UI di halaman Archive)
+Product Unggulan (boolean, max 10, hanya dari PUBLISHED; archiving dan SOLD_OUT menghapus status; reactivation tidak mengembalikan)
+Product Card field order
+Product Detail hierarchy
+Seller Products page layout (status tabs, tanpa Sort)
+Brand Management
+Customer Interest layout dan context
+Recent Activity (7 tipe, single-date filter)
+Date format `12.09.2026`
+Customer vs Seller Separation
+Seller Navigation (sidebar + bottom navigation + More)
+Dashboard (Catalog Overview satu baris, icons, side-by-side sections)
+
+Verifikasi ketiadaan konsep yang sudah tidak berlaku:
+
+availability field
+per-product retention (1 / 7 / 14 / 30 hari)
+date range filter pada /seller/activities dan Customer Interest
+SOLD_OUT yang tampil permanen tanpa auto archive
+
+Frontend tidak menambah endpoint API; gap backend dicatat di `docs/API-CONTRACT.md` sebagai item pending konfirmasi backend.
+
+### Deliverable
+
+Seluruh dokumen di `docs/` konsisten.
+
+AGENTS.md mencerminkan kondisi production code.
+
+Tidak ada contradiction antar dokumen.
+
+---
+
+## 6. Phase 0.1 — Documentation Verification
+
+### Goal
+
+Memverifikasi hasil Phase 0 sebelum masuk ke audit code.
+
+### Scope
+
+Verifikasi silang setiap dokumen:
+
+PRODUCT.md ↔ UX-FLOW.md ↔ ROUTES.md ↔ UI_RULES.md ↔ API-CONTRACT.md ↔ AGENTS.md
+
+Checklist:
+
+- Lifecycle sama di semua dokumen (termasuk `DRAFT → ARCHIVED`, dan tidak ada `SOLD_OUT → DRAFT`).
+- Auto Archive store-level konsisten; tidak ada sisa retention per-product. Nilai hanya: Tidak ada (default) / 1 / 7 / 30 / 90 / 180 / 365 hari / Never; UI di halaman Archive (bukan My Store).
+- Terminologi Product Unggulan konsisten; hanya dari PUBLISHED; SOLD_OUT menghapus featured; reactivation tidak mengembalikan.
+- Navigation seller konsisten (sidebar, bottom nav, More).
+- Date format `12.09.2026` konsisten; datetime `12.09.2026 · 18:02`; filter tanggal tunggal memakai date picker.
+- Seller Products menggunakan status tabs dan tanpa Sort.
+- Product Detail tidak menampilkan External Product Links; Brand ditampilkan sebagai "Brand : X".
+- Action category/brand card menggunakan "Lihat Produk" (bukan "Lihat Semua").
+- API-CONTRACT.md propopsed/pending; tidak ada endpoint yang dianggap final.
+- `src/`, `tests/`, `package.json`, `package-lock.json`, dan file konfigurasi TIDAK berubah selama Phase 0.
+
+### Deliverable
+
+Laporan verifikasi singkat: daftar file yang diperiksa, hasil cross-check, dan daftar contradiction yang tersisa (jika ada).
+
+---
+
+## 7. Phase 1 — Frontend Read-Only Audit
+
+### Goal
+
+Memahami kondisi project saat ini sebelum mengubah UI.
+
+Phase ini READ-ONLY: tidak ada perubahan code.
+
+Sebelum mengubah code project, agent harus:
+
+- baca seluruh file di `src/`
+- identifikasi struktur UI yang sudah ada
+- identifikasi component reusable yang sudah ada
+- identifikasi data model / service layer yang sudah ada
+- identifikasi gap terhadap PRODUCT.md / ROUTES.md / UI_RULES.md
+- susun daftar file yang perlu diubah / dibuat
+
+### Important
+
+Agent tidak boleh mengasumsikan folder structure project.
+
+Struktur final mengikuti architecture yang sudah ada setelah inspeksi.
 
 Jangan memaksakan folder structure jika project yang sudah ada memiliki architecture yang lebih baik.
 
-Verification
-project dapat dijalankan
-TypeScript tidak error
-lint tidak error
-build berhasil
-routing dasar bekerja
-6. Phase 1 — Design System & Shared Components
-Goal
+### Deliverable
 
-Membangun foundation UI yang akan digunakan seluruh aplikasi.
+Laporan audit arsitektur singkat.
 
-Scope
-typography
-spacing
-buttons
-inputs
-cards
-badges
-dropdown
-modal
-bottom sheet
-toast
-loading
-empty state
-error state
-icon conventions
-Shared Components
+Daftar file yang perlu diubah.
 
-Contoh:
+Daftar component reusable yang perlu dibuat.
 
-Button
-Input
-Select
-Badge
-Card
-Modal
-BottomSheet
-Dropdown
-Toast
-LoadingState
-EmptyState
-ErrorState
-Important
+---
 
-Jangan membuat design system terlalu kompleks di awal.
+## 8. Phase 1 Review — Human Review
 
-Gunakan kebutuhan nyata dari screenshot dan page yang akan dibuat.
+### Goal
 
-7. Phase 2 — Marketing Landing
-Route
-/
-Goal
+Hasil audit Phase 1 direview oleh manusia sebelum perencanaan implementasi.
 
-Membangun marketing landing Kataloga.
+### Scope
 
-Scope
-navbar
-hero
-hero visual
-CTA
-value propositions
-benefits
-responsive layout
-footer
-Visual Reference
+Human menyetujui / mengoreksi:
 
-Gunakan:
+- temuan audit
+- daftar file yang akan diubah
+- daftar component yang akan dibuat
+- prioritas area kerja
 
-reference/screenshots/public/
+### Deliverable
 
-yang sesuai dengan marketing landing final.
+Audit yang sudah disetujui / hasil review.
 
-Verification
+Audit inilah yang menjadi dasar Phase 2 (Implementation Planning).
 
-Desktop:
+---
 
-Layout
-Spacing
-Typography
-Hero
-CTA
-Visual
+## 9. Phase 2 — Implementation Planning
 
-Mobile:
+### Goal
 
-Stacking
-Spacing
-Hero visual
-CTA
-Navigation
-8. Phase 3 — Authentication
-Routes
+Menyusun rencana implementasi berdasarkan audit aktual.
+
+### Scope
+
+Urutan kerja umum mengikuti struktur:
+
+Foundation
+→ Shared Components
+→ Marketing
+→ Authentication
+→ Public Storefront
+→ Product Detail
+→ Seller Layout
+→ Dashboard
+→ Products
+→ Add/Edit Product
+→ Categories
+→ Brand Management
+→ My Store
+→ Customer Interest
+→ Recent Activity (incl. /seller/activities)
+→ Profile
+→ API Integration
+→ Validation
+→ Testing
+→ Visual QA
+
+Untuk setiap area:
+
+- pecah menjadi task kecil yang dapat diverifikasi
+- sediakan route yang terpengaruh
+- sediakan component yang dibuat/diubah
+- sediakan data/model yang diperlukan
+- sediakan potential regression
+- sediakan verification yang dilakukan
+
+Untuk task non-trivial: gunakan Plan Mode per task sebelum implementasi.
+
+### Deliverable
+
+Rencana task terperinci (task breakdown) untuk Phase 3+.
+
+---
+
+## 10. Phase 3+ — Incremental Implementation
+
+### Goal
+
+Membangun production frontend secara incremental per task yang sudah direncanakan di Phase 2.
+
+Setiap task dilakukan dengan urutan:
+
+Read Docs
+    ↓
+Plan Mode (untuk task non-trivial)
+    ↓
+Inspect Existing Code
+    ↓
+Implement
+    ↓
+Run Checks (TypeScript, lint, build)
+    ↓
+Visual QA / Responsive Check
+    ↓
+Commit
+
+### 10.1 Authentication + Account
+
+#### Routes
+
 /login
 /register
-Goal
+/create-store
+/seller/account
 
-Membangun authentication UI dan flow dasar.
+#### Scope
 
-Scope
 Login
+
+- email atau phone + password
+- kehilangan akses → recovery email (jika akun aktif via phone)
+
 Register
-validation
-loading state
-error state
-authentication state
-redirect handling
-context preservation
-Important
 
-Login dapat berasal dari:
+- alert:
+  - register dengan email verifikasi
+  - register dengan phone tidak verifikasi (perlu recovery email)
 
-Direct Login
-WhatsApp Action
-Marketplace Action
-Protected Seller Route
+Context preservation:
 
-Return context harus dipertahankan.
+- WhatsApp Action
+- Marketplace Action
+- Protected Seller Route
 
-9. Phase 4 — Public Storefront
-Route
+Account (Profile):
+
+- nama
+- email
+- phone
+- password
+- change password membutuhkan email terkini terlebih dahulu
+- logout
+
+Semua protected route harus login.
+
+Create Store membutuhkan login.
+
+Untrust store ownership check.
+
+### 10.2 Store + Storefront
+
+#### Routes
+
+Public:
+
 /{storeId}
-Goal
 
-Membangun customer-facing Store Landing.
+Seller:
 
-Scope
-Store navbar
-Store header
-Store information
-store actions
-announcement
-featured products
-product grid
-product card
-search
-filter
-sort
-empty states
-sold-out state
-responsive layout
-Interaction
-
-Desktop:
-
-Filter → Dropdown / Popover
-Sort → Dropdown / Popover
-Marketplace → Dropdown / Popover
-
-Mobile:
-
-Filter → Bottom Sheet
-Sort → Bottom Sheet
-Marketplace → Bottom Sheet
-Important
-
-Search/filter/sort tetap berada pada Store Landing.
-
-Jangan membuat page baru.
-
-10. Phase 5 — Product Detail
-Route
-/{storeId}/products/{productId}
-Goal
-
-Membangun public product detail.
-
-Scope
-product gallery
-product information
-price
-product details
-description
-WhatsApp
-Marketplace
-Share
-responsive layout
-long description state
-Interaction
-
-WhatsApp:
-
-Auth Check
-   ↓
-Interest
-   ↓
-WhatsApp
-
-Marketplace:
-
-Show Seller Channels
-   ↓
-Select Channel
-   ↓
-Auth Check
-   ↓
-Interest
-   ↓
-External URL
-
-Share:
-
-Share Product URL
-
-Tidak ada QR.
-
-11. Phase 6 — Seller Layout
-Goal
-
-Membangun seller application shell sebelum membuat seluruh seller pages.
-
-Desktop
-SellerLayout
-└── SellerSidebar
-Mobile
-SellerLayout
-├── Main Content
-├── BottomNavigation
-└── MoreMenu
-Navigation
-Dashboard
-Products
-Categories
-Customer Interest
-My Store
-Profile
-Logout
-Important
-
-Sidebar harus reusable.
-
-Jangan membuat sidebar baru di setiap page.
-
-12. Phase 7 — Seller Dashboard
-Route
-/seller/dashboard
-Goal
-
-Membangun dashboard berdasarkan hierarchy final.
-
-Urutan:
-
-1. Catalog Condition
-2. Customer Interest
-3. Recent Activity
-4. Quick Actions
-Scope
-
-Catalog:
-
-Active Products
-SOLD_OUT Products
-Archived Products
-
-Customer Interest:
-
-WhatsApp
-Marketplace
-
-Recent Activity:
-
-Product Published
-Product Edited
-Store Updated
-
-Quick Actions:
-
-Add Product
-Products
-My Store
-Navigation
-Active Products
-    ↓
-/seller/products
-
-Archived Products
-    ↓
-/seller/products/archived
-
-Customer Interest
-    ↓
-/seller/customer-interest
-
-Recent Activity "Lihat Semua"
-    ↓
-/seller/activities
-
-Halaman /seller/activities adalah list Recent Activity lengkap dan menyediakan "Kembali" ke Dashboard.
-13. Phase 8 — Products CRUD
-Routes
-/seller/products
-/seller/products/new
-/seller/products/:productId/edit
-/seller/products/archived
-13.1 Products
-
-Implement:
-
-product list
-search
-filter
-sort
-status
-featured state
-edit
-archive
-view
-13.2 Add Product
-
-Implement:
-
-ProductForm
-
-Create mode:
-
-mode = create
-
-Actions:
-
-Save as Draft
-Publish Product
-13.3 Edit Product
-
-Reuse:
-
-ProductForm
-
-Edit mode:
-
-mode = edit
-
-Existing data harus di-prefill.
-
-13.4 Archived Products
-
-Implement:
-
-archived list
-restore
-
-Restore:
-
-ARCHIVED
-    ↓
-DRAFT
-14. Phase 9 — Categories
-Route
-/seller/categories
-Goal
-
-Membangun category management.
-
-Scope
-category list
-Kategori Utama
-Sub Kategori
-create
-edit
-delete
-used-category protection
-"Lihat Product" per category
-Hierarchy
-
-Maksimal:
-
-Kategori Utama
-└── Sub Kategori
-
-Terminology user-facing:
-
-Kategori Utama
-Sub Kategori
-
-Jangan menggunakan "Parent Category" pada user-facing UI.
-
-Seller dapat membuat Kategori Utama baru langsung dari form pembuatan category.
-
-"Lihat Product" mengarah ke:
-
-/seller/products?category=...
-
-Category product filtering menggunakan URL query sebagai source of truth.
-
-Kategori Utama yang masih memiliki child tidak dapat dihapus.
-
-Product memilih tepat satu category.
-
-15. Phase 10 — My Store
-Route
 /seller/my-store
-Goal
 
-Membangun store management.
+#### Scope
 
-Scope
+Store Landing:
+
+navbar (logo, name, city/province)
+header
+actions (Hubungi via WhatsApp, Marketplace, Share)
+announcement
+featured products (Product Unggulan)
+product grid/card
+footer
+
+Store management:
+
+Create Store (Store Name + Store ID saja)
+My Store (lengkapi data store, validasi saat simpan)
+
+My Store menyediakan setting:
+
 Store Logo
 Store Name
 Store ID
-Store Description
+Store Description / Bio
 Province
 City / Regency
 Full Address (opsional, free-text)
@@ -561,345 +482,301 @@ Operating Hours
 WhatsApp
 External Sales Channels
 Announcement
-Store Link
-External Channel
 
-Model:
+Auto Archive TIDAK berada di My Store; UI-nya terletak pada halaman Archive (/seller/products/archived).
 
-type ExternalChannel = {
-  name: string
-  url: string
-}
+Operating Hours menggunakan field terstruktur:
 
-Seller dapat:
+- Hari Mulai
+- Hari Selesai
+- Jam Buka
+- Jam Tutup
 
-Add
-Edit
-Remove
+(contoh: Hari Mulai Senin, Hari Selesai Minggu, Jam Buka 08:00, Jam Tutup 17:00). Bukan input teks bebas.
 
-Tidak ada marketplace icon/logo requirement.
+Perubahan My Store bersifat draft sampai Simpan; konfirmasi navigasi jika ada perubahan belum disimpan.
 
-Store ID
+Mobile: judul halaman My Store centered.
 
-Implement:
+Store Link (Salin, Bagikan; tidak ada QR)
 
+QR tidak akan dibuat.
+
+Store ID:
+
+validasi format usage
 30-day change restriction
-Store ID format validation (lowercase, angka, tanda hubung; diawali/diakhiri alfanumerik; tanpa tanda hubung berurutan; di-trim)
-availability check saat Store ID valid dan saat berubah
-availability check ulang pada saat submit
-Store Link diturunkan dari Store ID saat ini
+availability check
 
-UI harus memberikan feedback ketika perubahan belum diperbolehkan.
+### 10.3 Seller Layout + Dashboard
 
-Location
-
-Province dipilih dahulu, kemudian City/Regency yang scoped ke province tersebut.
-
-16. Phase 11 — Customer Interest
-Route
-/seller/customer-interest
-Goal
-
-Menampilkan meaningful customer activities.
-
-Activity Types
-WHATSAPP_CLICK
-MARKETPLACE_CLICK
-Information
-Customer
-Product
-Channel
-Date / Time
-
-Customer menggunakan generic user-circle icon.
-
-Tidak menggunakan customer profile photo.
-
-17. Phase 12 — Profile
-Route
-/seller/account
-Goal
-
-Membangun account management dengan terminology "Profile".
-
-Route tetap /seller/account.
-
-Scope
-account information
-seller avatar
-profile information
-relevant settings
-
-Seller avatar optional.
-
-18. Phase 13 — Functional Integration
-
-Setelah seluruh major page tersedia, integrasikan interaction antar page.
-
-Scope
-Authentication
-Login
-Register
-Logout
-Protected Routes
-Redirect
-Context Preservation
-Store
-Create Store
-My Store
-Public Store
-Product
-Create
-Read
-Update
-Archive
-Restore
-Publish
-Draft
-Featured
-Category
-Create
-Read
-Update
-Delete
-Customer Interest
-WhatsApp Click
-Marketplace Click
-Share
-Share Store
-Share Product
-19. Phase 14 — API Integration
-
-API integration dilakukan setelah component dan page structure relatif stabil.
-
-Principle
-
-Frontend harus menggunakan service/API layer.
-
-Jangan menyebarkan raw API calls ke seluruh component.
-
-Contoh conceptual structure:
-
-src/
-└── services/
-    ├── auth/
-    ├── stores/
-    ├── products/
-    ├── categories/
-    └── customer-interest/
-
-Struktur aktual dapat menyesuaikan architecture project.
-
-20. API Integration Order
-
-Recommended order:
-
-1. Authentication
-2. Store
-3. Category
-4. Product
-5. External Channels
-6. Customer Interest
-7. Dashboard aggregation
-8. Recent Activities
-9. Profile
-21. Dynamic Asset Integration
-
-Asset dari backend:
-
-Store Logo
-Product Images
-Seller Avatar
-
-harus berasal dari API/data source.
-
-Contoh:
-
-store.logoUrl
-product.imageUrl
-user.avatarUrl
-
-Jangan memindahkan dynamic production asset ke src/assets/.
-
-22. Mock Data Strategy
-
-Mock data boleh digunakan sebelum API tersedia.
-
-Mock data harus:
-
-terisolasi
-mudah diganti
-memiliki shape yang mendekati API response
-tidak menyebar ke component secara hardcoded
-
-Contoh:
-
-mock/
-├── products
-├── stores
-├── categories
-└── customer-interest
-
-Jika project architecture menggunakan struktur lain, ikuti architecture existing.
-
-23. Phase 15 — Validation & Testing
-
-Setelah integration selesai, lakukan validation menyeluruh.
-
-23.1 Route Testing
-
-Check:
-
-/
- /login
- /register
- /create-store
- /{storeId}
-/{storeId}/products/{productId}
+#### Routes
 
 /seller/dashboard
+
+#### Scope
+
+Seller Layout:
+
+SellerSidebar (Kataloga, Dashboard, Products, Customer Interest, Recent Activity, My Store, Categories, Account Card, Logout)
+
+Mobile: BottomNavigation (Dashboard, Products, Customer Interest) + More (Recent Activity, My Store, Categories, Profile, Logout)
+
+Dashboard:
+
+Catalog Overview dalam satu baris: Active | Draft | Sold Out | Archive (icons sebagai visual anchor)
+Quick Actions
+Customer Interest + Recent Activity side-by-side
+
+Setiap section memiliki "Lihat Semua" di kanan atas heading.
+
+#### Catatan untuk Milestone Seller Navigation (M8)
+
+Findings dari audit M3 — navigasi seller saat ini belum sepenuhnya sesuai PRODUCT.md §36 / UI_RULES.md §7. Perbaikan ditunda ke milestone Seller Navigation (M8); jangan diubah pada M3:
+
+1. Item "Recent Activity" tidak ada pada `SELLER_SIDEBAR_ITEMS` (sidebar desktop) maupun `SELLER_MORE_ITEMS` (More mobile). Route `/seller/activities` sudah terdaftar di router; hanya navigasi yang belum mencantumkannya.
+2. Urutan sidebar desktop berbeda dari spec (Current: Dashboard, Products, Categories, Customer Interest, My Store; Spec: Dashboard, Products, Customer Interest, Recent Activity, My Store, Categories).
+3. Brand "Kataloga" pada `SellerSidebar` dan `SellerHeader` (mobile) adalah `<span>` bukan link ke Dashboard (spec: brand link ke Dashboard).
+
+### 10.4 Products + Product Lifecycle
+
+#### Routes
+
 /seller/products
 /seller/products/new
 /seller/products/:productId/edit
 /seller/products/archived
-/seller/categories
-/seller/customer-interest
-/seller/my-store
-/seller/activities
-/seller/account
-24. Authentication Testing
 
-Test:
+#### Scope
 
-Guest
-Logged-in User
-User without Store
-User with Store
+Product list (search/filter; tanpa Sort)
 
-Test:
+Layout Seller Products:
 
-Guest → WhatsApp
-Guest → Marketplace
-Guest → Seller Route
+Desktop: judul + Add Product satu baris; Search dan Filter sejajar; status tabs Active | Draft | Sold Out; Archive sebagai aksi terpisah.
+Mobile: Search, lalu Filter + Archive, lalu status tabs.
 
-Pastikan redirect dan context benar.
+Products status:
 
-25. Product Testing
+DRAFT
+PUBLISHED
+SOLD_OUT
+ARCHIVED
 
-Test:
+Lifecycle:
 
-Create Draft
-Create Published Product
+DRAFT → PUBLISHED
+PUBLISHED → SOLD_OUT
+SOLD_OUT → PUBLISHED (reactivasi; label aksi seller "Publish Kembali")
+PUBLISHED → ARCHIVED
+DRAFT → ARCHIVED
+ARCHIVED → DRAFT (restore)
+
+Tidak ada SOLD_OUT → DRAFT.
+
+Product Status Actions (Seller):
+
+PUBLISHED (Active): Lihat Product, Edit, Archive, Feature / Unfeature
+DRAFT: Edit, Publish, Archive (tanpa Lihat Product; tanpa Feature)
+SOLD_OUT: Lihat Product, Publish Kembali, Archive
+ARCHIVED (halaman Archive): Detail Product (read-only), Restore
+
+Auto Archive:
+
+setting store-level (nilai: Tidak ada default / 1 / 7 / 30 / 90 / 180 / 365 hari / Never; Never tidak memblokir manual archive); UI di halaman Archive; SOLD_OUT yang melewati threshold → ARCHIVED (backend scheduling; frontend menampilkan status hasil backend).
+
+ProductForm reusable:
+
+Add Product
+
+- Save as Draft
+- Publish Product
+
 Edit Product
-Archive Product
-Restore Product
-Featured Product
-Sold Out Product (lifecycle status, bukan availability field)
 
-Katalog aktif hanya berisi produk PUBLISHED.
+- Batal
+- Simpan
 
-Validation Publish:
+Product Edited activity hanya dibuat saat Simpan berhasil.
 
-Product Name
-Photo
-Category
-Product Details
-Description
-Condition
-Price
-26. Store Testing
+Product Unggulan (boolean; max 10 per store; archiving menghapus status).
 
-Test:
+#### Notes
 
-Create Store
-Update Store
-Update Logo
-Update Description
-Update Location (Province, City/Regency, Full Address opsional)
-Update WhatsApp
-Update External Channels
-Update Announcement
-Change Store ID
+Jangan menambah field:
 
-Store ID:
+stock
+quantity
+remainingStock
+lowStock
 
-Allowed Change
-Blocked Change < 30 days
-Format validation
-Availability check ulang saat submit
+Customer-facing storefront hanya menampilkan PUBLISHED + SOLD_OUT yang masih dalam jendela auto archive.
 
-Store Link:
+### 10.5 Product Listing + Categories + Brand
 
-ditampilkan di My Store
-berubah mengikuti Store ID saat ini
-
-26. Customer Interest Testing
-
-Test:
-
-WhatsApp Click
-Marketplace Click
-Marketplace Channel selection
-
-Verify:
-
-Customer
-Product
-Channel
-Date / Time
-Customer interaction history
-Total Interest = total record interaksi
-
-Action detail:
-
-Lihat Product → membuka product detail customer-facing
-Tutup → menutup detail
-
-Jangan menyediakan aksi kontak customer:
-
-Hubungi Customer
-Buka WhatsApp Customer
-Buka Marketplace
-Buka Channel
-
-Tidak membuat interest dari:
-
-Product View
-Share
-Login
-Logout
-28. Responsive Testing
-
-Minimal:
-
-Desktop
-Mobile
-
-Test seluruh major pages.
+#### Routes
 
 Public:
 
-Marketing
-Store
-Product Detail
-Login
-Register
+/{storeId}/products
 
 Seller:
 
-Dashboard
-Products
-Add Product
-Edit Product
-Archived
-Categories
-Customer Interest
-My Store
-Profile
-Recent Activities
-29. Visual QA
+/seller/categories
 
-Bandingkan implementation dengan:
+#### Scope
+
+Product Listing (/products):
+
+Product grid
+Search
+Category filter
+Filter
+Sort
+Ordering:
+
+Featured Published → Published lebih baru → Published lebih lama → Sold Out
+
+Product Detail (Public):
+
+Brand (jika tersedia) dengan format eksplisit "Brand : X"
+Product Unggulan indicator (jika featured)
+Product Name
+Price (bold)
+Category / Condition (bersebelahan, di bawah Price)
+Actions
+Product Details
+Description
+
+Bagian External Product Links TIDAK dirender pada Product Detail customer-facing (field tetap ada pada form/API).
+
+Primary action: "Hubungi via WhatsApp". Marketplace + Share adalah secondary actions; Marketplace hanya jika store memiliki external channel aktif.
+
+Desktop: image/gallery fixed di kiri, panel info scroll di dalam area, footer di luar scroll.
+
+Mobile: images swipe-only carousel/slider, info di bawah.
+
+Product Detail — Sold Out:
+
+Sold Out indicator
+WhatsApp tidak tersedia
+Marketplace tidak tersedia
+Share tetap tersedia
+
+Categories:
+
+Custom category scoped ke store
+Kategori Utama + Sub Kategori
+"Lihat Produk" → /seller/products?category=...
+Category deletion diblokir jika masih digunakan
+Kategori Utama yang memiliki child tidak dapat dihapus
+Category usage count Kategori Utama mencakup descendant
+Tanpa cascade delete
+
+Brand:
+
+Brand optional, terpisah dari Category
+Brand card grid (desktop 4×4, mobile 2×2): nama, usage count, Edit, Lihat Produk
+Lihat Produk menerapkan filter brand
+Delete hanya jika usage = 0
+Brand dapat dibuat dari Add/Edit Product
+
+#### Notes
+
+Search/filter/sort pada listing customer berada di route yang sama.
+
+Jangan membuat route baru:
+
+/search
+/filter
+/sort
+
+### 10.6 Customer Interest + Recent Activity
+
+#### Routes
+
+/seller/customer-interest
+/seller/activities
+
+#### Scope
+
+Customer Interest:
+
+WhatsApp Click
+Marketplace Click (simpan channel)
+List
+Detail
+History
+Channel cards (WhatsApp + configured; < 4 channel → Total Interest sebaris; ≥ 4 → di sebelah heading; desktop side-by-side tanpa fixed width, mobile horizontal scroll; card hierarchy: channel name atas, icon rata kanan, count besar/bold focal, teks "aktivitas minat")
+Search + Filter di bawah channel cards
+Filter tanggal TANGGAL TUNGGAL (single date)
+Context field: Store Landing vs Product Detail
+
+Customer Interest hanya mencatat WHATSAPP_CLICK dan MARKETPLACE_CLICK.
+
+Activity owner di store miliknya sendiri TIDAK dicatat.
+
+Recent Activity:
+
+Product Published
+Product Edited
+Product Sold Out
+Product Reactivated
+Product Archived
+Product Restored
+Store Updated
+
+Dashboard:
+
+Catalog Overview
+Quick Actions
+Customer Interest + Recent Activity
+
+Dashboard Recent Activity menampilkan 4 terbaru + "Lihat Semua" → /seller/activities
+
+/seller/activities:
+
+List lengkap
+Filter tipe
+Filter tanggal TANGGAL TUNGGAL (single date) menggunakan date picker (bukan input teks manual)
+Date display `12.09.2026`; datetime display `12.09.2026 · 18:02`; tanpa weekday
+"Kembali" → /seller/dashboard
+
+#### Notes
+
+Recent Activity tidak pernah berisi customer activity.
+
+Customer Interest tidak pernah berisi seller activity.
+
+### 10.7 Responsive / UI Polish
+
+### Goal
+
+Memastikan seluruh UI responsive dan sesuai visual source of truth.
+
+### Scope
+
+Desktop:
+
+layout width
+spacing
+alignment
+typography
+sidebar
+content hierarchy
+button placement
+
+Mobile:
+
+responsive layout
+bottom navigation
+touch targets
+horizontal scroll
+bottom sheets
+text wrapping
+tanpa horizontal overflow
+
+Visual QA terhadap:
 
 reference/screenshots/
 
@@ -915,11 +792,87 @@ Card structure
 Navigation
 Responsive behavior
 
+### Notes
+
 Visual mismatch harus diperbaiki sebelum finalization.
 
-30. Accessibility QA
+Jangan menambahkan feature baru pada tahap polish tanpa requirement baru.
 
-Check:
+### 10.8 Validation, Testing, Regression, Build
+
+### Goal
+
+Memvalidasi seluruh behavior dan memastikan build bersih.
+
+### Scope
+
+Route testing:
+
+/ 
+/login
+/register
+/create-store
+/{storeId}
+/{storeId}/products
+/{storeId}/product/{productId}/{slug}
+
+/seller/dashboard
+/seller/products
+/seller/products/new
+/seller/products/:productId/edit
+/seller/products/archived
+/seller/categories
+/seller/customer-interest
+/seller/my-store
+/seller/activities
+/seller/account
+
+Authentication testing:
+
+Guest
+Logged-in User
+User without Store
+User with Store
+
+Guest → WhatsApp
+Guest → Marketplace
+Guest → Seller Route
+
+Product lifecycle testing:
+
+Create Draft
+Create Published Product
+Edit Product (Batal / Simpan)
+Archive Product
+Restore Product
+Product Unggulan (max 10; hanya dari PUBLISHED; SOLD_OUT menghapus Featured; reactivation tidak mengembalikan)
+Sold Out Product
+Auto archive expiry → ARCHIVED
+Reactivation SOLD_OUT → PUBLISHED ("Publish Kembali")
+Archive Detail Product (read-only; tanpa Save/Edit/Restore)
+Archive page responsive layout (desktop: Search/Filter + Auto Archive; mobile: Kembali + Search + Filter/Auto Archive)
+Auto Archive setting hanya di halaman Archive (bukan My Store); hanya nilai yang diizinkan
+
+Store testing:
+
+Create Store
+Update Store
+Update Location
+Update External Channels
+Update Announcement
+Operating Hours (field terstruktur: Hari Mulai / Hari Selesai / Jam Buka / Jam Tutup; bukan teks bebas)
+Perubahan belum disimpan → konfirmasi navigasi
+Update Auto Archive (dari halaman Archive)
+Change Store ID
+30-day restriction
+Store Link update
+
+Responsive testing:
+
+Desktop
+Mobile
+
+Accessibility QA:
 
 Keyboard Navigation
 Focus State
@@ -929,11 +882,7 @@ Image Alt
 Contrast
 Form Errors
 
-Icon-only buttons harus memiliki accessible label.
-
-31. Build & Code Quality QA
-
-Final check:
+Build & code quality:
 
 TypeScript
 Lint
@@ -944,134 +893,48 @@ Console Errors
 Runtime Errors
 Broken Routes
 
-Tidak boleh menyelesaikan task dengan error yang diketahui.
+Definition of Done untuk setiap fase:
 
-32. Phase 16 — Final Polish
+UI implemented
+Responsive implemented
+Routes working
+Interactions working
+Loading states handled
+Error states handled
+Empty states handled
+Validation handled
+No known TypeScript errors
+No known build errors
+No broken existing features
 
-Setelah feature lengkap:
+---
 
-Performance
-Responsive Polish
-Accessibility
-Loading States
-Error States
-Empty States
-Micro Interactions
-Visual Consistency
-Code Cleanup
+## 11. Persisted Principles
 
-Jangan menambahkan feature baru pada tahap polish tanpa requirement baru.
+Bagian ini berlaku di seluruh phase.
 
-33. Suggested Git Strategy
+### 11.1 Backend Dependency
 
-Gunakan commit kecil dan terarah.
+Jika frontend membutuhkan backend behavior yang belum tersedia:
 
-Contoh:
+Gunakan mock/stub hanya untuk development.
 
-feat: initialize react project
-feat: add shared ui components
-feat: implement marketing landing
-feat: implement authentication pages
-feat: implement public store
-feat: implement product detail
-feat: add seller layout
-feat: implement seller dashboard
-feat: implement products management
-feat: implement categories
-feat: implement my store
-feat: implement customer interest
-feat: implement account
-feat: integrate api services
-fix: ...
-refactor: ...
+Catat dependency yang dibutuhkan secara eksplisit.
 
-Jangan menggunakan satu commit besar untuk seluruh aplikasi.
-
-34. OpenCode Workflow
-
-Untuk setiap task non-trivial:
-
-Read Relevant Docs
-        ↓
-Inspect Existing Code
-        ↓
-Inspect Screenshot
-        ↓
-Plan Mode
-        ↓
-Review Plan
-        ↓
-Implementation
-        ↓
-Run Checks
-        ↓
-Visual Verification
-        ↓
-Fix
-        ↓
-Commit
-35. OpenCode Task Scope
-
-Task harus kecil dan spesifik.
-
-Contoh task yang baik:
-
-Implement SellerLayout and reusable SellerSidebar
-
-atau:
-
-Implement Store Landing based on approved screenshot
-
-atau:
-
-Implement ProductForm for Add Product
-
-Hindari:
-
-Build the entire Kataloga application
-36. Documentation Reading Rule
-
-Sebelum mengerjakan task, OpenCode harus membaca dokumen yang relevan.
+Jangan membuat business logic palsu untuk meniru production behavior tanpa alasan.
 
 Contoh:
 
-Store Landing
+Backend Dependency:
+- Create Store API
+- Product CRUD API
+- Customer Interest API
+- External Channel API
+- Auto Archive scheduling
 
-Read:
+### 11.2 No Reinvention Rule
 
-PRODUCT.md
-UX-FLOW.md
-ROUTES.md
-UI-RULES.md
-reference/screenshots/customer/
-Seller Dashboard
-
-Read:
-
-PRODUCT.md
-UX-FLOW.md
-ROUTES.md
-UI-RULES.md
-reference/screenshots/seller/
-
-Tidak perlu membaca seluruh repository secara membabi buta jika task hanya menyentuh area tertentu.
-
-37. Screenshot Reference Rule
-
-Jika task memiliki screenshot reference:
-
-Screenshot = Visual Source of Truth
-
-OpenCode harus:
-
-membaca screenshot
-memahami layout
-mencocokkan component
-implementasi responsive version
-tidak melakukan redesign tanpa approval
-38. No Reinvention Rule
-
-OpenCode tidak boleh mengarang:
+Agent tidak boleh mengarang:
 
 feature baru
 route baru
@@ -1099,96 +962,65 @@ Explain ambiguity
 Propose options
 ↓
 Wait for decision
-39. Backend Dependency Rule
 
-Jika frontend membutuhkan backend behavior yang belum tersedia:
+### 11.3 Mock Data Strategy
 
-Jangan membuat business logic palsu untuk meniru production behavior tanpa alasan.
+Mock data boleh digunakan sebelum API tersedia.
 
-Gunakan:
+Mock data harus:
 
-Mock / Stub
-
-hanya untuk development.
-
-Catat dependency yang dibutuhkan.
+terisolasi
+mudah diganti
+memiliki shape yang mendekati API response
+tidak menyebar ke component secara hardcoded
 
 Contoh:
 
-Backend Dependency:
-- Create Store API
-- Product CRUD API
-- Customer Interest API
-- External Channel API
-40. Definition of Done
+mock/
+├── products
+├── stores
+├── categories
+└── customer-interest
 
-Sebuah phase dianggap selesai jika:
+Jika project architecture menggunakan struktur lain, ikuti architecture existing.
 
-UI implemented
-Responsive implemented
-Routes working
-Interactions working
-Loading states handled
-Error states handled
-Empty states handled
-Validation handled
-No known TypeScript errors
-No known build errors
-No broken existing features
-Visual QA completed
+### 11.4 API Readiness
 
-Untuk phase API:
+Frontend harus menggunakan service/API layer.
 
-API integration completed
-Error handling completed
-Auth handling completed
-Data mapping completed
-41. Recommended Implementation Order
+Jangan menyebarkan raw API calls ke seluruh component.
 
-Urutan final:
+Contoh conceptual structure:
 
-01. Project Foundation
-        ↓
-02. Shared UI Foundation
-        ↓
-03. Marketing Landing
-        ↓
-04. Authentication
-        ↓
-05. Public Store Landing
-        ↓
-06. Product Detail
-        ↓
-07. Seller Layout
-        ↓
-08. Seller Dashboard
-        ↓
-09. Products
-        ↓
-10. Add Product
-        ↓
-11. Edit Product
-        ↓
-12. Archived Products
-        ↓
-13. Categories
-        ↓
-14. My Store
-        ↓
-15. Customer Interest
-        ↓
-16. Profile
-        ↓
-17. Recent Activities
-        ↓
-18. Functional Integration
-        ↓
-19. API Integration
-        ↓
-20. Testing & QA
-        ↓
-21. Final Polish
-42. Scope Control
+src/
+└── services/
+    ├── auth/
+    ├── stores/
+    ├── products/
+    ├── categories/
+    └── customer-interest/
+
+Struktur aktual dapat menyesuaikan architecture project.
+
+### 11.5 Dynamic Asset Integration
+
+Asset dari backend:
+
+Store Logo
+Product Images
+Seller Avatar
+
+harus berasal dari API/data source.
+
+Contoh:
+
+store.logoUrl
+product.imageUrl
+user.avatarUrl
+
+Jangan memindahkan dynamic production asset ke src/assets/.
+
+### 11.6 Scope Control
 
 V1 tidak mencakup:
 
@@ -1204,7 +1036,74 @@ Complex Marketplace Integration
 
 Jangan memasukkan feature tersebut ke implementation backlog tanpa keputusan product baru.
 
-43. Final Principle
+### 11.7 Git Strategy
+
+Gunakan commit kecil dan terarah.
+
+Contoh:
+
+feat: initialize react project
+feat: add shared ui components
+feat: implement marketing landing
+feat: implement authentication pages
+feat: implement public store
+feat: implement product detail
+feat: add seller layout
+feat: implement seller dashboard
+feat: implement products management
+feat: implement categories
+feat: implement my store
+feat: implement customer interest
+feat: implement account
+feat: integrate api services
+fix: ...
+refactor: ...
+
+Jangan menggunakan satu commit besar untuk seluruh aplikasi.
+
+### 11.8 Documentation Reading Rule
+
+Sebelum mengerjakan task, agent harus membaca dokumen yang relevan.
+
+Contoh:
+
+Store Landing
+
+Read:
+
+PRODUCT.md
+UX-FLOW.md
+ROUTES.md
+UI_RULES.md
+reference/screenshots/customer/
+
+Seller Dashboard
+
+Read:
+
+PRODUCT.md
+UX-FLOW.md
+ROUTES.md
+UI_RULES.md
+reference/screenshots/seller/
+
+Tidak perlu membaca seluruh repository secara membabi buta jika task hanya menyentuh area tertentu.
+
+### 11.9 Screenshot Reference Rule
+
+Jika task memiliki screenshot reference:
+
+Screenshot = Visual Source of Truth
+
+Agent harus:
+
+membaca screenshot
+memahami layout
+mencocokkan component
+implementasi responsive version
+tidak melakukan redesign tanpa approval
+
+### 11.10 Final Principle
 
 Kataloga frontend harus dibangun dengan prinsip:
 

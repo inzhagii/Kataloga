@@ -2,13 +2,14 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PRODUCT_STATUS } from '../../../constants/enums'
 import { useClickOutside } from '../../../hooks/useClickOutside'
+import { buildStoreProductUrl, resolveProductSlug } from '../../../utils/storefrontUrl'
 
 /**
- * Per-row action dropdown. Actions depend on product status:
- * - Published: view, edit, featured toggle, archive, mark Sold Out.
- * - Draft: view, edit, publish, featured toggle, archive.
- * - Sold Out: view, edit, reactivate to Published.
- * - Archived: view, edit, restore to draft.
+ * Per-row action dropdown. Actions depend on product status (locked matrix):
+ * - PUBLISHED: Lihat Produk, Edit, Archive, Feature / Unfeature, Sold Out.
+ * - DRAFT: Edit, Publish, Archive. No "Lihat Produk", never featured.
+ * - SOLD_OUT: Lihat Produk, Publish Kembali, Archive. No Edit.
+ * - ARCHIVED: Detail Product (read-only internal view), Restore.
  *
  * @param {{
  *   product: import('../../../data/models.js').Product,
@@ -18,6 +19,7 @@ import { useClickOutside } from '../../../hooks/useClickOutside'
  *   onMarkSoldOut: (product: import('../../../data/models.js').Product) => void,
  *   onReactivate: (product: import('../../../data/models.js').Product) => void,
  *   onRestore: (product: import('../../../data/models.js').Product) => void,
+ *   onDetail?: (product: import('../../../data/models.js').Product) => void,
  * }} props
  */
 function ProductRowMenu({
@@ -28,6 +30,7 @@ function ProductRowMenu({
   onMarkSoldOut,
   onReactivate,
   onRestore,
+  onDetail,
 }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
@@ -56,24 +59,48 @@ function ProductRowMenu({
 
       {open ? (
         <div className="absolute right-0 top-full z-40 mt-1 w-52 rounded-xl border border-outline-variant/60 bg-surface-container-lowest py-1 shadow-xl">
-          <a
-            href={`/${product.storeId}/products/${product.id}`}
-            target="_blank"
-            rel="noreferrer"
-            className={itemClass}
-            onClick={close}
-          >
-            <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
-              visibility
-            </span>
-            Lihat Produk
-          </a>
-          <Link to={`/seller/products/${product.id}/edit`} className={itemClass} onClick={close}>
-            <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
-              edit
-            </span>
-            Edit Produk
-          </Link>
+          {product.status === PRODUCT_STATUS.PUBLISHED ||
+          product.status === PRODUCT_STATUS.SOLD_OUT ? (
+            <a
+              href={buildStoreProductUrl(product.storeId, product.id, resolveProductSlug(product))}
+              target="_blank"
+              rel="noreferrer"
+              className={itemClass}
+              onClick={close}
+            >
+              <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
+                visibility
+              </span>
+              Lihat Produk
+            </a>
+          ) : null}
+
+          {product.status === PRODUCT_STATUS.ARCHIVED ? (
+            <button
+              type="button"
+              className={itemClass}
+              onClick={() => {
+                close()
+                if (onDetail) {
+                  onDetail(product)
+                }
+              }}
+            >
+              <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
+                info
+              </span>
+              Detail Product
+            </button>
+          ) : null}
+
+          {product.status === PRODUCT_STATUS.DRAFT || product.status === PRODUCT_STATUS.PUBLISHED ? (
+            <Link to={`/seller/products/${product.id}/edit`} className={itemClass} onClick={close}>
+              <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
+                edit
+              </span>
+              Edit Produk
+            </Link>
+          ) : null}
 
           {product.status === PRODUCT_STATUS.DRAFT ? (
             <button
@@ -91,7 +118,7 @@ function ProductRowMenu({
             </button>
           ) : null}
 
-          {product.status === PRODUCT_STATUS.DRAFT || product.status === PRODUCT_STATUS.PUBLISHED ? (
+          {product.status === PRODUCT_STATUS.PUBLISHED ? (
             <>
               <button
                 type="button"
@@ -108,33 +135,35 @@ function ProductRowMenu({
               </button>
               <button
                 type="button"
-                className={`${itemClass} text-rose-600`}
+                className={itemClass}
                 onClick={() => {
                   close()
-                  onArchive(product)
+                  onMarkSoldOut(product)
                 }}
               >
-                <span className="material-symbols-outlined text-[17px] text-rose-500" aria-hidden="true">
-                  archive
+                <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
+                  block
                 </span>
-                Arsipkan
+                Sold Out
               </button>
             </>
           ) : null}
 
-          {product.status === PRODUCT_STATUS.PUBLISHED ? (
+          {product.status === PRODUCT_STATUS.DRAFT ||
+          product.status === PRODUCT_STATUS.PUBLISHED ||
+          product.status === PRODUCT_STATUS.SOLD_OUT ? (
             <button
               type="button"
-              className={itemClass}
+              className={`${itemClass} text-rose-600`}
               onClick={() => {
                 close()
-                onMarkSoldOut(product)
+                onArchive(product)
               }}
             >
-              <span className="material-symbols-outlined text-[17px] text-outline" aria-hidden="true">
-                block
+              <span className="material-symbols-outlined text-[17px] text-rose-500" aria-hidden="true">
+                archive
               </span>
-              Sold Out
+              Arsipkan
             </button>
           ) : null}
 
@@ -150,7 +179,7 @@ function ProductRowMenu({
               <span className="material-symbols-outlined text-[17px] text-primary" aria-hidden="true">
                 refresh
               </span>
-              Aktifkan Kembali
+              Publish Kembali
             </button>
           ) : null}
 

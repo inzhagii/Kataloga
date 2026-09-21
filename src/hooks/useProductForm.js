@@ -3,6 +3,7 @@ import {
   createProduct,
   updateProduct,
 } from '../services/productService'
+import { ensureBrand } from '../services/brandService'
 import {
   recordProductPublished,
   recordProductEdited,
@@ -182,6 +183,11 @@ export function useProductForm({ mode, initialProduct = null }) {
     }
     setState({ submitting: true, errors: {}, formError: '' })
     try {
+      // A brand typed directly in the form is persisted to the store's brand
+      // list so Brand Management stays in sync (new brand from Add/Edit Product).
+      if (payload.brand) {
+        await ensureBrand(payload.brand)
+      }
       if (mode === 'create') {
         const product = await createProduct({ ...payload, status: PRODUCT_STATUS.DRAFT })
         return {
@@ -194,7 +200,7 @@ export function useProductForm({ mode, initialProduct = null }) {
         ...payload,
         status: initialProduct.status,
       })
-      await recordProductEdited(product.name)
+      await recordProductEdited(product.name, { productId: product.id })
       return {
         ok: true,
         product,
@@ -211,9 +217,9 @@ export function useProductForm({ mode, initialProduct = null }) {
   }
 
   async function publish() {
-    if (mode === 'edit' && initialProduct?.status === PRODUCT_STATUS.ARCHIVED) {
+    if (mode === 'edit') {
       setState({
-        formError: 'Produk yang diarsipkan tidak dapat dipublikasikan. Restore ke draft terlebih dahulu.',
+        formError: 'Edit Product hanya mendukung Simpan. Gunakan halaman Products untuk mengubah status.',
       })
       return { ok: false, validationFailed: true }
     }
@@ -228,32 +234,15 @@ export function useProductForm({ mode, initialProduct = null }) {
     }
     setState({ submitting: true, errors: {}, formError: '' })
     try {
-      if (mode === 'create') {
-        const product = await createProduct({ ...payload, status: PRODUCT_STATUS.PUBLISHED })
-        await recordProductPublished(product.name)
-        return {
-          ok: true,
-          product,
-          feedback: { type: 'success', message: `${product.name} berhasil dipublikasi.` },
-        }
+      if (payload.brand) {
+        await ensureBrand(payload.brand)
       }
-      const product = await updateProduct(initialProduct.id, {
-        ...payload,
-        status: PRODUCT_STATUS.PUBLISHED,
-      })
-      if (initialProduct.status === PRODUCT_STATUS.DRAFT) {
-        await recordProductPublished(product.name)
-        return {
-          ok: true,
-          product,
-          feedback: { type: 'success', message: `${product.name} berhasil dipublikasi.` },
-        }
-      }
-      await recordProductEdited(product.name)
+      const product = await createProduct({ ...payload, status: PRODUCT_STATUS.PUBLISHED })
+      await recordProductPublished(product.name, { productId: product.id })
       return {
         ok: true,
         product,
-        feedback: { type: 'success', message: 'Perubahan produk disimpan.' },
+        feedback: { type: 'success', message: `${product.name} berhasil dipublikasi.` },
       }
     } catch (error) {
       return {

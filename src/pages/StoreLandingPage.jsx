@@ -2,9 +2,15 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useStoreCatalog } from '../hooks/useStoreCatalog'
 import { useAuth } from '../hooks/useAuth'
-import { INTEREST_TYPE } from '../constants/enums'
+import { INTEREST_TYPE, INTEREST_CONTEXT } from '../constants/enums'
 import { recordInterest } from '../services/customerInterestService'
 import { consumePendingAction, setPendingAction } from '../utils/pendingAction'
+import {
+  buildStoreListingUrl,
+  buildStoreProductUrl,
+  buildStoreUrl,
+  resolveProductSlug,
+} from '../utils/storefrontUrl'
 import StoreNavbar from '../components/storefront/StoreNavbar'
 import StoreHeader from '../components/storefront/StoreHeader'
 import AnnouncementBanner from '../components/storefront/AnnouncementBanner'
@@ -29,7 +35,7 @@ function StoreLandingPage() {
   const { status, store, products, categories, error, reload } = useStoreCatalog(storeId)
   const [shareTarget, setShareTarget] = useState(null)
 
-  const returnPath = `/${storeId}`
+  const returnPath = buildStoreUrl(storeId)
 
   function buildWhatsAppUrl() {
     return `https://wa.me/${store.whatsapp}?text=${encodeURIComponent(
@@ -59,8 +65,11 @@ function StoreLandingPage() {
       storeId,
       customerName: user.name,
       customerId: user.id,
+      customerEmail: user.email ?? null,
+      customerPhone: user.phone ?? null,
       productId: null,
       productName: null,
+      context: INTEREST_CONTEXT.STORE_LANDING,
       channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
     })
@@ -80,8 +89,11 @@ function StoreLandingPage() {
       storeId,
       customerName: user.name,
       customerId: user.id,
+      customerEmail: user.email ?? null,
+      customerPhone: user.phone ?? null,
       productId: null,
       productName: null,
+      context: INTEREST_CONTEXT.STORE_LANDING,
       channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: channel.name,
       externalUrl: channel.url,
@@ -105,8 +117,11 @@ function StoreLandingPage() {
         storeId,
         customerName: user.name,
         customerId: user.id,
+        customerEmail: user.email ?? null,
+        customerPhone: user.phone ?? null,
         productId: null,
         productName: null,
+        context: INTEREST_CONTEXT.STORE_LANDING,
         channelType: INTEREST_TYPE.WHATSAPP_CLICK,
         channel: 'WhatsApp',
       })
@@ -115,8 +130,11 @@ function StoreLandingPage() {
         storeId,
         customerName: user.name,
         customerId: user.id,
+        customerEmail: user.email ?? null,
+        customerPhone: user.phone ?? null,
         productId: null,
         productName: null,
+        context: INTEREST_CONTEXT.STORE_LANDING,
         channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
         channel: action.channel,
         externalUrl: action.externalUrl,
@@ -142,7 +160,11 @@ function StoreLandingPage() {
     if (!store) {
       return
     }
-    const url = `${window.location.origin}${returnPath}/products/${product.id}`
+    const url = `${window.location.origin}${buildStoreProductUrl(
+      store.storeId,
+      product.id,
+      resolveProductSlug(product),
+    )}`
     setShareTarget({
       title: 'Bagikan Produk',
       description: product.name,
@@ -223,6 +245,7 @@ function StoreLandingPage() {
           products={products}
           categories={categories}
           onShare={handleShareProduct}
+          listingHref={buildStoreListingUrl(store.storeId)}
         />
       </main>
 

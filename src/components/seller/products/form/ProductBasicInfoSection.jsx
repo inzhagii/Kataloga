@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import SectionCard from './SectionCard'
 
 const INPUT_CLASS =
@@ -47,15 +48,34 @@ function buildCategoryOptions(categories) {
 
 /**
  * Basic Information: product name, category (2-level) and optional brand.
+ * The brand field lists the store's brands and allows creating a new one
+ * inline; the typed name is persisted to Brand Management on save.
  * @param {{
  *   form: object,
  *   errors: Record<string, string>,
  *   categories: import('../../../../data/models.js').Category[],
+ *   brands: import('../../../../data/models.js').Brand[],
  *   setField: (field: string, value: unknown) => void,
  * }} props
  */
-function ProductBasicInfoSection({ form, errors, categories, setField }) {
+function ProductBasicInfoSection({ form, errors, categories, brands = [], setField }) {
   const groups = buildCategoryOptions(categories)
+  const [creatingBrand, setCreatingBrand] = useState(false)
+
+  const knownBrand = brands.some((brand) => brand.name === form.brand)
+  const isCustomBrand = form.brand !== '' && !knownBrand
+  const showNewBrandInput = creatingBrand || isCustomBrand
+  const brandSelectValue = showNewBrandInput ? '__new__' : knownBrand ? form.brand : ''
+
+  function handleBrandSelect(value) {
+    if (value === '__new__') {
+      setCreatingBrand(true)
+      setField('brand', '')
+      return
+    }
+    setCreatingBrand(false)
+    setField('brand', value)
+  }
 
   return (
     <SectionCard
@@ -141,14 +161,40 @@ function ProductBasicInfoSection({ form, errors, categories, setField }) {
             >
               Brand <span className="font-normal lowercase text-secondary">(opsional)</span>
             </label>
-            <input
-              id="product-brand"
-              type="text"
-              value={form.brand}
-              onChange={(event) => setField('brand', event.target.value)}
-              placeholder="Misal: Asus, Apple, Logitech"
-              className={INPUT_CLASS}
-            />
+            <div className="relative">
+              <select
+                id="product-brand"
+                value={brandSelectValue}
+                onChange={(event) => handleBrandSelect(event.target.value)}
+                className={`${INPUT_CLASS} appearance-none pr-10 font-medium ${
+                  brandSelectValue ? '' : 'text-outline'
+                }`}
+              >
+                <option value="">Pilih brand</option>
+                {brands.map((brand) => (
+                  <option key={brand.id} value={brand.name}>
+                    {brand.name}
+                  </option>
+                ))}
+                <option value="__new__">+ Brand Baru</option>
+              </select>
+              <span
+                className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-lg text-outline"
+                aria-hidden="true"
+              >
+                unfold_more
+              </span>
+            </div>
+            {showNewBrandInput ? (
+              <input
+                type="text"
+                value={form.brand}
+                onChange={(event) => setField('brand', event.target.value)}
+                placeholder="Nama brand baru"
+                aria-label="Nama brand baru"
+                className={`mt-2 ${INPUT_CLASS}`}
+              />
+            ) : null}
           </div>
         </div>
       </div>

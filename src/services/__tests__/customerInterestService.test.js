@@ -1,7 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { listCustomerInterests, recordInterest } from '../customerInterestService'
-import { INTEREST_TYPE } from '../../constants/enums'
-import { beforeEachScenario, STORE_B_ID } from './setup'
+import { listCustomerInterests, recordInterest, isStoreOwner } from '../customerInterestService'
+import { INTEREST_TYPE, INTEREST_CONTEXT } from '../../constants/enums'
+import {
+  beforeEachScenario,
+  STORE_A_ID,
+  STORE_B_ID,
+  actAsStoreA,
+  actAsStoreB,
+} from './setup'
 
 beforeEach(() => {
   beforeEachScenario()
@@ -78,6 +84,118 @@ describe('recordInterest', () => {
         channel: 'Share',
       }),
     ).rejects.toThrow('tidak valid')
+  })
+
+  it('snapshots the combined identity (name + email + phone) and the storefront context', async () => {
+    const interest = await recordInterest({
+      storeId: STORE_B_ID,
+      customerName: 'Budi',
+      customerId: 7,
+      customerEmail: 'budi.santoso@example.com',
+      customerPhone: '081234567001',
+      productId: 100,
+      productName: 'Kaos Polos Premium',
+      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
+      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      channel: 'WhatsApp',
+    })
+    expect(interest).toMatchObject({
+      customerName: 'Budi',
+      customerId: 7,
+      customerEmail: 'budi.santoso@example.com',
+      customerPhone: '081234567001',
+      productId: 100,
+      productName: 'Kaos Polos Premium',
+      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
+    })
+  })
+
+  it('keeps a store-level record context as Store Landing with nullable product', async () => {
+    const interest = await recordInterest({
+      storeId: STORE_B_ID,
+      customerName: null,
+      customerEmail: 'visitor@example.com',
+      context: INTEREST_CONTEXT.STORE_LANDING,
+      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      channel: 'WhatsApp',
+    })
+    expect(interest.context).toBe(INTEREST_CONTEXT.STORE_LANDING)
+    expect(interest.productId).toBeNull()
+    expect(interest.productName).toBeNull()
+  })
+
+  it('keeps recorded records renderable even when the channel is no longer configured', async () => {
+    const removedChannel = { name: 'Lazada', url: 'https://lazada.example/toko' }
+    const interest = await recordInterest({
+      storeId: STORE_B_ID,
+      customerName: 'Rina',
+      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
+      channel: removedChannel.name,
+      externalUrl: removedChannel.url,
+    })
+    expect(interest.channel).toBe(removedChannel.name)
+    expect(interest.externalUrl).toBe(removedChannel.url)
+
+    const store = (await import('../../data/mock')).stores.find((s) => s.storeId === STORE_B_ID)
+    expect(store.channels.some((c) => c.name === removedChannel.name)).toBe(false)
+    expect((await listCustomerInterests(STORE_B_ID)).some((i) => i.id === interest.id)).toBe(true)
+  })
+
+  it('defaults an absent context to null instead of guessing from the current route', async () => {
+    const interest = await recordInterest({
+      storeId: STORE_B_ID,
+      customerName: 'Budi',
+      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      channel: 'WhatsApp',
+    })
+    expect(interest.context).toBeNull()
+  })
+})
+
+describe('self-store exclusion', () => {
+  it('never records an interest when the acting account owns the target store', async () => {
+    actAsStoreA()
+    expect(isStoreOwner(STORE_A_ID)).toBe(true)
+
+    const recorded = await recordInterest({
+      storeId: STORE_A_ID,
+      customerName: 'Pemilik Toko',
+      customerId: 1,
+      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      channel: 'WhatsApp',
+    })
+    expect(recorded).toBeNull()
+
+    const storeA = await listCustomerInterests(STORE_A_ID)
+    expect(storeA.some((interest) => interest.customerId === 1)).toBe(false)
+  })
+
+  it('records normally when the acting account owns a different store (logged-in customer)', async () => {
+    actAsStoreB()
+    expect(isStoreOwner(STORE_A_ID)).toBe(false)
+
+    const recorded = await recordInterest({
+      storeId: STORE_A_ID,
+      customerName: 'Agung',
+      customerId: 2,
+      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
+      channel: 'Shopee',
+    })
+    expect(recorded).not.toBeNull()
+
+    const storeA = await listCustomerInterests(STORE_A_ID)
+    expect(storeA.some((interest) => interest.customerId === 2)).toBe(true)
+  })
+
+  it('records normally for guests (no authenticated account)', async () => {
+    const recorded = await recordInterest({
+      storeId: STORE_A_ID,
+      customerName: 'Pengunjung',
+      customerId: null,
+      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      channel: 'WhatsApp',
+    })
+    expect(recorded).not.toBeNull()
   })
 })
 

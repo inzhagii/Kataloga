@@ -1,24 +1,38 @@
-import { ACTIVITY_FILTERS } from './activityFilters'
+import InterestFilterPopover from './InterestFilterPopover'
 
 /**
- * Search + activity filter + reset controls for the Customer Interest page.
- * Search matches customer name, product name and channel (case insensitive).
+ * Search + filter controls for the Customer Interest page.
+ * Search matches customer identity and product data (case insensitive, partial
+ * match, store-scoped — docs/PRODUCT.md §27); advanced filters live in the
+ * popover. Reset appears whenever any filter or the query is active.
  * @param {{
  *   query: string,
  *   onQueryChange: (value: string) => void,
- *   activityFilter: string,
- *   onActivityFilterChange: (value: string) => void,
+ *   filters: object,
+ *   onFilterChange: (key: string, value: string|number|null) => void,
  *   onReset: () => void,
  *   canReset: boolean,
+ *   activeFilterCount: number,
+ *   activityFilterOptions: { value: string, label: string }[],
+ *   channelOptions: { id: string, name: string, isHistorical?: boolean }[],
+ *   categoryOptions: string[],
+ *   brands: string[],
+ *   products: { id: number, name: string }[],
  * }} props
  */
 function InterestFilters({
   query,
   onQueryChange,
-  activityFilter,
-  onActivityFilterChange,
+  filters,
+  onFilterChange,
   onReset,
   canReset,
+  activeFilterCount,
+  activityFilterOptions,
+  channelOptions,
+  categoryOptions,
+  brands,
+  products,
 }) {
   return (
     <div className="grid w-full grid-cols-2 items-stretch gap-2 sm:flex sm:items-center sm:gap-3">
@@ -34,6 +48,7 @@ function InterestFilters({
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder="Cari customer / produk..."
+          aria-label="Cari customer atau produk"
           className="h-11 w-full rounded-xl border border-outline-variant/50 bg-surface pr-9 pl-10 text-sm text-on-surface shadow-sm outline-none placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
         {query ? (
@@ -50,26 +65,17 @@ function InterestFilters({
         ) : null}
       </div>
 
-      <div className="relative min-w-0 sm:w-auto sm:min-w-[180px]">
-        <select
-          value={activityFilter}
-          onChange={(event) => onActivityFilterChange(event.target.value)}
-          aria-label="Filter aktivitas"
-          className="h-11 w-full cursor-pointer appearance-none rounded-xl border border-outline-variant/50 bg-surface pr-9 pl-3 text-sm text-on-surface shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-        >
-          {ACTIVITY_FILTERS.map((filter) => (
-            <option key={filter.value} value={filter.value}>
-              {filter.label}
-            </option>
-          ))}
-        </select>
-        <span
-          className="material-symbols-outlined pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[18px] text-outline"
-          aria-hidden="true"
-        >
-          expand_more
-        </span>
-      </div>
+      <InterestFilterPopover
+        filters={filters}
+        onChange={onFilterChange}
+        onReset={onReset}
+        activityFilterOptions={activityFilterOptions}
+        channelOptions={channelOptions}
+        categoryOptions={categoryOptions}
+        brands={brands}
+        products={products}
+        activeCount={activeFilterCount}
+      />
 
       {canReset ? (
         <button

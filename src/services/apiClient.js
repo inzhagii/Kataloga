@@ -62,6 +62,21 @@ export function getAccessToken() {
 }
 
 /**
+ * Handler invoked when the API responds 401. AuthProvider registers one so an
+ * expired session clears local auth state (RequireAuth then redirects to
+ * /login) instead of leaving protected pages showing stale data.
+ * @type {(() => void) | null}
+ */
+let unauthorizedHandler = null
+
+/**
+ * @param {(() => void) | null} handler
+ */
+export function setUnauthorizedHandler(handler) {
+  unauthorizedHandler = typeof handler === 'function' ? handler : null
+}
+
+/**
  * Build the absolute request URL from the configured base and query params.
  * @param {string} path
  * @param {Record<string, unknown> | undefined} query
@@ -149,6 +164,13 @@ export async function request({
   if (!response.ok) {
     if (response.status === 404 && notFoundAsNull) {
       return null
+    }
+    if (response.status === 401 && unauthorizedHandler) {
+      try {
+        unauthorizedHandler()
+      } catch {
+        // Never let a state-cleanup handler mask the original request error.
+      }
     }
     throw createApiError({ status: response.status, data })
   }

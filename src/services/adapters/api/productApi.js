@@ -34,6 +34,7 @@ function productToDto(product) {
     externalLinks: 'external_links',
     status: 'status',
     featured: 'featured',
+    soldOutAt: 'sold_out_at',
   }
   Object.entries(fields).forEach(([frontKey, apiKey]) => {
     if (product[frontKey] !== undefined) {

@@ -7,8 +7,8 @@ import { PRODUCT_STATUS } from '../../../constants/enums'
 export function ProductStatusBadge({ status }) {
   const styles = {
     [PRODUCT_STATUS.PUBLISHED]: {
-      chip: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-      dot: 'bg-emerald-500',
+      chip: 'border-blue-200 bg-blue-50 text-blue-700',
+      dot: 'bg-blue-500',
       label: 'Published',
     },
     [PRODUCT_STATUS.DRAFT]: {
@@ -17,8 +17,8 @@ export function ProductStatusBadge({ status }) {
       label: 'Draft',
     },
     [PRODUCT_STATUS.SOLD_OUT]: {
-      chip: 'border-rose-200 bg-rose-50 text-rose-700',
-      dot: 'bg-rose-500',
+      chip: 'border-slate-200 bg-slate-50 text-slate-600',
+      dot: 'bg-slate-500',
       label: 'Sold Out',
     },
     [PRODUCT_STATUS.ARCHIVED]: {

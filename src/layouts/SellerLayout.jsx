@@ -6,6 +6,7 @@ import SellerBottomNav from '../components/seller/SellerBottomNav'
 import ConfirmDialog from '../components/shared/ConfirmDialog'
 import { useAuth } from '../hooks/useAuth'
 import { getMyStore } from '../services/storeService'
+import { requiresStore } from '../utils/sellerAccess'
 
 /**
  * Resolve the breadcrumb/page title for a seller route.
@@ -79,7 +80,7 @@ function SellerLayout() {
     setLogoutOpen(true)
   }
 
-  if (user && !user.hasStore) {
+  if (user && !user.hasStore && requiresStore(location.pathname)) {
     return <Navigate to="/create-store" replace />
   }
 

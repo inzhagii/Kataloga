@@ -1,4 +1,10 @@
 /**
+ * Katalog search / filter / sort helpers.
+ */
+
+import { PRODUCT_STATUS } from '../constants/enums'
+
+/**
  * Build a single lowercase searchable text blob for a product.
  * Covers name, brand, category, product details (attributes) and description.
  * @param {import('../data/models.js').Product} product
@@ -55,24 +61,44 @@ export function scoreProduct(product, query) {
 
 /**
  * Compare two scored entries by the active sort option.
- * When sorting by relevance but no query is active, fall back to newest.
+ * When sorting by relevance but no query is active, the catalog order provided
+ * by the service (Featured Published -> newer Published -> older Published ->
+ * Sold Out) is preserved. SOLD_OUT always sorts below PUBLISHED in every
+ * other option (locked docs/UI_RULES.md).
  * @param {'relevance'|'newest'|'price-asc'|'price-desc'} sortBy
  * @param {string} query
  */
+function soldOutLast(comparator) {
+  return (a, b) => {
+    const aSoldOut = a.product.status === PRODUCT_STATUS.SOLD_OUT
+    const bSoldOut = b.product.status === PRODUCT_STATUS.SOLD_OUT
+    if (aSoldOut !== bSoldOut) {
+      return aSoldOut ? 1 : -1
+    }
+    return comparator(a, b)
+  }
+}
+
 function sortComparator(sortBy, query) {
   switch (sortBy) {
     case 'newest':
-      return (a, b) => new Date(b.product.createdAt) - new Date(a.product.createdAt)
+      return soldOutLast(
+        (a, b) => new Date(b.product.createdAt) - new Date(a.product.createdAt),
+      )
     case 'price-asc':
-      return (a, b) => (a.product.priceValue ?? 0) - (b.product.priceValue ?? 0)
+      return soldOutLast(
+        (a, b) => (a.product.priceValue ?? 0) - (b.product.priceValue ?? 0),
+      )
     case 'price-desc':
-      return (a, b) => (b.product.priceValue ?? 0) - (a.product.priceValue ?? 0)
+      return soldOutLast(
+        (a, b) => (b.product.priceValue ?? 0) - (a.product.priceValue ?? 0),
+      )
     case 'relevance':
     default:
       if (query.trim()) {
         return (a, b) => b.score - a.score
       }
-      return (a, b) => new Date(b.product.createdAt) - new Date(a.product.createdAt)
+      return () => 0
   }
 }
 

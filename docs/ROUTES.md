@@ -23,13 +23,17 @@ Route di dokumen ini merupakan acuan utama untuk implementasi frontend.
 Struktur utama:
 
 ```text
-/
+/ 
 ├── /login
 ├── /register
+├── /verify-email
+├── /forgot-password
+├── /reset-password
 ├── /create-store
 │
 ├── /{storeId}
-│   └── /products/{productId}
+│   ├── /products
+│   └── /product/{productId}/{slug}
 │
 └── /seller
     ├── /dashboard
@@ -100,13 +104,65 @@ Re-password
 Customer Name (optional)
 Success Behavior
 
-User menjadi authenticated.
+Register via phone:
 
-Jika belum memiliki store:
+Active immediately.
+
+If belum memiliki store:
 
 /register
     ↓
 /create-store
+
+Register via email:
+
+/register
+    ↓
+/verify-email
+    ↓
+/create-store (atau /seller/dashboard jika sudah memiliki store)
+
+4.3 Verify Email
+/verify-email
+Page
+VerifyEmailPage
+Purpose
+
+Verifikasi OTP email untuk akun yang register menggunakan email.
+
+6 digit kode
+Resend code (dengan cooldown)
+Success Behavior
+
+User menjadi authenticated, lalu diarahkan sesuai return context / status store.
+
+4.4 Forgot Password
+/forgot-password
+Page
+ForgotPasswordPage
+Purpose
+
+Meminta kode pemulihan password menggunakan email atau nomor HP.
+
+Respon selalu generik (tidak mengungkap apakah akun terdaftar)
+Success Behavior
+
+/forgot-password
+    ↓
+/reset-password
+
+4.5 Reset Password
+/reset-password
+Page
+ResetPasswordPage
+Fields
+Kode OTP
+Password baru
+Konfirmasi password baru
+Success Behavior
+
+Password berubah, user diarahkan ke /login.
+
 5. Store Creation Route
 5.1 Create Store
 /create-store
@@ -149,11 +205,24 @@ WhatsApp
 External Sales Channels
 Share Store
 Announcement
-Featured Products
-Product Catalog
-Search
-Filter
-Sort
+Product Unggulan
+Link ke Product Listing
+
+### Storefront Navbar
+
+Navbar storefront berisi:
+
+Store Logo
+Store Name
+City/Province
+
+Tidak menempatkan di dalam navbar:
+
+WhatsApp
+Marketplace
+Full Address
+
+WhatsApp, Marketplace, dan Full Address tersedia pada konten/footer storefront yang sesuai.
 
 City, Province ditampilkan dengan urutan "City dahulu, lalu Province".
 
@@ -170,14 +239,59 @@ Contoh:
 
 Store ID tidak perlu ditampilkan sebagai informasi visual pada halaman.
 
+### Historical Store ID
+
+Jika storeId merupakan historical Store ID lama:
+
+/arya
+→ /toko-arya
+
+Semua historical Store ID tetap menuju store saat ini (redirect).
+
+Historical aliases adalah behavior backend-owned.
+
+Frontend tidak memelihara alias mapping sendiri.
+
+6.2 Product Listing
+/{storeId}/products
+Page
+ProductListingPage
+Purpose
+
+Menampilkan listing katalog customer untuk store tertentu.
+
+Menyediakan:
+
+Search
+Category filter
+Filter
+Sort
+Product grid
+
+Menggunakan reusable ProductCard dan ProductGrid.
+
+Search/filter/sort merupakan state/interaksi di dalam halaman ini.
+
+Tidak membuat route tambahan untuk search/filter/sort.
+
+Ordering:
+
+Featured Published
+→ Published lebih baru
+→ Published lebih lama
+→ Sold Out
+
+Archived tidak pernah menjadi public catalog product.
+
 7. Product Detail Route
 7.1 Product Detail
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 Page
 ProductDetailPage
 Parameters
 storeId
 productId
+slug
 
 storeId:
 
@@ -187,24 +301,55 @@ productId:
 
 numeric public product ID
 
+slug:
+
+URL slug dari Product Name
+
 Contoh:
 
-/toko-komputer-jaya/products/20
+/toko-komputer-jaya/product/20/laptop-asus-rog
 Purpose
 
 Menampilkan:
 
+Brand (jika tersedia) dengan format eksplisit "Brand : X"
+Product Unggulan indicator (jika featured)
 Product Name
-Product Images
-Brand
-Category
-Condition
-Price
+Price (bold)
+Category / Condition (bersebelahan, di bawah Price)
 Product Details
 Description
 WhatsApp
-Marketplace
+Marketplace (tidak pada product SOLD_OUT)
 Share
+
+Product Unggulan indicator terpisah secara visual dari Brand.
+
+Brand ditampilkan secara eksplisit pada Product Detail. Contoh tampilan penulisan nama brand diikuti colon:
+
+`Brand : ASUS`
+
+Bagian External Product Links TIDAK ditampilkan pada Product Detail.
+
+External Product Links tetap ada sebagai field data product (form product dan API), tetapi tidak dirender di halaman Product Detail customer-facing.
+
+Primary action adalah "Hubungi via WhatsApp".
+
+Marketplace dan Share tersedia sebagai secondary actions.
+
+Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+
+Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+
+Product SOLD_OUT (masih dalam jendela auto archive):
+
+- tetap dapat dilihat,
+- indikasi "Sold Out" yang jelas,
+- WhatsApp tidak tersedia,
+- Marketplace tidak tersedia,
+- Share tetap tersedia.
+
+Tidak ada section availability.
 8. Seller Routes
 
 Semua seller routes menggunakan Seller Layout.
@@ -262,15 +407,32 @@ Seller dapat:
 melihat products
 mencari products
 filter products
-sort products
 menambahkan product
 melihat product
 mengedit product
 archive product
-mengatur featured status
+mengatur status Product Unggulan
 melihat status product (DRAFT / PUBLISHED / SOLD_OUT / ARCHIVED)
 
+Tidak ada Sort pada halaman Seller Products.
+
 Status SOLD_OUT merupakan area seller management yang terpisah dari katalog aktif.
+
+### Product Status Actions (Seller)
+
+Tindakan yang tersedia per status pada seller management (list Products / Archived):
+
+- PUBLISHED (Active): Lihat Product, Edit, Archive, Feature / Unfeature
+- DRAFT: Edit, Publish, Archive
+  - Tidak ada aksi Lihat Product pada DRAFT.
+  - DRAFT tidak pernah Product Unggulan, jadi tidak ada aksi Feature/Unfeature.
+- SOLD_OUT: Lihat Product, Publish Kembali, Archive
+  - Reaktivasi SOLD_OUT menggunakan label aksi seller "Publish Kembali".
+  - Reaktivasi ke PUBLISHED TIDAK otomatis mengembalikan status Product Unggulan.
+- ARCHIVED (halaman Archive): Detail Product, Restore
+  - Halaman Archive TIDAK memiliki aksi "Lihat Product".
+  - Aksi archive adalah "Detail Product" yang membuka tampilan read-only product archived.
+  - Restore tersedia dari menu aksi pada list, mengubah ARCHIVED → DRAFT.
 
 Category filter product seller menggunakan URL query sebagai source of truth:
 
@@ -286,7 +448,7 @@ Edit Product
 
 View Product
     ↓
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 11. Add Product
 /seller/products/new
 Page
@@ -337,7 +499,11 @@ Purpose
 Menampilkan product dengan status:
 
 ARCHIVED
-Available Actions
+
+Tidak ada route baru untuk detail archived; Archive Detail Product adalah state/internal view pada halaman Archive.
+
+Available Actions per product:
+Detail Product
 Restore
 Kembali
 
@@ -347,6 +513,15 @@ Archived Products
      ↓
 /seller/products
 
+Halaman Archive TIDAK memiliki aksi "Lihat Product".
+
+Detail Product behavior:
+
+- membuka tampilan read-only product archived.
+- menampilkan seluruh informasi product, termasuk Product Catalog Settings, gambar, Brand, Category, Condition, Price, Description, status Product Unggulan, dan status (ARCHIVED).
+- tidak ada field editable, tidak ada tombol Save/Edit/Restore di dalam tampilan ini.
+- hanya menyediakan Kembali → halaman Archive.
+
 Restore behavior:
 
 ARCHIVED
@@ -355,7 +530,28 @@ DRAFT
    ↓
 /seller/products
 
+Restore hanya tersedia dari menu aksi pada list Archived.
+
 Restore tidak otomatis membuat product menjadi Published.
+
+Responsive layout halaman Archive:
+
+Desktop:
+
+[ Search Produk ] [ Filter ]    [ Auto Archive ]
+
+Mobile:
+
+Archive [ Kembali ]
+[ Search Produk ]
+[ Filter ] [ Auto Archive ]
+[ Product List ]
+
+Auto Archive:
+
+- setting level store yang UI-nya terletak pada halaman Archive.
+- nilai: Tidak ada (default) / 1 hari / 7 hari / 30 hari / 90 hari / 180 hari / 365 hari / Never.
+- diubah melalui popover pada halaman Archive, bukan pada My Store.
 
 14. Seller Categories
 /seller/categories
@@ -385,9 +581,13 @@ Jangan menggunakan "Parent Category" pada user-facing UI.
 
 Seller dapat membuat Kategori Utama baru langsung dari form pembuatan category.
 
-Setiap category memiliki "Lihat Product" yang mengarah ke:
+Setiap category memiliki "Lihat Produk" yang mengarah ke:
 
 /seller/products?category=...
+
+"Lihat Produk" menggunakan hover treatment sederhana (text/action hover).
+
+Bukan "Lihat Semua".
 
 Category product filtering menggunakan URL query sebagai source of truth.
 
@@ -427,7 +627,7 @@ Detail Customer Interest menampilkan Customer, Product, Activity, Time, dan Cust
 
 Action detail:
 
-Lihat Product → membuka product detail customer-facing di /{storeId}/products/{productId}
+Lihat Product → membuka product detail customer-facing di /{storeId}/product/{productId}/{slug}
 Tutup → menutup detail
 
 Jangan menyediakan aksi kontak customer seperti Hubungi Customer, Buka WhatsApp Customer, Buka Marketplace, atau Buka Channel.
@@ -452,7 +652,44 @@ WhatsApp
 External Sales Channels
 Announcement
 
+Auto Archive TIDAK berada di My Store. Auto Archive terletak pada halaman Archive (lihat §13 Archived Products).
+
+Operating Hours menggunakan field terstruktur:
+
+- Hari Mulai
+- Hari Selesai
+- Jam Buka
+- Jam Tutup
+
+Contoh:
+
+- Hari Mulai: Senin
+- Hari Selesai: Minggu
+- Jam Buka: 08:00
+- Jam Tutup: 17:00
+
+TIDAK menggunakan input teks bebas untuk Operating Hours.
+
+Perubahan pada My Store bersifat draft sampai tombol Simpan diklik.
+
+Jika ada perubahan yang belum disimpan dan seller mencoba navigasi keluar, tampilkan konfirmasi sebelum keluar.
+
+Pada mobile, judul halaman My Store ditampilkan centered.
+
 Store Link diturunkan dari Store ID saat ini dan ditampilkan di My Store.
+
+Store Link berada di bawah Store ID.
+
+Actions Store Link:
+
+Salin
+Bagikan
+
+Tidak ada QR Code.
+
+Jika Store ID berubah, Store Link ikut berubah.
+
+Store ID lama tetap menjadi valid alias yang redirect ke Store ID saat ini (backend-owned).
 
 Location dipilih dengan urutan: Province dahulu, kemudian City/Regency yang scoped ke province tersebut.
 
@@ -509,25 +746,25 @@ Store Search
 
 Tetap:
 
-/{storeId}
+/{storeId}/products
 
 Contoh:
 
-/toko-komputer-jaya
+/toko-komputer-jaya/products?search=laptop
 
-Search state berada di halaman Store Landing.
+Search state berada di halaman Product Listing.
 
 Store Filter
 
 Tetap:
 
-/{storeId}
+/{storeId}/products
 
 Filter menggunakan UI state.
 
 Tidak membuat:
 
-/{storeId}/filter
+/{storeId}/products/filter
 
 Seller Category Filter
 
@@ -546,11 +783,11 @@ Store Sort
 
 Tetap:
 
-/{storeId}
+/{storeId}/products
 
 Tidak membuat:
 
-/{storeId}/sort
+/{storeId}/products/sort
 Marketplace Selector
 
 Marketplace selector bukan page.
@@ -569,7 +806,7 @@ Tetap berada di:
 
 atau:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 Share Store
 
 Share Store bukan route.
@@ -591,7 +828,7 @@ Share Product bukan route.
 
 Tetap berada di:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 
 Share menggunakan product-specific URL.
 
@@ -608,7 +845,7 @@ Authentication dapat muncul dari public product/store page.
 
 Contoh:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
         │
         ▼
      WhatsApp
@@ -621,7 +858,7 @@ Return to Product
 
 Atau:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
         │
         ▼
    Marketplace
@@ -655,7 +892,8 @@ Dapat diakses tanpa authentication:
  /login
  /register
  /{storeId}
-/{storeId}/products/{productId}
+/{storeId}/products
+/{storeId}/product/{productId}/{slug}
 Authenticated Routes
 
 Membutuhkan login:
@@ -712,6 +950,9 @@ Semua route:
 
 membutuhkan authenticated user.
 
+Akun tanpa store diarahkan ke /create-store, kecuali /seller/account (Profile)
+yang tetap dapat diakses untuk mengatur recovery email.
+
 Jika guest mencoba membuka seller route:
 
 /seller/dashboard
@@ -739,11 +980,24 @@ Tidak membuat route:
 
 State berada dalam public route tersebut.
 
+### Historical Store ID Resolution
+
+Jika storeId adalah historical Store ID lama, store tetap dapat di-resolve:
+
+/arya
+→ /toko-arya
+
+Semua historical Store ID menjadi valid alias yang menuju store saat ini (redirect).
+
+Historical aliases adalah behavior backend-owned.
+
+Frontend tidak memelihara alias mapping sendiri.
+
 25. Invalid Product
 
 Jika product tidak ditemukan:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
       ↓
 Product Not Found
 
@@ -756,7 +1010,7 @@ Tidak membuat:
 
 Public product URL selalu memiliki Store ID:
 
-/{storeId}/products/{productId}
+/{storeId}/product/{productId}/{slug}
 
 Frontend tidak boleh mengasumsikan product hanya berdasarkan productId.
 
@@ -764,12 +1018,13 @@ Product harus divalidasi terhadap store context.
 
 Contoh:
 
-/toko-komputer-jaya/products/20
+/toko-komputer-jaya/product/20/laptop-asus-rog
 
 berarti:
 
 storeId = toko-komputer-jaya
 productId = 20
+slug = laptop-asus-rog
 27. Route Parameters
 Public Store
 storeId: string
@@ -780,10 +1035,11 @@ Example:
 Public Product
 storeId: string
 productId: number
+slug: string
 
 Example:
 
-/toko-komputer-jaya/products/20
+/toko-komputer-jaya/product/20/laptop-asus-rog
 Seller Product
 productId: number
 
@@ -792,23 +1048,23 @@ Example:
 /seller/products/20/edit
 28. Query Parameters
 
-Search, filter, dan sort pada Store Landing dapat menggunakan URL query parameters jika implementasi membutuhkan state yang shareable/bookmarkable.
+Search, filter, dan sort pada Product Listing dapat menggunakan URL query parameters jika implementasi membutuhkan state yang shareable/bookmarkable.
 
 Contoh:
 
-/{storeId}?search=laptop
+/{storeId}/products?search=laptop
 
 Filter:
 
-/{storeId}?category=laptop&condition=NEW
+/{storeId}/products?category=laptop&condition=NEW
 
 Sort:
 
-/{storeId}?sort=PRICE_ASC
+/{storeId}/products?sort=PRICE_ASC
 
 Kombinasi:
 
-/{storeId}?search=asus&category=laptop&condition=NEW&sort=PRICE_ASC
+/{storeId}/products?search=asus&category=laptop&condition=NEW&sort=PRICE_ASC
 
 Query parameter bukan route baru.
 
@@ -833,9 +1089,13 @@ Route	Page	Access
 /	MarketingLandingPage	Public
 /login	LoginPage	Public
 /register	RegisterPage	Public
+/verify-email	VerifyEmailPage	Public
+/forgot-password	ForgotPasswordPage	Public
+/reset-password	ResetPasswordPage	Public
 /create-store	CreateStorePage	Authenticated
 /{storeId}	StoreLandingPage	Public
-/{storeId}/products/{productId}	ProductDetailPage	Public
+/{storeId}/products	ProductListingPage	Public
+/{storeId}/product/{productId}/{slug}	ProductDetailPage	Public
 /seller/dashboard	DashboardPage	Authenticated
 /seller/products	ProductsPage	Authenticated
 /seller/products/new	AddProductPage	Authenticated
@@ -887,6 +1147,7 @@ App
 │   ├── LoginPage
 │   ├── RegisterPage
 │   ├── StoreLandingPage
+│   ├── ProductListingPage
 │   └── ProductDetailPage
 │
 ├── ProtectedRoutes
@@ -920,7 +1181,7 @@ Product Detail:
 
 StoreLayout
 
-Store dan Product Detail menggunakan storefront context.
+Store, Product Listing, dan Product Detail menggunakan storefront context.
 
 Seller Layout
 
@@ -943,7 +1204,8 @@ Jangan membuat sidebar berbeda untuk setiap page.
 Route structure harus mengikuti dokumen ini.
 Jangan membuat route baru hanya untuk menyelesaikan UI state.
 Dynamic Store ID menggunakan /{storeId}.
-Dynamic Product ID menggunakan /{storeId}/products/{productId}.
+Product Listing menggunakan /{storeId}/products.
+Dynamic Product ID menggunakan /{storeId}/product/{productId}/{slug}.
 Seller product edit menggunakan /seller/products/:productId/edit.
 Add Product menggunakan /seller/products/new.
 Archived Products memiliki route sendiri.

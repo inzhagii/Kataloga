@@ -33,14 +33,18 @@ function SellerSidebar({ store, onLogoutRequest }) {
   return (
     <aside className="fixed left-0 top-0 z-40 hidden h-svh w-sidebar-width flex-col justify-between border-r border-outline-variant bg-surface-container-lowest lg:flex">
       <div className="flex flex-col">
-        <div className="flex h-16 items-center gap-3 border-b border-outline-variant px-6">
+        <Link
+          to="/seller/dashboard"
+          className="flex h-16 items-center gap-3 border-b border-outline-variant px-6 transition-colors hover:bg-surface-container"
+          aria-label="Kataloga Dashboard"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
             <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
               auto_stories
             </span>
           </div>
           <span className="text-lg font-bold tracking-tight text-on-surface">Kataloga</span>
-        </div>
+        </Link>
         <nav aria-label="Menu utama seller" className="p-4">
           <ul className="flex flex-col gap-1.5 text-sm">
             {SELLER_SIDEBAR_ITEMS.map((item) => (
