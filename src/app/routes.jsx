@@ -1,4 +1,5 @@
 import RequireAuth from './RequireAuth'
+import SellerEntryGate from './SellerEntryGate'
 import PublicLayout from '../layouts/PublicLayout'
 import StoreLayout from '../layouts/StoreLayout'
 import SellerLayout from '../layouts/SellerLayout'
@@ -39,6 +40,7 @@ export const routes = [
     element: <RequireAuth />,
     children: [
       { path: '/create-store', element: <CreateStorePage /> },
+      { path: '/seller', element: <SellerEntryGate /> },
       {
         element: <SellerLayout />,
         children: [

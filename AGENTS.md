@@ -16,7 +16,7 @@ Batasan:
 - TIDAK mengarang endpoint API baru. Endpoint yang belum final ditulis sebagai `API DEPENDENCY / CONFIRMATION REQUIRED`, bukan endpoint baru.
 - TIDAK menjadikan frontend sebagai source of truth untuk ownership maupun authorization; backend menentukan ownership dari session.
 - TIDAK membuat fake API success; kegagalan API tidak boleh menghasilkan respons sukses palsu.
-- TIDAK menggunakan mock data sebagai production data source; production/API mode tidak boleh silent-fallback ke mock.
+- TIDAK menggunakan mock data sebagai production data source; production/API mode tidak boleh silent-fallback ke mock. (Mock data tetap development data source resmi — lihat §35.)
 - TIDAK commit/push kecuali diminta eksplisit oleh user.
 
 ## 1. Project Overview
@@ -214,6 +214,7 @@ Public:
 
 Seller:
 
+/seller (entry gateway → /login | /create-store | /seller/dashboard)
 /seller/dashboard
 /seller/products
 /seller/products/new
@@ -598,24 +599,42 @@ Product Details bersifat opsional untuk Publish (bukan wajib).
 
 16. External Sales Channels
 
-External channel harus generic.
+External channels memakai satu **shared channel master** (CMS).
 
-Gunakan model:
+Channel didefinisikan satu kali di master dengan `channel_id`; referensi yang
+dikonfigurasi tidak membawa name/ikon, hanya merujuk ke master.
 
-type ExternalChannel = {
+Model:
+
+type ChannelDefinition = {
+  id: string;     // 'SHOPEE' | 'TOKOPEDIA' | 'LAZADA' | 'CUSTOM:...'
   name: string;
+  logo: string;   // material-symbol token, frontend-owned
+  custom?: boolean;
+  storeId?: string; // hanya untuk custom channel (store-scoped)
+}
+
+type CustomChannelDefinition = ChannelDefinition & {
+  custom: true;
+  storeId: string;
+}
+
+// referensi channel yang dikonfigurasi (Store external / Product external)
+type ExternalChannel = {
+  channelId: string;
   url: string;
 }
 
-Tidak ada field id pada persisted model/API contract.
+type ExternalProductLink = {
+  channelId: string;
+  url: string;
+}
 
-Model yang sama berlaku untuk Store external channels dan Product external links.
+Tidak ada field per-referensi berikut pada persisted model/API contract:
 
-Jangan menambahkan:
-
-id
+id (per referensi)
 iconUrl
-logoUrl
+logoUrl (per referensi)
 description
 displayOrder
 analytics
@@ -623,15 +642,129 @@ integrationType
 
 kecuali requirement baru disetujui.
 
-Channel tidak fixed.
+Mapping channel_id → icon material-symbol adalah frontend-owned; backend
+tidak mengirim/menyimpan icon assets V1.
 
-Seller dapat memasukkan channel eksternal yang mereka gunakan.
+### Channel Master & Custom Channel
+
+Channel master development (mock) berisi **persis** 3 channel:
+
+Shopee (SHOPEE)
+Tokopedia (TOKOPEDIA)
+Lazada (LAZADA)
+
+TikTok Shop dan Blibli hanya tersisa sebagai hint display (destinationPresets);
+keduanya BUKAN bagian channel master V1 mock. Apakah production CMS menyertakan
+TikTok Shop / Blibli needs backend confirmation.
+
+CUSTOM = channel buatan seller, scoped ke store:
+
+- id dibuat frontend dengan prefix `CUSTOM:` (contoh `CUSTOM:TOKO-SAYA`),
+- berupa ChannelDefinition dengan `custom: true` + `storeId`,
+- logo generic (frontend-owned), tidak ada upload icon,
+- hanya tampil pada store pemiliknya (store-scoped); store lain tidak pernah
+  melihat custom channel store tersebut.
+
+Channel tidak fixed: selain 3 channel master V1, seller dapat menambah custom
+channel yang mereka gunakan.
+
+### Definitions vs References
+
+Store external channels dan Product external links menunjuk ke definsi channel
+yang SAMA, tetapi masing-masing menyimpan konteks URL sendiri-sendiri:
+
+- Store: { channelId, url } → URL toko seller (konteks STORE)
+- Product: { channelId, url } → URL destination produk (konteks PRODUCT)
+
+Konteks STORE / PRODUCT adalah konteks URL, BUKAN definisi channel terpisah.
+
+Product external links adalah konsep domain yang terpisah dari Store external
+channels dan dari Product CTA, meskipun berbagi UI yang sama.
+
+Duplikasi dilarang:
+
+- channel yang sama tidak boleh direferensikan dua kali dalam satu store config,
+- channel yang sama tidak boleh direferensikan dua kali dalam satu product config,
+- frontend memvalidasi; backend tetap source of truth final.
+
+### Validasi URL External
+
+URL wajib diisi untuk setiap channel yang dikonfigurasi:
+
+- My Store save: setiap store channel harus memiliki URL valid (tidak kosong),
+- Product Publish: setiap external link harus memiliki URL valid (tidak kosong),
+- error inline per-channel: "URL external wajib diisi."
+
+### Picker "Tambah External"
+
+Product CTA destination, Product external links, dan pemilih channel Store
+external TIDAK pernah memakai dropdown:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+
+Pola "Tambah External" ini reusable (ExternalChannelsEditor,
+ProductExternalLinksSection).
+
+### Product CTA (Call-to-Action)
+
+CTA (Call-to-Action) adalah konfigurasi store (Store-level CTA Options),
+bukan per-product definitions.
+
+Store memiliki daftar opsi CTA yang reusable (Store CTA Options):
+
+type CTAOption = {
+  type: 'BUY' | 'BARGAIN' | 'CUSTOM';
+  label: string;
+}
+
+Default store CTA Options:
+
+BUY → "Beli"
+BARGAIN → "Tawar"
+
+Seller dapat menambahkan opsi CUSTOM dengan label kustom (misalnya "Tanya
+Harga") pada My Store. Options CUSTOM tidak boleh diduplikasi; detail aturan
+(termasuk batas jumlah opsi dan batas panjang label) needs backend/product
+confirmation (jangan mengarang rule).
+
+CTA options permanent default BUY/BARGAIN TIDAK dapat dihapus; CUSTOM yang
+tidak digunakan di product boleh dihapus.
+
+Setiap product memilih TEPAT SATU opsi CTA dari Store CTA Options:
+
+type ProductCTA = {
+  type: 'BUY' | 'BARGAIN' | 'CUSTOM';
+  label: string;
+}
+
+- Product menyeleksi sebuah option dari daftar store; label di-resolve dari
+  option yang dipilih (frontend dapat menyimpan type + label).
+- Add/Edit Product TIDAK pernah membuat definisi CTA baru — hanya memilih dari
+  daftar yang sudah ada di store.
+- Default seleksi: opsi BUY ("Beli"). Product publish tidak diblokir oleh
+  seleksi CTA (seleksi selalu tersedia karena default BUY tersedia untuk semua
+  store).
+- DRAFT dan ARCHIVED tidak relevan untuk seleksi CTA; CTA hanya tampil pada
+  storefront untuk product PUBLISHED / SOLD_OUT yang masih dalam auto archive.
+
+Terminology UI:
+
+BUY → Beli
+BARGAIN → Tawar
+CUSTOM → label kustom (dari store option)
+
+Icon CTA frontend-owned; seller tidak meng-upload icon CTA.
+
+CTA menjadi action primary pada Product Detail (lihat # 29 Product Detail).
 
 17. Marketplace Interaction
 
 Ketika customer menekan Marketplace:
 
-tampilkan channel yang dikonfigurasi seller,
+tampilkan channel yang dikonfigurasi seller (hanya yang dikonfigurasi; channel
+master yang tidak dikonfigurasi — mis. Lazada pada store tanpa Lazada — TIDAK
+tampil),
 customer memilih channel,
 baru lakukan authentication check,
 jika guest → login/register,
@@ -640,7 +773,13 @@ redirect ke exact external URL.
 
 Jangan langsung redirect sebelum channel dipilih.
 
-Jangan menampilkan marketplace icon/logo.
+Pemilihan channel TIDAK menggunakan dropdown/popover:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+
+Pada Product Detail, Marketplace (store channels) TIDAK digunakan — Product
+Detail hanya memakai Product CTA destination (lihat # 16 dan # 29).
 
 18. WhatsApp Interaction
 
@@ -926,18 +1065,24 @@ Store Logo
 Store Name
 City/Province
 
-Bukan: WhatsApp, Marketplace, atau Full Address di navbar.
+Bukan: WhatsApp, Marketplace, atau Full Address di navbar. Share TIDAK ada di
+navbar; Share berada di floating action bar (desktop dan mobile).
 
-Desktop actions:
+Store actions disajikan sebagai floating action bar:
 
-Hubungi via WhatsApp
-Marketplace
-Share
+- muncul ketika header/store info keluar dari viewport,
+- Desktop: Hubungi via WhatsApp + Marketplace + Share (Share visual lebih kecil),
+- Mobile: Hubungi via WhatsApp + Marketplace + Share (Share visual lebih kecil),
+- hidden ketika footer Store Landing masuk viewport.
+- Implementasi preferensi menggunakan IntersectionObserver.
+- Marketplace pada floating bar: modal (desktop) / bottom sheet (mobile), bukan dropdown.
 
-Mobile:
+Storefront footer bersifat compact:
 
-Hubungi via WhatsApp
-Marketplace + Share
+- Store Name + Description, WhatsApp/Contact, external channels, Full Address jika ada,
+- TANPA Store Logo, TANPA "Tentang Kataloga",
+- baris bawah satu baris centered: `© 2026 Kataloga · Made with Kataloga`,
+  dengan "Made with Kataloga" clickable menuju `/`.
 
 Store ID tidak ditampilkan.
 
@@ -1077,36 +1222,55 @@ Bagian External Product Links TIDAK ditampilkan pada Product Detail. External Pr
 
 Actions:
 
-WhatsApp
-Marketplace
+CTA (Beli / Tawar / Custom)
 Share
 
-Primary action adalah "Hubungi via WhatsApp".
+Primary action adalah CTA product (memakai selection CTA product yang dipilih
+dari Store CTA Options — lihat # 16).
 
-Marketplace dan Share tersedia sebagai secondary actions.
+Share adalah secondary action.
 
-Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+Rasio desktop dan mobile:
 
-Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+CTA : Share = 70 : 30
+
+CTA TIDAK menggunakan WhatsApp maupun Marketplace (store channels).
+
+CTA membuka menu destination product (modal desktop / bottom sheet mobile; bukan dropdown).
+
+CTA tidak tersedia jika menu destination external product kosong: tanpa fallback, CTA tidak ditampilkan (dicatat sebagai API/product dependency).
 
 Product SOLD_OUT (masih dalam auto archive):
 
 tetap dapat dilihat,
 indikasi Sold Out yang jelas,
-WhatsApp tidak tersedia,
-Marketplace tidak tersedia,
+CTA tidak tersedia,
 Share tetap tersedia.
+
+Product Detail TIDAK memiliki footer.
+
+Gallery Product Detail menyediakan mode fullscreen "Lihat Full" (overlay hitam, swipe horizontal, close ×) — state UI internal, bukan route.
 
 Desktop:
 
-image/gallery fixed di kiri, panel info scroll di dalam area tersebut,
-footer di luar area scroll.
+info card (Brand, product info, harga, kategori/kondisi, CTA + Share) fixed dan
+selalu terlihat; hanya bagian Product Details dan Description yang scroll di
+dalam area tersebut,
+TIDAK ada footer.
 
 Mobile:
 
-images menggunakan swipe-only carousel/slider, info di bawah images.
+images menggunakan swipe-only carousel/slider, info di bawah images,
+CTA + Share tetap tampil sebagai floating bottom bar di atas content (rasio
+CTA : Share = 70 : 30).
+
+Product Details dan Description menggunakan expand/collapse ("Lihat
+selengkapnya" / "Tutup") jika content panjang; jangan mengarang batas karakter
+tanpa requirement.
 
 Tidak menggunakan stock count.
+
+Tidak menggunakan bottom navigation pada Product Detail mobile.
 
 30. Responsive Design
 
@@ -1228,15 +1392,17 @@ Jangan copy-paste seluruh Stitch project menjadi production.
 
 35. Mock Data
 
-Mock data boleh digunakan selama API belum tersedia.
+Mock data adalah development data source resmi selama API backend belum tersedia.
 
 Policy mock data:
 
-- Mock data BUKAN production data source dan BUKAN application state.
-- Production/API mode TIDAK boleh silent-fallback ke mock — kegagalan API tidak boleh menghasilkan respons sukses palsu dari mock.
-- Mock tidak boleh menyamar sebagai data backend di depan seller/customer.
-- Mock tidak dihapus sekarang; dapat tetap dipakai untuk unit test terisolasi dan development sementara.
-- Pembersihan branch mock yang sudah tidak relevan dilakukan saat task API cleanup setelah backend terverifikasi.
+- Mock data BUKAN production data source dan BUKAN application state production.
+- Production/API mode TIDAK boleh silent-fallback ke mock — kegagalan API tidak boleh menghasilkan respons sukses palsu dari mock. Larangan ini HANYA berlaku untuk fake production API fallback, BUKAN untuk development mock data.
+- Semua fitur baru di Phase B WAJIB memiliki/update mock data yang dibutuhkan untuk kebutuhan UI dan QA.
+- Jangan menghapus atau menonaktifkan existing mock data/assets yang masih digunakan.
+- Mock tidak boleh menyamar sebagai data backend di depan seller/customer dalam konteks production/API mode.
+- Model konseptual baru (Product CTA, shared channel master/CMS, platform icons) TIDAK boleh menambah mock fallback untuk production API; di sisi development, mock data untuk fitur tersebut tetap harus disediakan. Mapping channel_id → icon tetap frontend-owned.
+- Pembersihan branch mock yang sudah tidak relevan dilakukan saat task API cleanup setelah backend terverifikasi; mock yang masih dipakai untuk dev/QA tidak dihapus.
 
 Namun:
 
@@ -1296,9 +1462,20 @@ Protected seller routes harus membutuhkan authentication.
 Customer auth hanya diperlukan untuk action yang membuat Customer Interest:
 
 WhatsApp
-Marketplace channel selection
+Marketplace channel selection / CTA destination selection (Product Detail)
 
 Browsing storefront dan viewing product tidak membutuhkan login.
+
+### Seller Entry Gateway (/seller)
+
+/seller adalah entry gateway seller:
+
+- Guest → redirect ke /login.
+- Authenticated tanpa store → redirect ke /create-store.
+- Authenticated dengan store → redirect ke /seller/dashboard.
+
+Gateway tidak membutuhkan endpoint backend baru; status auth dan store diperoleh
+dari session. Route /seller/* tetap diproteksi SellerLayout.
 
 ### Seller Preview Storefront (akun sudah login)
 
@@ -1525,6 +1702,18 @@ Kategori Utama
 Sub Kategori
 
 Jangan menggunakan "Parent Category" pada user-facing UI.
+
+Product CTA:
+
+CTA internal types: BUY / BARGAIN / CUSTOM.
+Terminology UI: Beli / Tawar / Custom (label kustom dari store option untuk
+CUSTOM). Opsi CTA adalah store-level (Store CTA Options); product hanya
+memilih salah satu opsi yang tersedia.
+
+Menghindari istilah ambiguous:
+
+"Hubungi via WhatsApp" adalah label WhatsApp action storefront. Jangan
+menggabungkan CTA dengan WhatsApp/Marketplace di Product Detail.
 
 Dashboard:
 

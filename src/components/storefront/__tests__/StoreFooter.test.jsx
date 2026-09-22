@@ -60,4 +60,13 @@ describe('StoreFooter', () => {
     expect(html).not.toContain('Alamat')
     expect(html).toContain('Belum ada saluran marketplace.')
   })
+
+  it('is compact: no Store Logo and no Tentang Kataloga block', () => {
+    const html = render(demoStore, {})
+    expect(html).not.toContain('Tentang Kataloga')
+    expect(html).not.toContain(`Logo ${demoStore.name}`)
+    expect(html).not.toContain('/assets/mock/store-logo.svg')
+    expect(html).toContain('© 2026 Kataloga')
+    expect(html).toContain('Made with Kataloga')
+  })
 })

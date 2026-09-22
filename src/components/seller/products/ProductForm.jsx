@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { useProductForm } from '../../../hooks/useProductForm'
 import { listCategories } from '../../../services/categoryService'
 import { listBrands } from '../../../services/brandService'
+import { getMyStore } from '../../../services/storeService'
 import ProductPhotosSection from './form/ProductPhotosSection'
 import ProductBasicInfoSection from './form/ProductBasicInfoSection'
 import ProductDetailsSection from './form/ProductDetailsSection'
 import ProductDescriptionSection from './form/ProductDescriptionSection'
 import ProductConditionSection from './form/ProductConditionSection'
 import ProductExternalLinksSection from './form/ProductExternalLinksSection'
+import ProductCTASelector from './form/ProductCTASelector'
 import ProductCatalogSettingsSection from './form/ProductCatalogSettingsSection'
 import FormActionsBar from './form/FormActionsBar'
 import ConfirmDialog from '../../shared/ConfirmDialog'
@@ -33,6 +35,7 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
   const navigate = useNavigate()
   const [categories, setCategories] = useState([])
   const [brands, setBrands] = useState([])
+  const [ctaOptions, setCtaOptions] = useState([])
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false)
 
   const {
@@ -74,6 +77,24 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
         setBrands(value)
       }
     })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    getMyStore()
+      .then((store) => {
+        if (active) {
+          setCtaOptions(store?.ctaOptions ?? [])
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCtaOptions([])
+        }
+      })
     return () => {
       active = false
     }
@@ -185,6 +206,7 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
           updateExternalLink={updateExternalLink}
           removeExternalLink={removeExternalLink}
         />
+        <ProductCTASelector form={form} setField={setField} options={ctaOptions} />
         <ProductCatalogSettingsSection form={form} setField={setField} />
       </form>
 

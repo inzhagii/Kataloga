@@ -6,10 +6,11 @@ import ProductActions from './ProductActions'
  * (top-left, if available) > Product Unggulan (top-right, if featured) >
  * Product Name > Price (bold) > Category + Condition side-by-side. The
  * category/condition row sits below the price and is not repeated in the
- * Product Details card. For SOLD_OUT products, WhatsApp and Marketplace are
- * replaced by a clear Sold Out notice; Share remains available.
+ * Product Details card. Actions are CTA (primary) + Share (secondary) — no
+ * WhatsApp, no Marketplace on Product Detail. For SOLD_OUT products only Share
+ * stays available.
  */
-function ProductInfo({ product, store, onWhatsApp, onSelectChannel, onShare }) {
+function ProductInfo({ product, onSelectDestination, onShare }) {
   const conditionLabel = product.condition === CONDITION.SECOND ? 'Second' : 'New'
   const isSoldOut = product.status === PRODUCT_STATUS.SOLD_OUT
 
@@ -83,13 +84,7 @@ function ProductInfo({ product, store, onWhatsApp, onSelectChannel, onShare }) {
         </div>
       ) : null}
 
-      <ProductActions
-        store={store}
-        soldOut={isSoldOut}
-        onWhatsApp={onWhatsApp}
-        onSelectChannel={onSelectChannel}
-        onShare={onShare}
-      />
+      <ProductActions product={product} onSelectDestination={onSelectDestination} onShare={onShare} />
     </div>
   )
 }

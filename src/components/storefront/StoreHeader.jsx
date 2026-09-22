@@ -1,15 +1,15 @@
-import StoreActions from './StoreActions'
 import { storeLocationLabel } from '../../utils/storeLocation'
 
 /**
  * Public store profile header: logo (+ verification badge), name, description,
- * city/operating hours and the store actions (WhatsApp / Marketplace / Share).
- * Ordering matches the mobile hierarchy; the same markup slides into a
- * balanced desktop layout.
+ * city/operating hours. Store actions (WhatsApp / Marketplace / Share) are NOT
+ * part of the header — they live in the floating action bar (docs/PRODUCT.md
+ * #7 and #8). `innerRef` exposes the section element so the page can observe
+ * its visibility.
  */
-function StoreHeader({ store, onWhatsApp, onSelectChannel, onShareStore }) {
+function StoreHeader({ store, innerRef }) {
   return (
-    <section className="mb-6 rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-sm sm:mb-8 sm:p-6 md:p-8">
+    <section ref={innerRef} className="mb-6 rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-sm sm:mb-8 sm:p-6 md:p-8">
       <div className="flex w-full flex-col items-center text-center">
         <div className="relative h-24 w-24 shrink-0 sm:h-28 sm:w-28">
           {store.logoUrl ? (
@@ -76,13 +76,6 @@ function StoreHeader({ store, onWhatsApp, onSelectChannel, onShareStore }) {
             <span className="leading-relaxed">{store.operatingHours ?? '-'}</span>
           </span>
         </div>
-
-        <StoreActions
-          store={store}
-          onWhatsApp={onWhatsApp}
-          onSelectChannel={onSelectChannel}
-          onShareStore={onShareStore}
-        />
       </div>
     </section>
   )

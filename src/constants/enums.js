@@ -10,9 +10,32 @@ export const CONDITION = {
   SECOND: 'SECOND',
 }
 
+/**
+ * Product CTA types (docs/PRODUCT.md §23). Only three types exist — BUY, BARGAIN,
+ * CUSTOM. CTA options are owned at store level (My Store): Kataloga provides the
+ * default BUY ("Beli") and BARGAIN ("Tawar") options, and sellers may add CUSTOM
+ * options with their own label. Products select exactly one option from the
+ * store's CTA options; they never create new CTA definitions.
+ */
+export const CTA_TYPE = {
+  BUY: 'BUY',
+  BARGAIN: 'BARGAIN',
+  CUSTOM: 'CUSTOM',
+}
+
 export const INTEREST_TYPE = {
   WHATSAPP_CLICK: 'WHATSAPP_CLICK',
   MARKETPLACE_CLICK: 'MARKETPLACE_CLICK',
+}
+
+/**
+ * Where a channel definition comes from. CMS = Kataloga-provided channel
+ * master (mock: exactly Shopee, Tokopedia, Lazada); CUSTOM = seller-created
+ * channel scoped to their store (docs/PRODUCT.md §16).
+ */
+export const CHANNEL_SOURCE = {
+  CMS: 'CMS',
+  CUSTOM: 'CUSTOM',
 }
 
 /**

@@ -1,5 +1,6 @@
 export * from './brands'
 export * from './categories'
+export * from './channels'
 export * from './customerInterests'
 export * from './products'
 export * from './recentActivities'

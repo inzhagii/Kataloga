@@ -8,7 +8,9 @@ import StoreInfoSection from '../../components/seller/mystore/StoreInfoSection'
 import AddressSection from '../../components/seller/mystore/AddressSection'
 import OperatingHoursSection from '../../components/seller/mystore/OperatingHoursSection'
 import StoreContactSection from '../../components/seller/mystore/StoreContactSection'
+import StoreCtaOptionsSection from '../../components/seller/mystore/StoreCtaOptionsSection'
 import AnnouncementSection from '../../components/seller/mystore/AnnouncementSection'
+import { withDefaultCtaOptions } from '../../constants/cta'
 import { useMyStore } from '../../hooks/useMyStore'
 import { useRegionData } from '../../hooks/useRegionData'
 import { canChangeStoreId, checkStoreIdAvailable, updateStore } from '../../services/storeService'
@@ -92,6 +94,7 @@ function MyStoreEditor({ store, onSaved }) {
   const [announcementMessage, setAnnouncementMessage] = useState(
     store.announcement?.message ?? '',
   )
+  const [ctaOptions, setCtaOptions] = useState(() => withDefaultCtaOptions(store.ctaOptions))
   const [errors, setErrors] = useState({})
   const [logoError, setLogoError] = useState('')
   const [channelError, setChannelError] = useState('')
@@ -200,6 +203,7 @@ function MyStoreEditor({ store, onSaved }) {
           message: announcementMessage.trim(),
           isEnabled: announcementEnabled,
         },
+        ctaOptions: withDefaultCtaOptions(ctaOptions),
         logoUrl: form.logoUrl || undefined,
       }
       if (!cooldown.locked) {
@@ -318,6 +322,18 @@ function MyStoreEditor({ store, onSaved }) {
           >
             <SectionToggleButton {...toggleProps('contact')} />
           </StoreContactSection>
+        </section>
+
+        <section>
+          <StoreCtaOptionsSection
+            options={ctaOptions}
+            onOptionsChange={(value) => {
+              setCtaOptions(value)
+              setDirty(true)
+            }}
+          >
+            <SectionToggleButton {...toggleProps('cta')} />
+          </StoreCtaOptionsSection>
         </section>
 
         <section>

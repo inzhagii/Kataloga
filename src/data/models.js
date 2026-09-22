@@ -7,9 +7,42 @@
  */
 
 /**
+ * Channel definition (shared channel master).
+ *
+ * A definition describes a channel once (id + display name + logo reference);
+ * Store external channels and Product external links reference it by
+ * `channelId` instead of embedding name/url into every record (docs/PRODUCT.md
+ * §16). CMS definitions are provided by Kataloga; custom channel definitions
+ * are created by the seller and scoped to their store.
+ *
+ * @typedef {Object} ChannelDefinition
+ * @property {string} id - Stable channel id (e.g. "SHOPEE", store-scoped custom ids are prefixed with "CUSTOM:").
+ * @property {string} name - Display name (e.g. "Shopee", or a seller-set custom name).
+ * @property {string} logo - Frontend-owned icon/logo reference; the backend never sends icon assets on V1.
+ */
+
+/**
+ * Seller-created channel definition, scoped to one store. Never part of the
+ * global CMS registry and never visible to other stores.
+ *
+ * @typedef {Object} CustomChannelDefinition
+ * @property {string} id - Store-scoped stable id (prefix "CUSTOM:"), unique within the store.
+ * @property {string} storeId - Store that owns the custom channel.
+ * @property {string} name - Seller-defined display name.
+ * @property {string} logo - Generic frontend-owned icon reference (custom channels never upload a logo).
+ * @property {boolean} custom - Always true, distinguishes the definition from a CMS channel.
+ */
+
+/**
+ * Store external channel reference (docs/PRODUCT.md §16).
+ *
+ * Only the stable channelId (pointing into the shared channel master / the
+ * store's custom channels) plus a store-context URL is persisted — the
+ * channel's name and logo are resolved from its definition.
+ *
  * @typedef {Object} ExternalChannel
- * @property {string} name - Channel name, e.g. "Shopee", "Website", "Instagram".
- * @property {string} url - Channel URL.
+ * @property {string} channelId - Reference to a ChannelDefinition id.
+ * @property {string} url - Channel URL, store context.
  */
 
 /**
@@ -17,6 +50,15 @@
  * @property {string} title - Announcement title.
  * @property {string} message - Announcement body text.
  * @property {boolean} isEnabled - Whether the announcement is shown on the storefront.
+ */
+
+/**
+ * @typedef {Object} CTAOption
+ * @property {'BUY'|'BARGAIN'|'CUSTOM'} type - CTA type. UI labels: Beli / Tawar / label kustom.
+ * @property {string} label - CTA display label. Defaults (BUY -> "Beli",
+ *   BARGAIN -> "Tawar") are provided by Kataloga; CUSTOM options carry a
+ *   seller-defined label. Length bound for CUSTOM labels is not yet locked —
+ *   backend/product confirmation required.
  */
 
 /**
@@ -31,9 +73,17 @@
  * @property {string} [operatingHours] - Operating hours as a single wire string
  *   (e.g. "Senin - Sabtu, 09:00 - 18:00"), composed by the structured editor.
  * @property {string} [whatsapp] - WhatsApp number.
- * @property {ExternalChannel[]} [channels] - External sales channels.
+ * @property {ExternalChannel[]} [channels] - External sales channels, stored as
+ *   references ({ channelId, url }) to shared channel definitions. The seller
+ *   only provides the URL; name/logo come from the channel definition.
+ * @property {CustomChannelDefinition[]} [customChannels] - Seller-created custom
+ *   channel definitions, scoped to this store and never visible to other stores.
  * @property {boolean} [verified] - Verification status.
  * @property {Announcement} [announcement] - Single store announcement to show on the storefront.
+ * @property {CTAOption[]} [ctaOptions] - Store-level CTA options managed from My
+ *   Store. Defaults: BUY "Beli" and BARGAIN "Tawar"; seller may add CUSTOM
+ *   options. Reusable across the store's products. Products select ONE of these
+ *   (never create their own CTA definitions).
  * @property {number|null} [autoArchiveDays] - Store-level auto archive threshold in days (1-365), null disables it ("Never"). Backend-owned behavior.
  * @property {string} [lastStoreIdChange] - ISO date of last Store ID change.
  * @property {string} [createdAt] - ISO date.
@@ -47,8 +97,23 @@
 
 /**
  * @typedef {Object} ExternalProductLink
- * @property {string} name - Link name, e.g. "Shopee", "Website".
- * @property {string} url - Link URL.
+ * @property {string} channelId - Reference to a ChannelDefinition id (shared with store external channels).
+ * @property {string} url - Link URL, product context (independent from any store external URL).
+ */
+
+/**
+ * Product CTA selection (docs/PRODUCT.md §23). A product does NOT create its
+ * own CTA definition — it selects exactly one CTA option from the store's
+ * `ctaOptions` (docs/PRODUCT.md §8 / My Store). The label is resolved from the
+ * selected store option so `type: 'BUY'` always renders "Beli", etc.
+ *
+ * CTA and product external destinations are separate concepts: the CTA opens a
+ * destination picker containing ALL of the product's `externalLinks`; the CTA
+ * selection never filters or determines which destinations appear.
+ *
+ * @typedef {Object} ProductCTA
+ * @property {'BUY'|'BARGAIN'|'CUSTOM'} type - Selected CTA type (one of the store's CTA options).
+ * @property {string} label - Resolved display label from the selected store CTA option.
  */
 
 /**
@@ -66,7 +131,12 @@
  * @property {number} priceValue - Numeric price for sorting.
  * @property {ProductDetailAttribute[]} details - Product details attributes.
  * @property {string} [description] - Longer product description.
- * @property {ExternalProductLink[]} [externalLinks] - External product links.
+ * @property {ExternalProductLink[]} [externalLinks] - External product links
+ *   configured independently at product level, referencing the shared channel
+ *   definitions. The CTA opens a picker containing ALL of these destinations;
+ *   the CTA selection never filters them.
+ * @property {ProductCTA} cta - Selected CTA option (exactly one per product,
+ *   from the store's CTA options; default BUY "Beli"). Never contains destinations.
  * @property {'DRAFT'|'PUBLISHED'|'SOLD_OUT'|'ARCHIVED'} status - Product lifecycle status.
  * @property {boolean} [featured] - Featured product flag.
  * @property {string} [soldOutAt] - ISO date when the product became SOLD_OUT. Used by the

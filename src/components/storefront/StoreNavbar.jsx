@@ -13,12 +13,17 @@ import CustomerProfileMenu from './CustomerProfileMenu'
  * Detail) keep the guest on the current page after login; it defaults to the
  * Store Landing URL.
  *
+ * `onShareMobile` makes the navbar render a mobile-only Share button near the
+ * account controls (used by Store Landing, where Share is not part of the
+ * mobile floating action bar).
+ *
  * @param {{
  *   store: import('../../data/models.js').Store,
  *   returnPath?: string,
+ *   onShareMobile?: () => void,
  * }} props
  */
-function StoreNavbar({ store, returnPath }) {
+function StoreNavbar({ store, returnPath, onShareMobile }) {
   const { user } = useAuth()
   const returnUrl = returnPath ?? buildStoreUrl(store.storeId)
   const location = storeLocationLabel(store)
@@ -54,6 +59,19 @@ function StoreNavbar({ store, returnPath }) {
         </Link>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
+          {onShareMobile ? (
+            <button
+              type="button"
+              onClick={onShareMobile}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary md:hidden"
+              aria-label="Bagikan toko"
+            >
+              <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+                share
+              </span>
+            </button>
+          ) : null}
+
           {user ? (
             <CustomerProfileMenu />
           ) : (

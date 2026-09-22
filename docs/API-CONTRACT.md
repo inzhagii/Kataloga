@@ -160,7 +160,7 @@ Store DTO:
   "province": "Jawa Barat", "full_address": null,
   "operating_hours": "Senin - Sabtu, 09.00 - 18.00",
   "whatsapp": "6281234567890",
-  "external_links": [ { "platform_name": "Shopee", "store_url": "https://..." } ],
+  "external_links": [ { "platform_name": "Shopee", "store_url": "https://..." } ],  // illustrative; wire shape UNCONFIRMED (see note below)
   "verified": true,
   "announcement": { "title": "...", "message": "...", "is_enabled": true },
   "auto_archive_days": 30,
@@ -168,10 +168,21 @@ Store DTO:
 ```
 
 WhatsApp is a **dedicated** store field (`whatsapp`), separate from external
-marketplace links (`external_links`). External links are arbitrary
-`{ platform_name, store_url }` pairs; there is no persisted link id, no icon,
-no display order, and no fixed marketplace fields (`shopeeUrl`, `tokopediaUrl`).
-The frontend maps these to its internal `ExternalChannel { name, url }` model.
+marketplace links (`external_links`). External links reference a **shared
+channel master (CMS)**; the wire representation is UNCONFIRMED. The frontend
+model is `{ channelId, url }` (per-reference), with `channelId` referring to a
+channel master definition (`{ id, name, logo }`, logo = frontend-owned icon
+token). There is no persisted per-reference link id, no icon/logo per
+reference, no display order, and no fixed marketplace fields (`shopeeUrl`,
+`tokopediaUrl`).
+
+> **API DEPENDENCY / CONFIRMATION REQUIRED (channel master):** exact wire shape
+> for external channels and product external links (`channel_id` reference vs.
+> embedded `{name,url}`), whether the backend serves a channel-master endpoint,
+> how custom (seller-created) store-scoped channels are represented and where
+> they are stored, and backend-side duplicate-channel rejection. Frontend
+> currently runs on the mock channel master (exactly Shopee/Tokopedia/Lazada
+> + store-scoped `CUSTOM:` channels).
 
 Announcement is a single object (`title`, `message`, `is_enabled`), not an array.
 
@@ -284,7 +295,7 @@ Product DTO:
   "price": "Rp 8.500.000", "price_value": 8500000,
   "details": [ { "label": "RAM", "value": "16 GB" } ],
   "description": "...",
-  "external_links": [ { "platform_name": "Shopee", "store_url": "https://..." } ],
+  "external_links": [ { "platform_name": "Shopee", "store_url": "https://..." } ],  // illustrative; wire shape UNCONFIRMED (see note below)
   "status": "PUBLISHED", "featured": false,
   "created_at": "...", "updated_at": "...",
   "published_at": "...", "sold_out_at": null,
@@ -294,6 +305,10 @@ Product DTO:
 Product identity is the numeric product ID (`id`). `slug` is the canonical,
 readable URL component, unique within a store, and backend-owned; the public
 route is `/{storeId}/product/{productId}/{slug}`.
+
+`external_links` references the shared channel master (CMS); the wire shape is
+UNCONFIRMED (see §4 channel-master dependency). Frontend model is
+`{ channelId, url }` per reference.
 
 > **Backend confirmation needed (API DEPENDENCY / CONFIRMATION REQUIRED):**
 > whether `slug` is exposed on the product DTO by the backend (expected) or
@@ -577,6 +592,27 @@ requirements; the actual backend behavior needs confirmation:
     identity snapshots.
 16. Auth transport: Laravel Sanctum session + CSRF bootstrap; exact route paths
     for `/sanctum/csrf-cookie` and auth endpoints.
+17. Product CTA + external destinations (conceptual, NOT locked into this
+    contract yet — registered as dependency): Store CTA Options
+    (`store.ctaOptions` = `[{ type: 'BUY'|'BARGAIN'|'CUSTOM', label }]`, defaults
+    BUY "Beli" + BARGAIN "Tawar", seller-addable CUSTOM; product stores exactly
+    one selected CTA `product.cta` (`{ type, label }`, default BUY/"Beli", label
+    resolved from the selected store option) — destinations are a SEPARATE field
+    (`product.externalLinks`), CTA never contains them), destination channels
+    (shared channel master; mock = exactly Shopee / Tokopedia / Lazada,
+    store-scoped `CUSTOM:` custom channels, TikTok Shop / Blibli only as
+    frontend display hints pending backend confirmation; channel_id → icon is
+    frontend-owned), deletion rules for CUSTOM-only-used options, and
+    custom-label length validation. Wire representation (including the channel
+    master and `channelId`-reference vs. `{name,url}` encoding) needs backend
+    confirmation; do not implement as finalized DTO fields until confirmed.
+18. `/seller` entry gateway (frontend route): guest → `/login`; authenticated
+    without store → `/create-store`; with store → `/seller/dashboard`. Needs no
+    new endpoint; requires the session to expose store status. Whether the
+    session payload already includes store presence needs backend/API
+    confirmation.
+19. Fullscreen gallery ("Lihat Full") and floating action bar on Store Landing
+    are frontend-only UI state; no API impact.
 
 No new endpoints were invented in this document beyond the existing proposal
 and the explicit lifecycle endpoints above. Backend-created Recent Activity means

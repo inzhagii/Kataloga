@@ -125,6 +125,7 @@ describe('recordInterest', () => {
   })
 
   it('keeps recorded records renderable even when the channel is no longer configured', async () => {
+    const removedChannelId = 'LAZADA'
     const removedChannel = { name: 'Lazada', url: 'https://lazada.example/toko' }
     const interest = await recordInterest({
       storeId: STORE_B_ID,
@@ -137,7 +138,7 @@ describe('recordInterest', () => {
     expect(interest.externalUrl).toBe(removedChannel.url)
 
     const store = (await import('../../data/mock')).stores.find((s) => s.storeId === STORE_B_ID)
-    expect(store.channels.some((c) => c.name === removedChannel.name)).toBe(false)
+    expect(store.channels.some((c) => c.channelId === removedChannelId)).toBe(false)
     expect((await listCustomerInterests(STORE_B_ID)).some((i) => i.id === interest.id)).toBe(true)
   })
 

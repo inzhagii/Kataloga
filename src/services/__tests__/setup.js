@@ -16,6 +16,7 @@ import {
   stores,
   users,
 } from '../../data/mock'
+import { CUSTOM_CHANNEL_LOGO } from '../../data/mock/channels'
 import { resetAuthFlowState, setActiveUser } from '../authService'
 import { setAccessToken, setMockLatency } from '../apiClient'
 
@@ -57,7 +58,21 @@ export const storeB = {
   city: 'Bandung',
   operatingHours: 'Senin - Minggu, 08.00 - 20.00',
   whatsapp: '6289876543210',
-  channels: [{ name: 'Instagram', url: 'https://instagram.com/toko-agung-fashion' }],
+  channels: [{ channelId: 'CUSTOM:INSTAGRAM', url: 'https://instagram.com/toko-agung-fashion' }],
+  customChannels: [
+    {
+      id: 'CUSTOM:INSTAGRAM',
+      storeId: STORE_B_ID,
+      name: 'Instagram',
+      logo: CUSTOM_CHANNEL_LOGO,
+      custom: true,
+    },
+  ],
+  ctaOptions: [
+    { type: 'BUY', label: 'Beli' },
+    { type: 'BARGAIN', label: 'Tawar' },
+    { type: 'CUSTOM', label: 'Tanya Harga' },
+  ],
   verified: false,
   announcement: {
     title: 'Pengumuman Toko Agung',
@@ -101,6 +116,7 @@ export function mkProduct(overrides = {}) {
     details: [{ label: 'Bahan', value: 'Katun' }],
     description: 'Produk fashion terbaru.',
     externalLinks: [],
+    cta: { type: 'BUY', label: 'Beli' },
     status: 'DRAFT',
     featured: false,
     createdAt: '2026-09-01T00:00:00.000Z',

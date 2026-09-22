@@ -7,7 +7,6 @@ import { recordInterest } from '../services/customerInterestService'
 import { consumePendingAction, setPendingAction } from '../utils/pendingAction'
 import { buildStoreProductUrl, resolveProductSlug } from '../utils/storefrontUrl'
 import StoreNavbar from '../components/storefront/StoreNavbar'
-import StoreFooter from '../components/storefront/StoreFooter'
 import ProductGallery from '../components/storefront/ProductGallery'
 import ProductInfo from '../components/storefront/ProductInfo'
 import ProductDetailsSection from '../components/storefront/ProductDetailsSection'
@@ -18,10 +17,13 @@ import EmptyState from '../components/shared/EmptyState'
 
 /**
  * Public product detail for a store (/{storeId}/product/{productId}/{slug}).
- * Route enforces store context. WhatsApp and Marketplace are the only actions
- * that record Customer Interest (product-scoped); guests are routed through
- * Login/Register first and the intended action auto-continues on return.
- * Product viewing and sharing are NOT tracked.
+ * Route enforces store context. Actions are CTA (primary) + Share (secondary)
+ * at 70:30 — no WhatsApp, no Marketplace, no footer on Product Detail.
+ *
+ * A CTA destination pick records Customer Interest (product-scoped) then
+ * redirects to the exact external URL; guests pass through Login/Register
+ * first and the intended action auto-continues on return. Product viewing and
+ * sharing are NOT tracked.
  */
 function ProductDetailPage() {
   const { storeId, productId, slug } = useParams()
@@ -32,19 +34,11 @@ function ProductDetailPage() {
 
   const returnPath = buildStoreProductUrl(storeId, productId, slug)
 
-  function buildWhatsAppUrl() {
-    return `https://wa.me/${store.whatsapp}?text=${encodeURIComponent(
-      `Halo ${store.name}, saya tertarik dengan produk ini: ${product.name}`,
-    )}`
-  }
-
   function recordAndOpen(action) {
     recordInterest(action)
       .catch(() => {})
       .finally(() => {
-        if (action.channelType === INTEREST_TYPE.WHATSAPP_CLICK) {
-          window.open(buildWhatsAppUrl(), '_blank', 'noopener,noreferrer')
-        } else {
+        if (action.externalUrl) {
           window.open(action.externalUrl, '_blank', 'noopener,noreferrer')
         }
       })
@@ -59,26 +53,8 @@ function ProductDetailPage() {
     return false
   }
 
-  function handleWhatsApp() {
-    if (guardGuest({ type: 'whatsapp' })) {
-      return
-    }
-    recordAndOpen({
-      storeId,
-      customerName: user.name,
-      customerId: user.id,
-      customerEmail: user.email ?? null,
-      customerPhone: user.phone ?? null,
-      productId: product.id,
-      productName: product.name,
-      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
-      channel: 'WhatsApp',
-    })
-  }
-
-  function handleSelectChannel(channel) {
-    if (guardGuest({ type: 'marketplace', channel: channel.name, externalUrl: channel.url })) {
+  function handleSelectDestination(destination) {
+    if (guardGuest({ type: 'cta', channel: destination.name, externalUrl: destination.url })) {
       return
     }
     recordAndOpen({
@@ -91,14 +67,14 @@ function ProductDetailPage() {
       productName: product.name,
       context: INTEREST_CONTEXT.PRODUCT_DETAIL,
       channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
-      channel: channel.name,
-      externalUrl: channel.url,
+      channel: destination.name,
+      externalUrl: destination.url,
     })
   }
 
   /**
    * After a guest completes login/register with a stored pending action for
-   * this product path, auto-continue the WhatsApp/marketplace intent once.
+   * this product path, auto-continue the CTA destination intent once.
    */
   useEffect(() => {
     if (status !== 'ready' || !authLoaded || !user) {
@@ -108,20 +84,7 @@ function ProductDetailPage() {
     if (!action) {
       return
     }
-    if (action.type === 'whatsapp') {
-      recordAndOpen({
-        storeId,
-        customerName: user.name,
-        customerId: user.id,
-        customerEmail: user.email ?? null,
-        customerPhone: user.phone ?? null,
-        productId: product.id,
-        productName: product.name,
-        context: INTEREST_CONTEXT.PRODUCT_DETAIL,
-        channelType: INTEREST_TYPE.WHATSAPP_CLICK,
-        channel: 'WhatsApp',
-      })
-    } else if (action.type === 'marketplace') {
+    if (action.type === 'cta') {
       recordAndOpen({
         storeId,
         customerName: user.name,
@@ -256,12 +219,10 @@ function ProductDetailPage() {
               <ProductGallery product={product} storeName={store.name} />
             </div>
 
-            <div className="flex min-w-0 flex-col gap-5 sm:gap-6 lg:h-full lg:min-h-0 lg:gap-0 lg:overflow-y-auto lg:overflow-x-hidden lg:pb-8 lg:pr-1">
+            <div className="flex min-w-0 flex-col gap-5 sm:gap-6 lg:h-full lg:min-h-0 lg:gap-0 lg:overflow-y-auto lg:overflow-x-hidden lg:pb-8 lg:pr-1 pb-28">
               <ProductInfo
                 product={product}
-                store={store}
-                onWhatsApp={handleWhatsApp}
-                onSelectChannel={handleSelectChannel}
+                onSelectDestination={handleSelectDestination}
                 onShare={handleShare}
               />
               <div className="lg:pt-6">
@@ -274,12 +235,6 @@ function ProductDetailPage() {
           </div>
         </div>
       </main>
-
-      <StoreFooter
-        store={store}
-        onWhatsApp={handleWhatsApp}
-        onSelectChannel={handleSelectChannel}
-      />
 
       <ShareSheet
         open={Boolean(shareTarget)}

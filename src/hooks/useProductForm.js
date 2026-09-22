@@ -35,8 +35,29 @@ function toProductPayload(form) {
     externalLinks: (form.externalLinks || [])
       .filter((link) => link.name.trim() && link.url.trim())
       .map((link) => ({ name: link.name.trim(), url: link.url.trim() })),
+    cta: normalizeCta(form.cta),
     featured: Boolean(form.featured),
   }
+}
+
+/**
+ * Normalize the CTA before persisting. Every product always carries exactly
+ * one selected CTA option (default BUY/"Beli"). A blank/unset selection, or a
+ * CUSTOM selection without a label, resolves to the default BUY option rather
+ * than removing the CTA — products never have "no CTA".
+ * @param {import('../data/models.js').ProductCTA|undefined} cta
+ * @returns {import('../data/models.js').ProductCTA}
+ */
+function normalizeCta(cta) {
+  const type = cta?.type
+  if (type === 'BARGAIN') {
+    return { type: 'BARGAIN', label: 'Tawar' }
+  }
+  if (type === 'CUSTOM') {
+    const label = (cta.label ?? '').trim()
+    return label ? { type: 'CUSTOM', label } : { type: 'BUY', label: 'Beli' }
+  }
+  return { type: 'BUY', label: 'Beli' }
 }
 
 /**
@@ -48,6 +69,8 @@ function toProductPayload(form) {
  * @param {{ mode: 'create'|'edit', initialProduct?: import('../data/models.js').Product|null }} props
  */
 export function useProductForm({ mode, initialProduct = null }) {
+  const defaultCta = initialProduct?.cta ?? { type: 'BUY', label: 'Beli' }
+
   const initialForm = useMemo(
     () => ({
       name: initialProduct?.name ?? '',
@@ -60,6 +83,7 @@ export function useProductForm({ mode, initialProduct = null }) {
       details: initialProduct?.details ?? [],
       description: initialProduct?.description ?? '',
       externalLinks: initialProduct?.externalLinks ?? [],
+      cta: defaultCta,
       featured: Boolean(initialProduct?.featured),
     }),
     // Only derive defaults once; page gates rendering until the product loads.
@@ -91,6 +115,7 @@ export function useProductForm({ mode, initialProduct = null }) {
           details: initialProduct.details ?? [],
           description: initialProduct.description ?? '',
           externalLinks: initialProduct.externalLinks ?? [],
+          cta: initialProduct.cta ?? { type: 'BUY', label: 'Beli' },
           featured: Boolean(initialProduct.featured),
         },
         errors: {},

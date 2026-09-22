@@ -5,8 +5,9 @@
  * - complete enough to walk through every seller/public flow convincingly,
  * - isolated to the mock data layer (no HTTP calls, no API/DTO changes),
  * - compliant with locked model rules (no stock/availability reintroduced,
- *   one category per product, two-level categories, only {name,url} channels,
- *   only the documented interest/activity types).
+ *   one category per product, two-level categories, channel references
+ *   {channelId,url} over the shared CMS registry with store-scoped custom
+ *   channels, only the documented interest/activity types).
  */
 
 import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest'
@@ -38,7 +39,12 @@ import {
   INTEREST_CONTEXT,
   ACTIVITY_TYPE,
 } from '../../constants/enums'
-import { products, customerInterests, recentActivities } from '../../data/mock'
+import { products, stores, customerInterests, recentActivities, CMS_CHANNELS } from '../../data/mock'
+import {
+  validateChannelRefs,
+  resolveChannelDefinition,
+  listStoreChannelDefinitions,
+} from '../../utils/channels'
 import { isApiMode } from '../apiConfig'
 import { login, setActiveUser, DEMO_EMAIL, DEMO_PASSWORD } from '../authService'
 import { STORE_A_ID, actAsStoreA, actAsStoreB, beforeEachScenario } from './setup'
@@ -86,8 +92,10 @@ describe('demo data source mode', () => {
     expect(storeA.channels.length).toBeGreaterThan(0)
 
     const channelKeys = new Set(storeA.channels.flatMap((channel) => Object.keys(channel)).sort())
-    expect([...channelKeys]).toEqual(['name', 'url'])
-    expect(storeA.channels.some((channel) => channel.name === 'Shopee')).toBe(true)
+    expect([...channelKeys]).toEqual(['channelId', 'url'])
+    expect(storeA.channels.some((channel) => channel.channelId === 'SHOPEE')).toBe(true)
+    expect(storeA.customChannels.length).toBeGreaterThan(0)
+    expect(storeA.customChannels.every((definition) => definition.storeId === STORE_A_ID)).toBe(true)
 
     const myStore = await (() => {
       actAsStoreA()
@@ -144,14 +152,99 @@ describe('demo data respects locked data models', () => {
     }
   })
 
-  it('keeps external links in the generic {name,url} shape', () => {
+  it('keeps external links as channel references over the shared registry', () => {
     const linkedProducts = products.filter((p) => (p.externalLinks ?? []).length > 0)
     expect(linkedProducts.length).toBeGreaterThan(0)
     for (const product of linkedProducts) {
       for (const link of product.externalLinks) {
-        expect(Object.keys(link).sort()).toEqual(['name', 'url'])
+        expect(Object.keys(link).sort()).toEqual(['channelId', 'url'])
+        expect(CMS_CHANNELS.some((definition) => definition.id === link.channelId)).toBe(true)
       }
     }
+  })
+
+  it('gives every product exactly one CTA selection referencing a store CTA option, never destinations', () => {
+    for (const product of products) {
+      expect(product.cta).toBeDefined()
+      expect(product.cta.type).toMatch(/^(BUY|BARGAIN|CUSTOM)$/)
+      expect(product.cta.label).toBeTruthy()
+      // The CTA selection never carries a destination set.
+      expect(product.cta).not.toHaveProperty('destinations')
+      expect(product.cta).not.toHaveProperty('links')
+      expect(product.cta).not.toHaveProperty('externalLinks')
+    }
+    // Every store exposes the default BUY/BARGAIN options plus at least one CUSTOM.
+    for (const store of stores) {
+      const types = store.ctaOptions.map((option) => option.type)
+      expect(types).toContain('BUY')
+      expect(types).toContain('BARGAIN')
+      expect(types).toContain('CUSTOM')
+      for (const option of store.ctaOptions) {
+        expect(option.type).toMatch(/^(BUY|BARGAIN|CUSTOM)$/)
+        expect(option.label).toBeTruthy()
+      }
+    }
+  })
+
+  it('keeps the shared CMS channel registry locked to exactly the three channels, each with logo metadata', () => {
+    expect(CMS_CHANNELS.map((definition) => definition.name)).toEqual(['Shopee', 'Tokopedia', 'Lazada'])
+    for (const definition of CMS_CHANNELS) {
+      expect(typeof definition.id).toBe('string')
+      expect(definition.id.length).toBeGreaterThan(0)
+      expect(typeof definition.name).toBe('string')
+      expect(definition.logo).toBeTruthy()
+    }
+  })
+
+  it('keeps store custom channels store-scoped: Store A custom channels are invisible to Store B', async () => {
+    const storeA = await getStore(STORE_A_ID)
+    const storeB = await getStore('techspace-bandung')
+    expect(storeA.customChannels.length).toBeGreaterThan(0)
+
+    const storeACustomIds = storeA.customChannels.map((definition) => definition.id)
+    const storeBDefinitions = listStoreChannelDefinitions(storeB, CMS_CHANNELS)
+    const storeBAvailableIds = new Set(storeBDefinitions.map((definition) => definition.id))
+
+    expect(storeACustomIds.every((id) => !storeBAvailableIds.has(id))).toBe(true)
+    expect(storeB.channels.every((ref) => storeBAvailableIds.has(ref.channelId))).toBe(true)
+  })
+
+  it('references the same channel definitions from store and product with separate URL contexts', async () => {
+    const storeA = await getStore(STORE_A_ID)
+    const linkedProduct = products.find((p) => (p.externalLinks ?? []).length > 0)
+
+    const storeRef = storeA.channels[0]
+    const productRef = linkedProduct.externalLinks[0]
+    const storeDefinitions = listStoreChannelDefinitions(storeA, CMS_CHANNELS)
+
+    // Both reference the same shared channel master.
+    expect(resolveChannelDefinition(storeRef.channelId, storeDefinitions)).toBeTruthy()
+    expect(
+      resolveChannelDefinition(productRef.channelId, storeDefinitions),
+    ).toEqual(resolveChannelDefinition(storeRef.channelId, storeDefinitions))
+
+    // Store URL and product URL are independent data contexts (separate records).
+    expect(storeA.channels).not.toBe(linkedProduct.externalLinks)
+    expect(storeA.channels[0]).not.toBe(linkedProduct.externalLinks[0])
+  })
+
+  it('blocks Save/Publish while any selected channel has an empty URL, identifying the channel', () => {
+    const storeCase = validateChannelRefs([
+      { channelId: 'SHOPEE', url: 'https://shopee.co.id/x' },
+      { channelId: 'TOKOPEDIA', url: '' },
+    ])
+    expect(storeCase.valid).toBe(false)
+    expect(storeCase.errors['channel-1']).toBe('URL external wajib diisi.')
+    expect(storeCase.errors['channel-0']).toBeUndefined()
+
+    const productCase = validateChannelRefs([{ channelId: 'SHOPEE', url: '  ' }])
+    expect(productCase.valid).toBe(false)
+    expect(productCase.errors['channel-0']).toBe('URL external wajib diisi.')
+
+    expect(validateChannelRefs([]).valid).toBe(true)
+    expect(validateChannelRefs([{ channelId: 'SHOPEE', url: 'https://shopee.co.id/x' }]).valid).toBe(
+      true,
+    )
   })
 
   it('only records documented customer interest and activity types', () => {
@@ -220,6 +313,8 @@ describe('demo data respects locked data models', () => {
     actAsStoreB()
     const storeA = await getStore(STORE_A_ID)
     const chosen = storeA.channels[0]
+    const storeADefinitions = listStoreChannelDefinitions(storeA, CMS_CHANNELS)
+    const chosenDefinition = resolveChannelDefinition(chosen.channelId, storeADefinitions)
 
     await recordInterest({
       storeId: STORE_A_ID,
@@ -228,14 +323,14 @@ describe('demo data respects locked data models', () => {
       productId: 1,
       productName: 'ASUS VivoBook 14',
       channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
-      channel: chosen.name,
+      channel: chosenDefinition.name,
       externalUrl: chosen.url,
     })
 
     const interests = await listCustomerInterests(STORE_A_ID)
     expect(interests[0]).toMatchObject({
       channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
-      channel: chosen.name,
+      channel: chosenDefinition.name,
       externalUrl: chosen.url,
     })
   })
@@ -262,7 +357,11 @@ describe('demo account (TechSpace Bandung)', () => {
       city: 'Kota Bandung',
       whatsapp: '6281234567890',
     })
-    expect(store.channels.map((channel) => channel.name)).toEqual(['Tokopedia', 'Shopee'])
+    const storeDefinitions = listStoreChannelDefinitions(store, CMS_CHANNELS)
+    expect(
+      store.channels.map((channel) => resolveChannelDefinition(channel.channelId, storeDefinitions).name),
+    ).toEqual(['Tokopedia', 'Shopee'])
+    expect(store.customChannels).toEqual([])
 
     const published = await listPublicProducts('techspace-bandung')
     expect(published.length).toBeGreaterThanOrEqual(7)
@@ -368,7 +467,14 @@ describe('active store resolution & single-source customer interest flow (audit)
     expect(interests).toHaveLength(22)
 
     const store = await getStore(storeId)
-    const channelCards = buildChannelOptions({ interests, channels: store.channels })
+    const storeDefinitions = listStoreChannelDefinitions(store, CMS_CHANNELS)
+    // Channel refs are resolved to display entries (name + url) for the
+    // channel-option derivation; resolution moves into the UI layer next step.
+    const displayChannels = store.channels.map((ref) => ({
+      name: resolveChannelDefinition(ref.channelId, storeDefinitions).name,
+      url: ref.url,
+    }))
+    const channelCards = buildChannelOptions({ interests, channels: displayChannels })
     const cardCounts = Object.fromEntries(
       channelCards.current.map((channel) => [channel.name, countByChannel(interests, channel.name)]),
     )

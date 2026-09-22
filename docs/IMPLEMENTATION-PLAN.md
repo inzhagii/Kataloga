@@ -112,7 +112,9 @@ ProductCard
 ProductGrid
 StoreHeader
 StoreActions
-MarketplaceSelector
+DestinationPicker (reuse/refactor dari MarketplaceSelector; modal/sheet)
+MarketplaceSelector (akan di-refactor menjadi DestinationPicker)
+ProductCTASelector
 ShareButton
 EmptyState
 LoadingState
@@ -167,7 +169,7 @@ Kataloga dikerjakan dalam dua fase besar:
 ```text
 PHASE A  → Documentation & Architecture Reconciliation (docs-only)
 Phase A Review → Human review
-PHASE B  → Incremental Source Implementation (11 phase, menyentuh src/)
+PHASE B  → Incremental Source Implementation (12 phase, menyentuh src/)
 ```
 
 Prinsip:
@@ -223,11 +225,34 @@ Item kunci yang diselaraskan pada Phase A (hasil akhir tercatat di docs):
   tidak ada `channel_type`; destination dibuka hanya setelah POST berhasil.
 - Recent Activity: dibuat oleh backend; frontend hanya mengonsumsi; 11 tipe kanonik
   (termasuk `PRODUCT_UPDATED`); tidak ada `POST /activities`.
-- Store DTO: `whatsapp` dedicated field + `external_links` terpisah
-  (`platform_name`/`store_url` wire).
+- Store DTO: `whatsapp` dedicated field + `external_links` terpisah yang
+  mereferensikan **shared channel master (CMS)**; frontend model
+  `{ channelId, url }` per referensi; wire shape UNCONFIRMED
+  (regangan `channel_id`-reference vs `{name,url}`); mock master = persis
+  Shopee/Tokopedia/Lazada + custom store-scoped `CUSTOM:`.
+- Store CTA Options + Product CTA + destinations (konseptual, NOT confirmed
+  backend DTO): `store.ctaOptions` (`[{ type, label }]`, defaults BUY "Beli" +
+  BARGAIN "Tawar", seller add/delete CUSTOM); `product.cta` memilih TEPAT SATU
+  opsi dari store (default BUY/"Beli", label di-resolve dari opsi; Add/Edit
+  Product TIDAK membuat definisi CTA baru); CTA TIDAK berisi daftar destination
+  — klik CTA membuka menu SEMUA External Product Links; destination channels =
+  shared channel master (mock persis Shopee/Tokopedia/Lazada + custom
+  store-scoped `CUSTOM:`; TikTok Shop/Blibli hanya hint display
+  `destinationPresets` — perlu konfirmasi backend; icon frontend-owned);
+  Product External = konsep terpisah dari Store External.
+  Dicatat sebagai API/product dependency, bukan DTO final.
+- `/seller` entry gateway: guest → /login; auth tanpa store → /create-store; auth
+  dengan store → /seller/dashboard; tanpa endpoint backend baru.
+- Storefront UX final: Product Detail = CTA (primary) + Share (secondary) 70:30,
+  TANPA WhatsApp/Marketplace, TANPA footer, fullscreen "Lihat Full"; Store actions =
+  floating action bar (hidden saat footer masuk viewport; Share termasuk floating
+  bar desktop & mobile); footer compact tanpa Store Logo/Tentang Kataloga.
 - Search/filter/sort: backend-owned dalam API mode; mock mode = client-side.
 - Envelope: `{data,message}` / `{data,meta{current_page,per_page,total}}` / `{message,errors}`.
-- Mock data policy: bukan production data source; bukan silent fallback di API mode.
+- Mock data policy: mock = development data source resmi selama API belum
+  tersedia; bukan production data source; bukan silent fallback di API mode;
+  fitur baru Phase B wajib menyediakan/update mock untuk UI & QA; jangan hapus
+  mock/assets yang masih digunakan.
 
 Verifikasi ketiadaan konsep yang sudah tidak berlaku:
 
@@ -287,7 +312,7 @@ Commit
 
 ### Urutan phase B
 
-Eleven phase, urutan dipertahankan:
+Twelve phase, urutan dipertahankan:
 
 1. **B-1 API transport + Authentication (Sanctum)** — `credentials: 'include'`,
    CSRF bootstrap (`GET /sanctum/csrf-cookie`, `X-CSRF-TOKEN`), 419 → /login;
@@ -321,18 +346,56 @@ Eleven phase, urutan dipertahankan:
     fitur terverifikasi di API mode; mock boleh tetap untuk unit test terisolasi.
 11. **B-11 Tests / Integration** — unit + integration dimaksimalkan ke
     contract; regression seller + customer; visual QA menyeluruh.
+12. **B-12 CTA + Destinations + Storefront rework** — `/seller` gateway route;
+    model konseptual CTA/destination (models+enums + Store CTA Options;
+    `product.cta` = seleksi satu opsi store, label di-resolve; CTA tidak berisi
+    destinations); shared DestinationPicker (reuse MarketplaceSelector,
+    modal/sheet, non-dropdown); Product Detail rework (CTA+Share 70:30, tanpa
+    footer/Marketplace/WhatsApp, fullscreen "Lihat Full"); Store Landing rework
+    (compact footer, floating action bar via IntersectionObserver, Share mobile
+    di floating bar). Item ini dapat dikerjakan lebih awal bila disetujui karena
+    bergantung hanya pada konsep dokumentasi, bukan DTO backend final.
+
+Catatan progres B-12: mock/model layer sudah dikerjakan lebih dulu dan ber-status
+selesai (shared channel master `src/data/mock/channels.js` persis 3 channel +
+custom `CUSTOM:`, model `{channelId,url}` di `src/data/models.js`, helper
+`src/utils/channels.js`, validasi URL external di store/product validation,
+konversi mock stores/products ke refs, test invariant 570 lulus, lint & build
+hijau). Task UI (DestinationPicker, StoreFooter, ProductActions, StoreActions,
+MarketplaceSelector, ExternalChannelsEditor, Product Detail & Store Landing
+layout) adalah task tersendiri yang menyusul, diikuti Visual QA →
+Cleanup → Final QA.
 
 Phase B-1 sampai B-9 bersifat dependency-safe: setiap phase dapat dikerjakan
 tanpa menunggu keputusan backend untuk phase berikutnya, karena seluruh kontrak
 sudah direkonsiliasi pada Phase A dan adapters tetap menjadi proposal sampai
 backend tersedia.
 
-### Catatan lintas phase (B-1 s.d. B-11)
+### Catatan lintas phase (B-1 s.d. B-12)
 
 - Production/API mode tidak boleh silent-fallback ke mock.
 - API failure tidak boleh menghasilkan respons sukses palsu.
 - Setiap data-driven page: loading / success / empty / error.
 - Product Detail customer-facing tidak merender External Product Links.
+- Product Detail actions = CTA (Beli/Tawar/label kustom, primary) + Share
+  (secondary), rasio 70:30; tanpa WhatsApp/Marketplace store channel; tanpa
+  footer; SOLD_OUT → CTA tidak tersedia, Share tetap.
+- CTA adalah Store CTA Options (default BUY "Beli"/BARGAIN "Tawar"); product
+  memilih tepat satu opsi (default BUY/"Beli") dan TIDAK membuat definisi baru;
+  CTA tidak berisi daftar destination — klik CTA membuka menu SEMUA External
+  Product Links.
+- CTA TIDAK punya fallback: jika destination external kosong, CTA tidak
+  ditampilkan (dicatat sebagai API/product dependency).
+- Destination picker (Store External maupun Product External) TIDAK pernah
+  dropdown; modal (desktop) / bottom sheet (mobile).
+- Store actions Store Landing = floating action bar (IntersectionObserver:
+  header keluar → tampil; footer masuk → hidden; footer keluar → boleh tampil lagi).
+- Footer Store Landing compact: Store Name + Description, WhatsApp/Contact,
+  external channels, Full Address jika ada; TANPA Store Logo, TANPA Tentang
+  Kataloga; baris bawah satu baris centered `© 2026 Kataloga · Made with
+  Kataloga` (dengan "Made with Kataloga" clickable menuju `/`).
+- Gallery Product Detail: fullscreen "Lihat Full" (overlay hitam, swipe
+  horizontal, close ×) — state UI, bukan route.
 - Katalog aktif terurut: Featured Published → Published lebih baru → Published
   lebih lama → Sold Out.
 - Seller Products page: status Active | Draft | Sold Out; Archive sebagai aksi
@@ -398,16 +461,22 @@ Wait for decision
 
 ### 7.3 Mock Data Strategy
 
-Mock data boleh digunakan selama API belum tersedia.
+Mock data adalah development data source resmi selama API backend belum tersedia.
 
 Policy mock data:
 
-- Mock data BUKAN production data source dan BUKAN application state.
+- Mock data BUKAN production data source dan BUKAN application state production.
 - Production/API mode TIDAK boleh silent-fallback ke mock — kegagalan API tidak
-  boleh menghasilkan respons sukses palsu dari mock.
-- Mock tidak boleh menyamar sebagai data backend di depan seller/customer.
-- Mock tidak dihapus sebelum task API cleanup (B-10) terverifikasi; dapat tetap
-  dipakai untuk unit test terisolasi dan development sementara.
+  boleh menghasilkan respons sukses palsu dari mock. Larangan ini HANYA berlaku
+  untuk fake production API fallback, BUKAN untuk development mock data.
+- Semua fitur baru di Phase B WAJIB memiliki/update mock data yang dibutuhkan
+  untuk kebutuhan UI dan QA.
+- Jangan menghapus atau menonaktifkan existing mock data/assets yang masih
+  digunakan. Pembersihan branch mock yang sudah tidak relevan hanya dilakukan
+  saat task API cleanup setelah backend terverifikasi; mock yang masih dipakai
+  untuk dev/QA tidak dihapus.
+- Mock tidak boleh menyamar sebagai data backend di depan seller/customer dalam
+  konteks production/API mode.
 - Pisahkan mock dari UI, gunakan typed models, dan sediakan API-ready abstraction
   sehingga replacement mudah saat API tersedia.
 

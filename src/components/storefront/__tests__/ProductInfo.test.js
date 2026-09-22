@@ -1,8 +1,9 @@
 /**
  * Consumer test: ProductInfo follows the locked hierarchy (Brand >
  * Product Unggulan > Name > Price > Category + Condition) and applies the
- * SOLD_OUT / no-marketplace action rules. Uses react-dom/server (no DOM test
- * library) and React.createElement without JSX (Vitest include matches *.test.js).
+ * CTA + Share action rules (no WhatsApp/Marketplace on Product Detail).
+ * Uses react-dom/server (no DOM test library) and React.createElement without
+ * JSX (Vitest include matches *.test.js).
  */
 
 import { describe, expect, it } from 'vitest'
@@ -10,13 +11,11 @@ import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import ProductInfo from '../ProductInfo'
 
-function render(product, store = { storeId: 's1', name: 'Toko', channels: [] }) {
+function render(product) {
   return renderToStaticMarkup(
     React.createElement(ProductInfo, {
       product,
-      store,
-      onWhatsApp: () => {},
-      onSelectChannel: () => {},
+      onSelectDestination: () => {},
       onShare: () => {},
     }),
   )
@@ -32,6 +31,8 @@ const baseProduct = {
   price: 'Rp 15.000.000',
   status: 'PUBLISHED',
   featured: false,
+  externalLinks: [{ name: 'Shopee', url: 'https://shopee.co.id/x' }],
+  cta: { type: 'BUY' },
 }
 
 describe('ProductInfo hierarchy', () => {
@@ -63,27 +64,18 @@ describe('ProductInfo hierarchy', () => {
 })
 
 describe('ProductInfo actions', () => {
-  it('keeps WhatsApp and Share but hides Marketplace without channels', () => {
+  it('renders CTA (Beli) and Share, never WhatsApp or Marketplace', () => {
     const html = render(baseProduct)
-    expect(html).toContain('Hubungi via WhatsApp')
+    expect(html).toContain('Beli')
     expect(html).toContain('Bagikan')
-    expect(html).not.toContain('Marketplace')
-  })
-
-  it('shows Marketplace when the store has channels', () => {
-    const html = render(baseProduct, {
-      storeId: 's1',
-      name: 'Toko',
-      channels: [{ name: 'Shopee', url: 'https://shopee.co.id/x' }],
-    })
-    expect(html).toContain('Marketplace')
-  })
-
-  it('hides WhatsApp and Marketplace for SOLD_OUT, keeping Share', () => {
-    const html = render({ ...baseProduct, status: 'SOLD_OUT' })
-    expect(html).toContain('Sold Out')
-    expect(html).toContain('Bagikan Produk')
     expect(html).not.toContain('Hubungi via WhatsApp')
     expect(html).not.toContain('Marketplace')
+  })
+
+  it('hides the CTA and keeps Share for SOLD_OUT', () => {
+    const html = render({ ...baseProduct, status: 'SOLD_OUT' })
+    expect(html).toContain('Sold Out')
+    expect(html).toContain('Bagikan')
+    expect(html).not.toContain('Beli')
   })
 })

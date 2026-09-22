@@ -1,8 +1,11 @@
 /**
  * Product validation rules (locked in docs/PRODUCT.md and UI_RULES.md).
  * Publish requires: name, >=1 photo, category, product details, description,
- * condition, price. Save Draft only requires a name.
+ * condition, price. Save Draft only requires a name. Every selected external
+ * link must carry a non-empty URL before Publish (docs/PRODUCT.md §16).
  */
+
+import { validateChannelRefs } from './channels'
 
 /**
  * Validate a product form for Publish.
@@ -43,7 +46,23 @@ export function validateProductForPublish(product) {
     errors.price = 'Harga produk wajib diisi dan lebih dari 0.'
   }
 
+  const externalLinks = product.externalLinks || []
+  if (externalLinks.length > 0) {
+    Object.assign(errors, validateChannelRefs(externalLinks).errors)
+  }
+
   return { errors, valid: Object.keys(errors).length === 0 }
+}
+
+/**
+ * Validate a product's external link references. A selected channel stays
+ * editable with an empty URL, but Publish is blocked until every link has a
+ * non-empty URL. Drafts may keep incomplete links.
+ * @param {Array<{ channelId?: string, url?: string }>|undefined} links
+ * @returns {{ errors: Record<string, string>, valid: boolean }}
+ */
+export function validateProductExternalLinks(links) {
+  return validateChannelRefs(links)
 }
 
 /**

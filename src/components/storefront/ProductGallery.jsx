@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CONDITION, PRODUCT_STATUS } from '../../constants/enums'
 
 /**
- * Product image gallery.
+ * Product image gallery with a frontend-only fullscreen "Lihat Full" mode
+ * (overlay hitam penuh layar, swipe horizontal antar foto, tombol close ×).
  *
  * Mobile (< lg): swipe-only scroll-snap carousel, no thumbnail navigation.
  * Desktop (lg+): main image with thumbnail navigation. Condition is shown as
@@ -13,9 +14,33 @@ import { CONDITION, PRODUCT_STATUS } from '../../constants/enums'
 function ProductGallery({ product, storeName }) {
   const images = product.images?.length > 0 ? product.images : []
   const [activeIndex, setActiveIndex] = useState(0)
+  const [fullscreenOpen, setFullscreenOpen] = useState(false)
   const scrollRef = useRef(null)
+  const fullscreenRef = useRef(null)
   const conditionLabel = product.condition === CONDITION.SECOND ? 'SECOND' : 'NEW'
   const isSoldOut = product.status === PRODUCT_STATUS.SOLD_OUT
+
+  useEffect(() => {
+    if (!fullscreenOpen) {
+      return undefined
+    }
+    const previousActive = document.activeElement
+    const closeButton = fullscreenRef.current?.querySelector('[data-fullscreen-close]')
+    closeButton?.focus()
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setFullscreenOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      if (previousActive && typeof previousActive.focus === 'function') {
+        previousActive.focus()
+      }
+    }
+  }, [fullscreenOpen])
 
   if (images.length === 0) {
     return (
@@ -39,13 +64,17 @@ function ProductGallery({ product, storeName }) {
     }
   }
 
-  function goToSlide(index) {
+  function goToSlide(index, el = scrollRef.current) {
     const bounded = Math.min(Math.max(index, 0), images.length - 1)
     setActiveIndex(bounded)
-    const el = scrollRef.current
     if (el && el.clientWidth > 0) {
       el.scrollTo({ left: bounded * el.clientWidth, behavior: 'smooth' })
     }
+  }
+
+  function openFullscreen() {
+    setActiveIndex(0)
+    setFullscreenOpen(true)
   }
 
   return (
@@ -78,6 +107,17 @@ function ProductGallery({ product, storeName }) {
             {conditionLabel}
           </span>
         </div>
+
+        <button
+          type="button"
+          onClick={openFullscreen}
+          className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-lg bg-neutral-950/60 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-neutral-950/80 sm:bottom-4 sm:right-4 sm:px-3 sm:py-2 sm:text-xs"
+        >
+          <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
+            open_in_full
+          </span>
+          <span className="whitespace-nowrap">Lihat Full</span>
+        </button>
 
         {images.length > 1 ? (
           <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 lg:hidden">
@@ -125,6 +165,66 @@ function ProductGallery({ product, storeName }) {
               <img src={image} alt="" loading="lazy" className="h-full w-full rounded-lg object-cover" />
             </button>
           ))}
+        </div>
+      ) : null}
+
+      {fullscreenOpen ? (
+        <div
+          ref={fullscreenRef}
+          className="fixed inset-0 z-[60] bg-black"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Galeri fullscreen"
+        >
+          <button
+            type="button"
+            data-fullscreen-close
+            onClick={() => setFullscreenOpen(false)}
+            aria-label="Tutup"
+            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+          >
+            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+              close
+            </span>
+          </button>
+
+          <div
+            data-fullscreen-scroll
+            className="flex h-full w-full snap-x snap-mandatory overflow-x-auto scroll-smooth scrollbar-hide"
+            role="group"
+            aria-label="Foto produk fullscreen"
+            onScroll={handleScroll}
+          >
+            {images.map((image, index) => (
+              <div
+                key={`full-${index}-${image}`}
+                className="relative flex h-full w-full shrink-0 snap-center items-center justify-center"
+                aria-hidden={index !== activeIndex}
+              >
+                <img
+                  src={image}
+                  alt={`Foto ${product.name} — ${storeName ?? 'Toko Kataloga'} (besar)`}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            ))}
+          </div>
+
+          {images.length > 1 ? (
+            <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1.5">
+              {images.map((image, index) => (
+                <button
+                  key={`full-dot-${index}-${image}`}
+                  type="button"
+                  onClick={() => goToSlide(index, fullscreenRef.current?.querySelector('[data-fullscreen-scroll]'))}
+                  aria-label={`Ke foto ${index + 1}`}
+                  className={`h-2 rounded-full transition-all ${
+                    index === activeIndex ? 'w-5 bg-white' : 'w-2 bg-white/40 hover:bg-white/70'
+                  }`}
+                />
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

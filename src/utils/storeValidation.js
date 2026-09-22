@@ -15,6 +15,7 @@ import { isValidPhone } from '../services/authService'
 import { cityBelongsToProvince } from '../services/regionService'
 import { validateStoreId } from './storeId'
 import { isOperatingHoursValid, parseOperatingHours } from './operatingHours'
+import { validateChannelRefs } from './channels'
 
 /**
  * Validate a store location form.
@@ -90,7 +91,23 @@ export function validateStoreInformation(form) {
 
   Object.assign(errors, validateStoreLocation(form).errors)
 
+  const channels = Array.isArray(form.channels) ? form.channels : []
+  if (channels.length > 0) {
+    Object.assign(errors, validateChannelRefs(channels).errors)
+  }
+
   return { errors, valid: Object.keys(errors).length === 0 }
+}
+
+/**
+ * Validate a store's external channel references. A selected channel stays
+ * editable with an empty URL, but My Store save is blocked until every
+ * configured channel has a non-empty URL (docs/PRODUCT.md §16).
+ * @param {Array<{ channelId?: string, url?: string }>|undefined} channels
+ * @returns {{ errors: Record<string, string>, valid: boolean }}
+ */
+export function validateStoreChannels(channels) {
+  return validateChannelRefs(channels)
 }
 
 /**

@@ -51,6 +51,7 @@ describe('authorization and seller routes', () => {
       '/forgot-password',
       '/reset-password',
       '/create-store',
+      '/seller',
       '/seller/dashboard',
       '/seller/products',
       '/seller/products/new',
@@ -65,5 +66,11 @@ describe('authorization and seller routes', () => {
     for (const path of expected) {
       expect(findByPath(path), `missing route ${path}`).toBeDefined()
     }
+  })
+
+  it('registers the /seller entry gateway route', () => {
+    const route = findByPath('/seller')
+    expect(route).toBeDefined()
+    expect(route.element.type.name).toBe('SellerEntryGate')
   })
 })

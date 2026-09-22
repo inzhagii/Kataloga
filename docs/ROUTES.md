@@ -36,6 +36,7 @@ Struktur utama:
 │   └── /product/{productId}/{slug}
 │
 └── /seller
+    ├── (gateway: /seller → redirect ke /login | /create-store | /seller/dashboard)
     ├── /dashboard
     ├── /products
     ├── /products/new
@@ -86,7 +87,7 @@ Jika user sudah memiliki store:
 
 /seller/dashboard
 
-Jika login berasal dari protected action, misalnya WhatsApp atau Marketplace:
+Jika login berasal dari protected action, misalnya WhatsApp, Marketplace, atau CTA destination:
 
 Login
   ↓
@@ -201,9 +202,9 @@ Verification Status
 Description / Bio
 City, Province
 Operating Hours
-WhatsApp
-External Sales Channels
-Share Store
+WhatsApp (floating action bar)
+External Sales Channels (floating action bar → modal/bottom sheet)
+Share Store (floating action bar desktop & mobile)
 Announcement
 Product Unggulan
 Link ke Product Listing
@@ -221,8 +222,13 @@ Tidak menempatkan di dalam navbar:
 WhatsApp
 Marketplace
 Full Address
+Share (Share berada di floating action bar desktop & mobile)
 
-WhatsApp, Marketplace, dan Full Address tersedia pada konten/footer storefront yang sesuai.
+WhatsApp dan Marketplace ditampilkan sebagai floating action bar Store Landing (lihat PRODUCT.md # 8 Store Actions).
+
+Full Address tersedia pada konten/footer storefront yang sesuai.
+
+Share Store berada di floating action bar yang sama pada desktop dan mobile (bukan navbar).
 
 City, Province ditampilkan dengan urutan "City dahulu, lalu Province".
 
@@ -319,8 +325,7 @@ Price (bold)
 Category / Condition (bersebelahan, di bawah Price)
 Product Details
 Description
-WhatsApp
-Marketplace (tidak pada product SOLD_OUT)
+CTA (Beli / Tawar / label kustom; selection dari Store CTA Options) → menu destination product (SEMUA External Product Links)
 Share
 
 Product Unggulan indicator terpisah secara visual dari Brand.
@@ -333,20 +338,44 @@ Bagian External Product Links TIDAK ditampilkan pada Product Detail.
 
 External Product Links tetap ada sebagai field data product (form product dan API), tetapi tidak dirender di halaman Product Detail customer-facing.
 
-Primary action adalah "Hubungi via WhatsApp".
+Primary action adalah CTA product (memakai selection opsi CTA dari Store CTA
+Options: Beli / Tawar / label kustom; default Beli).
 
-Marketplace dan Share tersedia sebagai secondary actions.
+Share adalah secondary action.
 
-Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+Rasio action desktop dan mobile:
 
-Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+CTA : Share = 70 : 30
+
+Eksekusi actions Responsive Desktop/Mobile:
+
+- Desktop: Actions inline di dalam info card Product Detail (ProductInfo).
+- Mobile: Actions disajikan sebagai floating action bar terkunci di dasar viewport (selalu visible; pola visual mengikuti floating action bar Store Landing, tanpa hide/show berbasis viewport). Actions tidak inline pada mobile.
+
+CTA TIDAK menggunakan WhatsApp maupun Marketplace (store channels).
+
+CTA membuka menu destination product:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+
+Menu destination TIDAK pernah dropdown.
+
+CTA tidak tersedia jika menu destination external product kosong:
+
+- tidak ada fallback,
+- CTA tidak ditampilkan,
+- dicatat sebagai API/product dependency.
+
+Product Detail TIDAK memiliki footer.
+
+Gallery Product Detail memiliki mode fullscreen "Lihat Full" (overlay hitam, swipe horizontal, close ×).
 
 Product SOLD_OUT (masih dalam jendela auto archive):
 
 - tetap dapat dilihat,
 - indikasi "Sold Out" yang jelas,
-- WhatsApp tidak tersedia,
-- Marketplace tidak tersedia,
+- CTA tidak tersedia,
 - Share tetap tersedia.
 
 Tidak ada section availability.
@@ -651,6 +680,7 @@ Full Address (opsional, free-text)
 Operating Hours
 WhatsApp
 External Sales Channels
+Store CTA Options (BUY "Beli" + BARGAIN "Tawar" permanent default; seller dapat menambah/menghapus opsi CUSTOM berlabel kustom)
 Announcement
 
 Auto Archive TIDAK berada di My Store. Auto Archive terletak pada halaman Archive (lihat §13 Archived Products).
@@ -795,19 +825,27 @@ Marketplace Selector
 
 Marketplace selector bukan page.
 
-Desktop:
+Desktop dan mobile:
 
-Popover / Dropdown
+Modal / Bottom Sheet
 
-Mobile:
-
-Bottom Sheet
+Bukan dropdown.
 
 Tetap berada di:
 
 /{storeId}
 
-atau:
+CTA Destination Menu (Product)
+
+Menu destination external product bukan page.
+
+Desktop dan mobile:
+
+Modal / Bottom Sheet
+
+Bukan dropdown.
+
+Tetap berada di:
 
 /{storeId}/product/{productId}/{slug}
 Share Store
@@ -946,6 +984,16 @@ V1:
 
 1 Account = 1 Store
 23. Seller Route Protection
+
+Route `/seller` adalah entry gateway seller.
+
+Perilaku `/seller`:
+
+- Guest → redirect ke `/login`.
+- Authenticated tanpa store → redirect ke `/create-store`.
+- Authenticated dengan store → redirect ke `/seller/dashboard`.
+
+Gateway `/seller` tidak membutuhkan endpoint backend baru; status auth dan store diperoleh dari session.
 
 Semua route:
 
@@ -1099,6 +1147,7 @@ Route	Page	Access
 /{storeId}	StoreLandingPage	Public
 /{storeId}/products	ProductListingPage	Public
 /{storeId}/product/{productId}/{slug}	ProductDetailPage	Public
+/seller	SellerEntryGate (redirect)	Dynamic (gateway)
 /seller/dashboard	DashboardPage	Authenticated
 /seller/products	ProductsPage	Authenticated
 /seller/products/new	AddProductPage	Authenticated
@@ -1155,6 +1204,9 @@ App
 │
 ├── ProtectedRoutes
 │   ├── CreateStorePage
+│   │
+│   ├── SellerEntryGate (/seller)
+│   │   └── redirect: /login | /create-store | /seller/dashboard
 │   │
 │   └── SellerLayout
 │       ├── DashboardPage
@@ -1219,10 +1271,12 @@ Dashboard Recent Activity "Lihat Semua" menuju /seller/activities.
 "Kembali" pada /seller/activities menuju /seller/dashboard.
 Create Store diarahkan ke My Store setelah berhasil.
 Seller routes harus protected.
+/seller adalah gateway: guest → /login; auth tanpa store → /create-store; auth dengan store → /seller/dashboard.
 Public store dan product routes harus dapat diakses guest.
 Authentication harus mempertahankan return context.
 Search/filter/sort tidak membutuhkan dedicated route.
 Marketplace selector tidak membutuhkan dedicated route.
+CTA destination menu (Product) tidak membutuhkan dedicated route.
 Share tidak membutuhkan dedicated route.
 Tidak ada QR Code route atau QR-related page.
 Tidak ada logout route.

@@ -366,19 +366,18 @@ Store Landing
     ├── Product Card
     │      └── Product Detail
     │
-    ├── WhatsApp
+    ├── WhatsApp (floating action bar)
     │
-    ├── Marketplace
+    ├── Marketplace (floating action bar)
+    │      └── modal/bottom sheet list channel
     │
-    └── Share Store
+    └── Share Store (floating action bar desktop & mobile)
 
 Product Listing menyediakan:
 
-Search
-Category filter
-Filter
-Sort
+Toolbar (Search + Filter + Sort)
 Product grid
+Search
 
 Menggunakan reusable ProductCard dan ProductGrid.
 
@@ -388,15 +387,31 @@ Ordering:
 
 Featured Published → Published lebih baru → Published lebih lama → Sold Out
 
+### Toolbar
+
+Desktop:
+
+`[Search (full width)] [Filter (compact)]`
+
+berada pada baris yang sama. Filter berisi Category, Condition, dan Sort
+(TIDAK ada category chips). 
+
+Mobile:
+
+`[Search (full width)]`
+`[Filter] [Urutkan]`
+
+Search full width; baris kedua memisahkan tombol Filter dan Urutkan.
+
 ### Storefront Footer
 
-Footer ditampilkan pada Store Landing (dan Product Detail).
+Footer ditampilkan pada Store Landing (Product Detail TIDAK memiliki footer — lihat Product Detail Flow).
 
-Berisi:
+Footer bersifat compact dan berisi:
 
 Store Identity
-- Store Logo
 - Store Name
+- Store Description / Bio
 
 Contact
 - WhatsApp / Contact
@@ -407,15 +422,30 @@ External Sales Channels
 Address
 - Full Address jika tersedia
 
-Kataloga
-- Tentang Kataloga, hanya link/konten existing
+Footer TIDAK memuat:
 
-External channels tetap:
+- Store Logo
+- Tentang Kataloga
+- kumpulan link informasi Kataloga
 
-name
+Baris terbawah footer adalah satu baris centered:
+
+- © 2026 Kataloga · Made with Kataloga
+
+dengan "Made with Kataloga" clickable menuju `/`.
+
+External channels menunjuk ke shared channel master (CMS) sebagai referensi:
+
+channelId
 url
 
-Tidak ada persisted channel ID atau field marketplace-specific.
+Definisi channel (name + logo) di-resolve dari master; custom channel
+(store-scoped) ber-prefix `CUSTOM:`. Tidak ada persisted channel ID
+per-referensi atau field marketplace-specific pada model/API contract.
+
+Channel master mock berisi persis 3 channel (Shopee / Tokopedia / Lazada);
+TikTok Shop & Blibli tersisa sebagai hint display (destinationPresets) —
+apakah production CMS menyertakannya needs backend confirmation.
 
 WhatsApp dan Marketplace pada footer mengikuti aturan authentication + Customer Interest yang sama.
 10. Product Listing — Search Flow
@@ -628,9 +658,8 @@ Product Detail
       │
       ├── Description
       │
-      ├── WhatsApp
-      │
-      ├── Marketplace
+      ├── CTA (Beli / Tawar / label kustom)
+      │      └── menu destination product berisi SEMUA External Product Links (modal desktop / bottom sheet mobile)
       │
       └── Share
 
@@ -646,7 +675,7 @@ Price (bold)
       ↓
 Category / Condition (bersebelahan, di bawah Price)
       ↓
-Actions
+Actions (CTA : Share = 70 : 30)
       ↓
 Product Details
       ↓
@@ -662,26 +691,38 @@ External Product Links tetap ada sebagai field data product (form product dan AP
 
 Desktop:
 
-image/gallery fixed di kiri, panel info scroll di dalam area tersebut,
-footer di luar area scroll.
+info card (Brand, product info, harga, kategori/kondisi, CTA + Share) fixed dan
+selalu terlihat; hanya bagian Product Details dan Description yang scroll di
+dalam area tersebut,
+TIDAK ada footer pada Product Detail.
 
 Mobile:
 
-images menggunakan swipe-only carousel/slider, info di bawah images.
+images menggunakan swipe-only carousel/slider, info di bawah images,
+CTA + Share tetap tampil sebagai floating bottom bar di atas content (rasio
+CTA : Share = 70 : 30).
 
-Primary action adalah "Hubungi via WhatsApp".
+Product Details dan Description menggunakan expand/collapse ("Lihat
+selengkapnya" / "Tutup") jika content panjang; jangan mengarang batas karakter
+tanpa requirement.
 
-Marketplace dan Share tersedia sebagai secondary actions.
+Gallery menyediakan mode fullscreen "Lihat Full" (overlay hitam, swipe horizontal, tombol close ×).
 
-Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+Primary action adalah CTA product (Beli / Tawar / Custom).
 
-Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+CTA TIDAK menggunakan WhatsApp maupun Marketplace (store channels).
+
+CTA tidak tersedia jika menu destination external product kosong:
+
+- tidak ada fallback, tidak mengarang destination,
+- CTA tidak ditampilkan,
+- kebutuhan ini dicatat sebagai API/product dependency.
+
+Menu destination product menggunakan modal (desktop) / bottom sheet (mobile), bukan dropdown.
 
 Navbar Product Detail tidak mengandung WhatsApp/Contact maupun Marketplace.
 
-Keputusan tersebut hanya menyangkut navbar.
-
-WhatsApp, Marketplace, dan Share tetap tersedia pada area action Product Detail.
+Product Detail tidak memiliki footer.
 
 ### Sold Out pada Product Detail
 
@@ -689,145 +730,81 @@ Jika product SOLD_OUT (masih dalam jendela auto archive):
 
 indikasi "Sold Out" yang jelas
 product tetap dapat dilihat
-WhatsApp tidak tersedia
-Marketplace tidak tersedia
+CTA tidak tersedia
 Share tetap tersedia
 
 Tidak ada section availability.
-15. Product Detail — WhatsApp Flow
+15. Product Detail — CTA Destination Flow
 
-Saat user menekan:
+Saat user menekan CTA:
 
-Hubungi via WhatsApp
+CTA (Beli / Tawar / label kustom)
+   │
+   ▼
+Auth Check terlebih dahulu? Tidak.
 
-System melakukan auth check.
+CTA menampilkan menu destination product (modal desktop / bottom sheet mobile) berisi SEMUA External Product Links product:
 
-Guest
-WhatsApp
+Product CTA
    │
-   ▼
-Auth Check
-   │
-   ▼
-Guest
-   │
-   ▼
-Login / Register
-   │
-   ▼
-Preserve Product Context
-   │
-   ▼
-Return to Product
-   │
-   ▼
-Continue WhatsApp
+   ├── Destination A (Shopee)
+   ├── Destination B (Tokopedia)
+   └── Destination C (Custom)
 
-Context product harus tetap dipertahankan setelah login/register.
+Setelah destination dipilih
 
-Logged-in User
-WhatsApp
-   │
-   ▼
-Auth Check
-   │
-   ▼
-Authenticated
-   │
-   ▼
-Create Customer Interest
-   │
-   ▼
-Open WhatsApp
+Selected Destination
+       │
+       ▼
+    Auth Check
+       │
+  ┌────┴─────┐
+  │          │
+Guest    Logged-in
+  │          │
+  ▼          ▼
+Login     Record Interest
+Register     │
+  │           ▼
+  ▼        Redirect URL
+Return
 
-Customer Interest:
+Guest:
 
-channelType = WHATSAPP_CLICK
+CTA → Login/Register → kembali ke context product → continue CTA destination → record Customer Interest → redirect ke exact URL destination.
+
+CTA (Beli/Tawar/label kustom) adalah selection dari Store CTA Options (level store); CTA tidak berisi daftar destination. Klik CTA membuka menu yang berisi SEMUA External Product Links product (bukan library: Add/Edit Product tidak pernah membuat definisi CTA baru).
+
+Autentikasi hanya dilakukan SETELAH destination dipilih.
+
+Customer Interest menyimpan destination yang benar-benar dipilih (context PRODUCT).
 
 Product View tidak dicatat sebagai Customer Interest.
 
-Seller (owner) di storefront miliknya sendiri:
+CUSTOM destination:
 
-WhatsApp
-   │
-   ▼
-Open WhatsApp
-(TANPA Customer Interest)
+Customer Interest channel disimpan sesuai nama/nilai yang dipilih (needs backend confirmation untuk representasi wire).
 
-Activity owner di storefront miliknya sendiri tidak pernah membuat Customer Interest.
+Perilaku CTA terhadap product SOLD_OUT:
 
-16. Product Detail — Marketplace Flow
+CTA tidak tersedia; tidak ada ecommerce checkout/perantara.
 
-Marketplace tidak langsung melakukan auth check.
-
-Pertama tampilkan channel yang dikonfigurasi seller.
-
-Desktop:
-
-Marketplace
-     │
-     ▼
-Popover / Dropdown
-     │
-     ├── Channel A
-     ├── Channel B
-     └── Channel C
-
-Mobile:
-
-Marketplace
-     │
-     ▼
-Bottom Sheet
-     │
-     ├── Channel A
-     ├── Channel B
-     └── Channel C
-
-Tidak menggunakan marketplace icon/logo.
-
-Channel hanya memiliki:
-
-name
-url
-Setelah channel dipilih
-Selected Channel
-      │
-      ▼
-   Auth Check
-      │
- ┌────┴─────┐
- │          │
-Guest    Logged-in
- │          │
- ▼          ▼
-Login     Record Interest
-Register     │
- │           ▼
- ▼        Redirect URL
-Return
-
-Customer Interest menyimpan channel yang dipilih.
-
-Contoh:
-
-channelType = MARKETPLACE_CLICK
-channelName = "Shopee"
-
-Nama channel harus menggunakan channel yang dipilih user, bukan nama generic seperti "Marketplace".
+Share tetap tersedia.
 
 Seller (owner) di storefront miliknya sendiri:
 
-Marketplace
+CTA
    │
    ▼
-Pilih Channel
+Pilih Destination
    │
    ▼
 Redirect URL
 (TANPA Customer Interest)
 
 Activity owner di storefront miliknya sendiri tidak pernah membuat Customer Interest.
+
+16. (hapus — WhatsApp/Marketplace Product Detail digantikan CTA + Share; lihat # 15 dan # 17)
 
 17. Product Share Flow
 
@@ -895,6 +872,29 @@ customer storefront tidak merender announcement.
 Tidak menggunakan carousel.
 
 20. Seller Entry Flow
+
+Entry gateway seller menggunakan route `/seller`.
+
+`/seller`:
+
+Guest
+   │
+   ▼
+Redirect ke /login
+
+Authenticated tanpa store
+   │
+   ▼
+Redirect ke /create-store
+
+Authenticated dengan store
+   │
+   ▼
+Redirect ke /seller/dashboard
+
+Route `/seller/*` tetap diproteksi SellerLayout.
+
+Gateway `/seller` tidak membutuhkan endpoint backend baru; status auth dan store diperoleh dari session.
 
 Setelah user login:
 
@@ -1324,7 +1324,8 @@ Product Details
 Description
 Condition
 Price
-External Product Links
+Product CTA (Call-to-Action): selection satu opsi dari Store CTA Options (Beli | Tawar | label kustom; default Beli) — bukan definisi baru
+External Product Links / Destinations
 Product Unggulan
 
 Actions:
@@ -1367,7 +1368,8 @@ Price
 Optional:
 
 Brand
-External Product Links
+Product CTA (Call-to-Action) — selection opsi (default `BUY`/"Beli" selalu tersedia, tidak memblokir Publish)
+External Product Links / Destinations
 Product Unggulan
 
 Flow:
@@ -1626,6 +1628,7 @@ Full Address (opsional, free-text)
 Operating Hours
 WhatsApp
 External Sales Channels
+Store CTA Options (BUY "Beli" + BARGAIN "Tawar" permanent default; seller dapat menambah opsi CUSTOM berlabel kustom)
 Announcement
 
 Auto Archive TIDAK berada di My Store. Auto Archive terletak pada halaman Archive.
@@ -1744,15 +1747,28 @@ External Sales Channels
    ├── Add Channel
    │      ├── Name
    │      └── URL
-   │
+
    ├── Edit Channel
    │
    └── Remove Channel
 
+Add/Edit Channel TIDAK menggunakan dropdown.
+
+Pemilihan channel menggunakan pola "Tambah External" yang reusable:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+- Item hasil tambah ditampilkan dengan icon + name + URL + tombol remove.
+
+Pola yang sama dipakai oleh Product External Links (Add/Edit Product).
+
+Product External dan Store External adalah konsep yang terpisah, meskipun berbagi komponen UI yang sama.
+
 Channel yang dikonfigurasi seller akan muncul pada:
 
 Store Landing
-Product Detail jika product memiliki external product link
+External channels store tidak muncul pada Product Detail
+(batasan: Product Detail hanya menampilkan CTA destination product)
 37. Profile Flow
 
 Route:
@@ -1955,15 +1971,18 @@ Desktop
 Contoh:
 
 Filter → Popover / Inline
-Marketplace → Dropdown / Popover
+Marketplace / Destination → Modal
+CTA + Share → rasio 70 : 30
 Sidebar → Fixed Sidebar
 Mobile
 
 Contoh:
 
 Filter → Bottom Sheet
-Marketplace → Bottom Sheet
+Marketplace / Destination → Bottom Sheet
+CTA + Share → rasio 70 : 30
 Navigation → Bottom Navigation + More
+Store actions → floating action bar (hidden saat footer masuk viewport); Share di floating bar desktop & mobile
 
 Business logic tidak boleh diduplikasi hanya karena perbedaan responsive UI.
 
@@ -1976,8 +1995,20 @@ Product View tidak membuat Customer Interest.
 Share tidak membuat Customer Interest.
 Share tidak membutuhkan login.
 Tidak ada QR Code.
-Marketplace channel bersifat arbitrary.
-Marketplace channel tidak menggunakan icon/logo.
+Marketplace channel menunjuk ke shared channel master (CMS): mock persis Shopee/Tokopedia/Lazada + custom store-scoped `CUSTOM:`; TikTok Shop/Blibli hanya hint display (`destinationPresets`); icon/logo = mapping frontend-owned, bukan requirement backend V1.
+Store ID tidak ditampilkan secara visual pada Store Landing.
+Product Detail TIDAK memiliki footer.
+Product Detail actions = CTA (primary) + Share (secondary), rasio 70 : 30. Desktop: inline di info card. Mobile: floating action bar terpaku di dasar viewport (pola sama dengan floating action bar Store Landing).
+CTA TIDAK menggunakan WhatsApp maupun Marketplace (store channels).
+CTA membuka menu destination product; destination TIDAK memakai dropdown (modal desktop / bottom sheet mobile).
+CTA tidak tersedia jika destination external product kosong (tidak ada fallback).
+Gallery Product Detail menyediakan "Lihat Full" (overlay hitam, swipe horizontal, close ×).
+Store Landing actions menggunakan floating action bar (WhatsApp + Marketplace + Share, desktop & mobile; Share TIDAK di navbar).
+Floating action bar hidden ketika footer Store Landing masuk viewport.
+Storefront Footer compact: Store Name + Description, WhatsApp/Contact, external channels, Full Address jika ada; TANPA Store Logo dan TANPA Tentang Kataloga; baris bawah satu baris centered `© 2026 Kataloga · Made with Kataloga` ("Made with Kataloga" clickable menuju `/`).
+Entry `/seller` = gateway: guest → /login; auth tanpa store → /create-store; auth dengan store → /seller/dashboard.
+CTA internal types: BUY / BARGAIN / CUSTOM; label UI: Beli / Tawar / label kustom. CTA adalah opsi store (Store CTA Options); product memilih tepat satu opsi (default BUY/"Beli") dan TIDAK membuat definisi CTA baru. CTA tidak berisi daftar destination; klik CTA membuka menu berisi SEMUA External Product Links.
+Scroll tidak membuat route baru untuk action floating maupun fullscreen gallery.
 Store ID tidak ditampilkan secara visual pada Store Landing.
 Store ID dapat berubah maksimal sekali setiap 30 hari.
 Store ID maksimal 50 karakter.
@@ -2042,7 +2073,9 @@ Product Detail          Add / Edit / Archive
     │
  ┌──┴──────────────┐
  │                 │
-WhatsApp       Marketplace
- │                 │
- ▼                 ▼
-Customer Interest
+CTA (Beli/        Share
+Tawar/Custom)
+ │
+ ▼
+Destination list → Customer Interest
+(field channel = destination dipilih)

@@ -40,6 +40,10 @@ export function toStore(dto) {
     fullAddress: dto.full_address ?? undefined,
     operatingHours: dto.operating_hours ?? undefined,
     whatsapp: dto.whatsapp ?? undefined,
+    // CHANNEL-MASTER WIRE SHAPE UNCONFIRMED: the CMS vs custom-channel DTO
+    // representation is a backend/product dependency (docs/API-CONTRACT.md).
+    // The frontend model now stores refs { channelId, url }; this mapping must
+    // be reconciled once the DTO is confirmed.
     channels: (dto.channels ?? []).map((channel) => ({
       name: channel.name,
       url: channel.url,
@@ -84,12 +88,15 @@ export function toProduct(dto) {
         }))
       : [],
     description: dto.description ?? '',
+    // CHANNEL-MASTER WIRE SHAPE UNCONFIRMED: same as store.channels (above) —
+    // must be reconciled with the confirmed DTO before API integration.
     externalLinks: Array.isArray(dto.external_links)
       ? dto.external_links.map((link) => ({
           name: link.name ?? '',
           url: link.url ?? '',
         }))
       : [],
+    cta: dto.cta ? { type: dto.cta.type, label: dto.cta.label } : undefined,
     status: dto.status,
     featured: Boolean(dto.featured),
     soldOutAt: dto.sold_out_at ?? undefined,

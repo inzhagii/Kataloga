@@ -32,6 +32,7 @@ function productToDto(product) {
     details: 'details',
     description: 'description',
     externalLinks: 'external_links',
+    cta: 'cta',
     status: 'status',
     featured: 'featured',
     soldOutAt: 'sold_out_at',

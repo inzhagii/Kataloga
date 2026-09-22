@@ -59,6 +59,7 @@
 | RECOVERY-1 | Recovery email | `POST /auth/recovery-email/otp { email }`; `POST /auth/recovery-email/verify { email, code }` → user DTO | Adapter reads `expires_at`/`cooldown_seconds` then user DTO | PROPOSED | Confirm path/keys + uniqueness | Yes | Needed for phone-registered accounts (locked) |
 | ACCOUNT-1 | Account activation | Email signup waits for verification; phone signup active immediately but needs a verified recovery email before recovery/change-password | `register()` returns `requiresVerification`; login throws typed `EMAIL_UNVERIFIED` | CONFIRMED | Enforce activation gate on login | No | `authService.js` |
 | ACCOUNT-2 | Account without store | An authenticated account with no store must reach `/seller/account` (Profile) to set a recovery email | **Resolved (pre-Phase B):** `SellerLayout` redirects no-store accounts to `/create-store` except `/seller/account` (`src/utils/sellerAccess.js`) | CONFIRMED (product decision) | None | No | Other `/seller/*` routes still require a store |
+| GATEWAY-1 | `/seller` entry gateway | `/seller` redirect: guest → `/login`; authenticated without store → `/create-store`; with store → `/seller/dashboard`. Needs **no new endpoint** | Frontend route declared as `SellerEntryGate`; auth + store status from session | CONFIRMED (frontend behavior, PRODUCT §2/ROUTES §23) / PROPOSED (session payload) | Confirm the session/`GET /auth/me` payload surfaces store presence so the gateway can branch | No | Add to ROUTES §30/§32 as `/seller` row; no fake API success |
 
 ### Store / Region
 
@@ -98,6 +99,9 @@
 | PRODUCT-15 | Seller category filter | `/seller/products?category=...` server or client side | URL query is the source of truth; mock filters client-side | BACKEND DEPENDENCY | Confirm server vs client | No | Contract §10.1(5) |
 | PRODUCT-16 | Seller brand filter | `/seller/products?brand=...` server or client side | URL query is the source of truth; UI applies filter | BACKEND DEPENDENCY | Confirm server vs client | No | Contract §10.1(5) |
 | PRODUCT-17 | Catalog search/filter/sort | Public listing search (name/brand/category/details/description/attributes), category & condition filter, sort (Relevance/Newest/Price low-high/Price high-low), pagination | Mock filters/sorts client-side | BACKEND DEPENDENCY | Confirm query param names + pagination | No | Backend-owned in API mode; Contract §5 |
+| PRODUCT-18 | Store CTA Options + Product CTA selection + destinations | Conceptual model added to `PRODUCT.md` §23 (NOT finalized DTO): store-level `store.ctaOptions` (`[{ type: 'BUY'|'BARGAIN'|'CUSTOM', label }]`, defaults BUY "Beli" + BARGAIN "Tawar", seller-addable CUSTOM; permanent defaults not deletable, unused CUSTOM deletable), `product.cta` selects exactly one option (`{ type, label }`, default BUY/"Beli", label resolved from store option, Add/Edit Product never creates CTA definitions), and destination channels via a **shared channel master (CMS)** — mock = exactly Shopee/Tokopedia/Lazada + store-scoped `CUSTOM:` custom channels (TikTok Shop/Blibli only as frontend display hints pending confirmation). Product external destinations remain `{ channelId, url }` references — SEPARATE field from CTA; CTA never contains destinations. CTA selection never blocks Publish; empty-URL external links block Publish | Frontend model/mock reworked (`src/data/models.js`, `src/data/mock/channels.js`, refs in mock data); not yet in production adapters; docs only | PROPOSED (product decision) / BACKEND DEPENDENCY | Confirm DTO fields, wire shape + channel-master endpoint, store vs product persistence, and whether `channel` value for CUSTOM destinations is a free string | No | Doc-level dependency, see API-CONTRACT §10.1(17); do not lock into contract until confirmed |
+| PRODUCT-19 | Store CTA Option custom label validation | `CUSTOM` label: store-level option with seller-filled label; frontend must not invent max-length/character/dedup rules; CUSTOM-only-option deletion rules need confirmation | Docs list it as "needs backend/product confirmation" | BACKEND DEPENDENCY | Confirm length + character + dedup rules and delete semantics | No | PRODUCT.md §23 (CUSTOM) |
+| PRODUCT-20 | Product Detail action set | Product Detail uses CTA (primary) + Share (secondary) 70:30; NO WhatsApp, NO Marketplace on Product Detail; CTA opens destination menu when external destinations exist, with **no fallback** when empty; Product Detail has no footer; gallery "Lihat Full" fullscreen is frontend-only UI state | UI/plan only; no API impact | CONFIRMED (frontend) | None (except confirm CTA wire shape, PRODUCT-18) | No | PRODUCT.md §29/§30; no fallback recorded as dependency |
 
 ### Category / Brand
 
@@ -125,6 +129,7 @@
 | INTEREST-3 | Identity source | Session vs request body for `customer_name/email/phone`; **email/phone from session, no uploaded customer avatar in V1** | Adapter sends client snapshots; backend expected to trust session | BACKEND DEPENDENCY | Declare session as source of truth | Yes | Contract §7 opens this |
 | INTEREST-4 | Self-store exclusion | Owner's own clicks never recorded | Frontend skips in mock; API posts as-is and relies on backend | CONFIRMED (rule) / BACKEND DEPENDENCY | Enforce server-side | No | |
 | INTEREST-5 | Allowed types | Only `WHATSAPP_CLICK` and `MARKETPLACE_CLICK`; store `channel` (e.g. `"whatsapp"`, `"shopee"`) — **no `channel_type`** | Service + mock enforce | CONFIRMED | Reject others | No | |
+| INTEREST-7 | CTA destination interest (Product Detail) | Product Detail CTA → destination click records Customer Interest (context `PRODUCT`, `channel` = selected destination). Wire representation of a CUSTOM destination's `channel` value is open | Frontend reuses existing interest flow; no new activity concept | BACKEND DEPENDENCY | Confirm `channel` value encoding for CUSTOM destinations on CTA clicks | No | PRODUCT.md §23/§30; no new invented flow |
 INTEREST-6 | Redirect timing | Redirect/WhatsApp opens **only after** the interest POST succeeds | Service awaits POST before opening destination | CONFIRMED (frontend behavior) | Backend must persist before success response | No | Locked requirement §19 |
 | ACTIVITY-1 | List | `GET /activities` → DTO[], newest first | Adapter lists + canonical filter | PROPOSED | Scope to session store | No | |
 | ACTIVITY-2 | Record | Recent Activity is **backend-created**; frontend consumes only. **No `POST /activities`** (removal is a Phase B cleanup item) | Adapter currently POSTs `/activities`; must be removed in Phase B | CONFIRMED (backend-created) / BACKEND DEPENDENCY | Backend creates records on domain actions | Yes | Locked requirement §20 |
@@ -148,7 +153,7 @@ INTEREST-6 | Redirect timing | Redirect/WhatsApp opens **only after** the intere
 | Store ID rules/cooldown/alias | `utils/storeId`, `MyStorePage` | `storeApi` | §4 | CONFIRMED rule / BACKEND DEP | Enforce + aliases |
 | Region master data | `regionService`, location form | **none** | §4, §10.1(3) | BACKEND DEP | Add endpoints + adapter |
 | Product catalog | `StoreLandingPage`, `ProductListingPage` | `productApi.listPublicProducts` | §5 | PROPOSED | Confirm content/order server-side |
-| Product detail | `ProductDetailPage` | `productApi.getProduct` | §5 | PROPOSED | Hide non-public |
+| Product detail | `ProductDetailPage` | `productApi.getProduct` | §5 | PROPOSED | Hide non-public; Product Detail actions = CTA + Share (no WhatsApp/Marketplace), no footer, fullscreen "Lihat Full" (frontend-only) |
 | Seller products list | `ProductsPage`, `StatusTabs` | `productApi.listSellerProducts` | §5 | MISMATCH | Resolve `?status=` (PRODUCT-4) |
 | Product lifecycle actions | `ProductsPage`, `ArchivedProductsPage` | `productApi` | §5 | PROPOSED | Confirm SOLD_OUT transport |
 | Auto Archive | mock lazy window; UI on Archive page | `storeApi` | §4/§5 | BACKEND DEP | Scheduler + DTO |
@@ -177,6 +182,8 @@ These are facts about the current frontend, **not** claims about the backend:
 - `toRecentActivity` currently normalizes `PRODUCT_UPDATED` → `PRODUCT_EDITED` and
   accepts `date` or `created_at`; the canonical value is `PRODUCT_UPDATED`
   (flip to canonical in Phase B).
+- There is no `/seller` root route in `src/app/routes.jsx` today; the gateway
+  (`SellerEntryGate`) is a planned frontend route (docs-only, not yet implemented).
 
 ---
 
@@ -209,6 +216,10 @@ These are facts about the current frontend, **not** claims about the backend:
   `PROPOSED`.
 - No new endpoint is invented by this document beyond what already exists in the
   adapters and `docs/API-CONTRACT.md`.
+- Product CTA, destination presets, `/seller` gateway, fullscreen "Lihat Full",
+  and the Store Landing floating action bar are recorded as **doc-level
+  dependencies** (rows 16–18 in §7), not as confirmed backend contracts. They
+  do not create endpoints or DTO fields until backend confirms.
 
 ---
 
@@ -240,6 +251,9 @@ These are facts about the current frontend, **not** claims about the backend:
 | 13 | Announcement storage | Store DTO single `{ title, message, is_enabled }` | Confirm single-object wire shape |
 | 14 | Operating hours storage | My Store structured editor composes a wire string | Confirm string wire format expected by backend |
 | 15 | Account activation / recovery flows | Register verify / recovery email / change-password flows | Email vs phone activation; OTP vs magic link; short-lived proof shape |
+| 16 | Store CTA Options + Product CTA selection + external destinations (shared channel master) | Store-level `store.ctaOptions` (defaults BUY "Beli" + BARGAIN "Tawar", seller add/delete CUSTOM) — product selects exactly one (default BUY/"Beli"); Product Detail CTA opens a menu of ALL external destinations (separate field from CTA); external links reference a shared channel master (CMS) — mock = exactly Shopee/Tokopedia/Lazada + store-scoped `CUSTOM:` custom channels (frontend-icons; TikTok Shop/Blibli display hints only, pending backend confirmation); channel refs `{ channelId, url }`, empty-URL + duplicate rejection. Docs only (PRODUCT-18/19) | DTO fields for `store.ctaOptions` + `product.cta` + external destinations; channel-master endpoint/wire shape (`channel_id` reference vs `{name,url}`); custom-channel storage; store vs product persistence; `channel` value encoding for CUSTOM destinations in Customer Interest (INTEREST-7) |
+| 17 | `/seller` entry gateway | `/seller` redirects guest→/login, no-store→/create-store, store→/seller/dashboard; no new endpoint (GATEWAY-1) | Confirm session/`GET /auth/me` payload exposes store presence |
+| 18 | Frontend-only UI (no API) — fullscreen "Lihat Full" and Store Landing floating action bar | No wire impact; documented to avoid inventing endpoints | None (confirm any dependency only if a surface decision later needs it) |
 
 **Phase B start condition (no-api server):** Phase B proceeds in a
 mock-first / adapter-compatible way; it does not require these confirmations to

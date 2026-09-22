@@ -47,6 +47,20 @@ function findProduct(productId) {
 }
 
 /**
+ * The default CTA option for a new product: the store's BUY option (default
+ * "Beli"), falling back to a minimal BUY option when the store has no CTA
+ * options yet. Products always carry exactly one selected CTA option
+ * (docs/PRODUCT.md §23); they never create CTA definitions themselves.
+ * @param {string} storeId
+ * @returns {import('../data/models.js').ProductCTA}
+ */
+function defaultCtaOption(storeId) {
+  const store = stores.find((item) => item.storeId === storeId)
+  const buy = (store?.ctaOptions ?? []).find((option) => option.type === 'BUY')
+  return buy ?? { type: 'BUY', label: 'Beli' }
+}
+
+/**
  * Compute the next product id.
  * @returns {number}
  */
@@ -247,6 +261,7 @@ export function createProduct(payload) {
     details: payload.details ?? [],
     description: payload.description ?? '',
     externalLinks: payload.externalLinks ?? [],
+    cta: payload.cta ?? defaultCtaOption(getCurrentStoreId()),
     status: initialStatus,
     featured: Boolean(payload.featured) && initialStatus === PRODUCT_STATUS.PUBLISHED,
     createdAt: now,
@@ -311,6 +326,10 @@ export function updateProduct(productId, payload) {
     featured: nextFeatured,
     updatedAt: new Date().toISOString(),
   })
+  // A product always carries exactly one selected CTA option; an edit that
+  // omits/nulls it falls back to the store's default BUY option instead of
+  // removing the selection.
+  product.cta = payload.cta ?? defaultCtaOption(product.storeId)
   return withLatency(product)
 }
 

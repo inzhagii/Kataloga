@@ -212,7 +212,7 @@ Store profile fields (mapped to the reconciled wire DTO from
 | operating hours | `operating_hours` | Optional (see §5) |
 | auto archive | `auto_archive_days` | Optional (`null` = Never) (see §11) |
 | announcement | `announcement` | Optional — single object `{ title, message, is_enabled }` (see §4 note) |
-| external channels | `external_links` | Optional — `[{ platform_name, store_url }]` (see §13) |
+| external channels | `external_links` | Optional — channel references (frontend model `{ channelId, url }`; wire shape unconfirmed, see §13 and §19 #25) |
 
 Notes:
 
@@ -374,7 +374,7 @@ Expected product fields:
 | `price` | **DECIMAL**; **`price = 0` is valid** (free) |
 | `photos` | Minimum 1, maximum 5; **exactly one main photo** |
 | `details` / `attributes` | Product Details (hybrid category-recommended + seller custom); **optional**, never all-required |
-| `external_links` | `[{ platform_name, store_url }]`; product-level links (see §13); not rendered on customer Product Detail |
+| `external_links` | Channel references (frontend model `{ channelId, url }`; wire shape unconfirmed, see §13 / §19 #25); product-level links; not rendered on customer Product Detail |
 | `status` | DRAFT / PUBLISHED / SOLD_OUT / ARCHIVED (see §9) |
 | `featured` | Boolean; Product Unggulan (see §10) |
 
@@ -557,8 +557,38 @@ SOLD_OUT (still within auto archive window):
 - searchable
 - shareable
 - product detail page remains accessible
-- **WhatsApp / Marketplace contact CTAs are hidden or disabled**
+- **CTA is unavailable**
 - **Share remains available**
+
+Product Detail actions (finalized):
+
+- Product Detail uses **CTA (primary) + Share (secondary)**, ratio 70:30 on
+  desktop and mobile.
+- **No WhatsApp, no Marketplace (store channels) on Product Detail.**
+- CTA opens the product's **external destination menu** (modal desktop / bottom
+  sheet mobile, never a dropdown).
+- CTA is hidden — without a fallback — when the product has no external
+  destinations (recorded as a dependency; do not invent a redirect).
+- Product Detail has **no footer**.
+
+Store Landing actions (finalized):
+
+- Store actions are a **floating action bar** that appears when the header/store
+  info scrolls out of view.
+- Desktop: WhatsApp + Marketplace + Share (Share visually smaller).
+- Mobile: WhatsApp + Marketplace + Share (Share visually smaller). Share does
+  **not** live in the storefront navbar.
+- The floating bar hides when the Store Landing **footer** enters the viewport.
+- Marketplace on the floating bar opens a modal (desktop) / bottom sheet
+  (mobile), never a dropdown.
+
+Storefront footer (finalized):
+
+- Compact: Store Name + Description, WhatsApp/Contact, external channels,
+  Full Address (if present).
+- No Store Logo, no "Tentang Kataloga".
+- Bottom single line, centered: `© 2026 Kataloga · Made with Kataloga`, with
+  "Made with Kataloga" clickable to `/`.
 
 `Do not fabricate store status or unavailable data.`
 
@@ -569,21 +599,64 @@ SOLD_OUT (still within auto archive window):
 - **WhatsApp is a dedicated store field** (`whatsapp`), separate from external
   marketplace/sales channels. **Do not merge WhatsApp into the generic
   external-link model.**
-- External marketplace/sales channels are a separate list. Conceptual external
-  link shape:
+- External marketplace/sales channels reference a **shared channel master
+  (CMS)**. Frontend reference model:
 
 ```text
-{ "platform_name": "Shopee", "store_url": "https://..." }
+{ "channel_id": "SHOPEE", "url": "https://..." }
 ```
 
-- No persisted link id, no icon/logo, no display order, no description, no
-  analytics on external links.
+  per reference; channel definition (`id`, `name`, `logo` icon token) lives on
+  the master. The exact wire shape (channel_id-reference vs. embedded
+  `{name,url}`) is UNCONFIRMED — see §19 #25.
+
+- Channel master V1 (mock) contains **exactly** Shopee, Tokopedia, Lazada.
+  Custom (seller-created, store-scoped) channels use an id prefix `CUSTOM:`
+  (e.g. `CUSTOM:TOKO-SAYA`), are scoped so other stores never see them, and use
+  a generic frontend-owned icon (no upload).
+- TikTok Shop / Blibli remain only as a frontend display hint
+  (`destinationPresets`); whether the production CMS includes them needs backend
+  confirmation.
+- No persisted per-reference link id, no icon/logo per reference, no display
+  order, no description, no analytics on external links.
+- A channel must not be referenced twice within one store config or one product
+  config (duplicate rejected; frontend validates, backend is final).
+- Every configured channel must have a URL (empty URL blocks My Store save and
+  Product Publish; inline per-channel error).
 - Marketplace appears on the storefront only if the store has at least one
   external channel. Marketplace is a picker: when the customer presses
   Marketplace, show the configured channels, wait for the channel choice, then
-  proceed.
+  proceed. The picker is a modal (desktop) / bottom sheet (mobile) — **never a
+  dropdown**.
 
-CTA behavior (WhatsApp and Marketplace):
+Product CTA + external destinations (docs-only dependency, NOT a confirmed
+backend contract — see §19 #22 and #25):
+
+- **Store CTA Options** (store-level, reusable): `store.ctaOptions` =
+  `[{ type: 'BUY'|'BARGAIN'|'CUSTOM', label }]`. Defaults: BUY `"Beli"` and
+  BARGAIN `"Tawar"` (permanent, cannot be deleted); the seller may add CUSTOM
+  options with a custom label (e.g. `"Tanya Harga"`); unused CUSTOM options may
+  be deleted. CUSTOM options must not be duplicated; count/length/dedup rules
+  need backend/product confirmation (not invented here).
+- **Product selects exactly one CTA option**: `product.cta` =
+  `{ type: 'BUY'|'BARGAIN'|'CUSTOM', label }`, label resolved from the selected
+  store option (default BUY / `"Beli"`). Add/Edit Product never creates new CTA
+  definitions — it only selects from the store list. CTA never blocks Publish.
+- Destination channels V1: shared channel master with exactly Shopee, Tokopedia,
+  Lazada (mock), plus store-scoped `CUSTOM:` channels; TikTok Shop & Blibli are
+  frontend display hints only pending backend confirmation. Preset → icon
+  mapping is frontend-owned; the backend does not send icon assets.
+- Product external destinations remain `{ channelId, url }` references as a
+  **separate domain concept** from both the Product CTA and the Store external
+  channels, even though the seller-side picker UI is shared. **CTA never
+  contains a destination list** — clicking CTA opens a menu of ALL product
+  external destinations (Product CTA itself is only the label/type of the
+  primary action).
+- The seller-side "Tambah External" picker (Store External and Product
+  External) is a modal (desktop) / bottom sheet (mobile), never a dropdown.
+- `CUSTOM` label length rule: needs backend/product confirmation.
+
+CTA behavior (WhatsApp, Marketplace, and product CTA destinations):
 
 ```text
 Auth check
@@ -599,8 +672,11 @@ open destination (WhatsApp / exact external URL)
 
 - **Do NOT redirect/open the destination before interest recording succeeds.**
 - If the interest POST fails, do not redirect.
-- WhatsApp/marketplace product-detail action requires the product to be
-  publishable context: for SOLD_OUT products these CTAs are disabled (see §12).
+- On Product Detail, the CTA menu is the interest-triggering action; on the
+  Store Landing, WhatsApp / Marketplace on the floating bar are the
+  interest-triggering actions.
+- For SOLD_OUT products the Product Detail CTA is disabled (see §12); Share
+  remains.
 - Product view or share must **never** create a Customer Interest.
 
 ---
@@ -638,6 +714,9 @@ Creation:
 
 - Customer Interest is created **ONLY from explicit CTA actions**
   (`WHATSAPP_CLICK` and `MARKETPLACE_CLICK`, with the chosen channel).
+- On Product Detail, the **CTA destination click** is the explicit CTA action
+  (context `PRODUCT`, `channel` = selected destination). On Store Landing,
+  WhatsApp / Marketplace on the floating bar are the explicit CTA actions.
 - **Do NOT create interest from**: page view, product detail view, browsing,
   search, share, login/logout, store visit, category activity.
 
@@ -674,10 +753,11 @@ last_activity_at
 Critical flow (backend contract expectation):
 
 1. Check authentication.
-2. If guest, preserve context through auth (product URL / selected channel).
+2. If guest, preserve context through auth (product URL / selected channel /
+   selected CTA destination).
 3. Authenticate.
 4. **POST Customer Interest.**
-5. Only after a successful POST, open the WhatsApp/marketplace destination.
+5. Only after a successful POST, open the WhatsApp/marketplace/destination URL.
 6. If the POST fails, do not redirect.
 
 `API DEPENDENCY / CONFIRMATION REQUIRED` — **aggregated rows vs per-click
@@ -877,6 +957,10 @@ markers), and the reconciled frontend docs. **Do not invent answers.**
 | 19 | Brand identifier | `brand_id` vs `brand name` for `product.brand`; rename propagation; delete usage counting incl. ARCHIVED | API-CONTRACT §6.1; BACKEND-DEP BRAND-1/2/3/4/5; §7 |
 | 20 | Activity date/time wire format | Raw timestamp vs pre-formatted `DD.MM.YYYY`; datetime format | API-CONTRACT §8; BACKEND-DEP ACTIVITY-4; §15 |
 | 21 | V1 master seed data (NEW — see discrepancy note) | Confirm the category seed (§6) and 12-brand seed (§7) are the authoritative V1 master data | This handoff §6/§7 |
+| 22 | Store CTA Options + Product CTA selection + external destinations (NEW) | `store.ctaOptions` DTO (`[{ type: 'BUY'|'BARGAIN'|'CUSTOM', label }]`, defaults BUY/BARGAIN, seller-added CUSTOM); `product.cta` selects exactly one option (`{ type, label }`, default BUY/"Beli"); whether CTA persisted store-level vs per-product; external destination presets + wire shape (separate field from CTA); `CUSTOM` label count/length/dedup + unused-CUSTOM deletion rules; `channel` value encoding for CUSTOM destinations in Customer Interest | PRODUCT §23/§30; BACKEND-DEP PRODUCT-18/19, INTEREST-7; API-CONTRACT §10.1(17) |
+| 23 | `/seller` entry gateway (NEW) | Confirm session/`GET /auth/me` payload exposes store presence so `/seller` can branch (guest→/login, no-store→/create-store, store→/dashboard); no new endpoint | PRODUCT §2; ROUTES §23/§30/§32; BACKEND-DEP GATEWAY-1; API-CONTRACT §10.1(18) |
+| 24 | Frontend-only UI (no API) — fullscreen "Lihat Full" + Store Landing floating action bar | No wire impact; noted to avoid inventing endpoints | API-CONTRACT §10.1(19); BACKEND-DEP §7#18 |
+| 25 | External channel master (NEW) | Whether the backend serves a channel master (CMS); wire shape for store `external_links` / product `external_links` (`channel_id` reference vs. embedded `{name,url}`); custom (store-scoped `CUSTOM:`) channel representation/storage; backend-side duplicate rejection; whether production CMS includes TikTok Shop / Blibli | HANDOFF §4/§8/§13; API-CONTRACT §4/§5/§10.1(17); BACKEND-DEP row 16; frontend mock = exactly Shopee/Tokopedia/Lazada |
 
 Additional dependency rows already in `docs/BACKEND-DEPENDENCIES.md` §7 and
 register (keep in view):
@@ -889,6 +973,7 @@ register (keep in view):
 - Self-store exclusion enforcement (backend expected).
 - Seller product list shows PUBLISHED + DRAFT + SOLD_OUT in one list; adapter today only implements `active`/`archived` — never auto-fixed, documented pending confirmation.
 - Brand endpoints are `PROPOSED` (not implemented by backend); frontend runs on mock brand data until confirmed.
+- Product Detail actions = CTA + Share (no WhatsApp/Marketplace), no footer, fullscreen gallery; Store actions = floating bar + compact footer; documented as frontend UI, no backend endpoint required.
 
 ---
 
@@ -907,6 +992,7 @@ API ready for frontend integration.
 - [ ] Ownership enforced (session-derived, never client `store_id`)
 - [ ] `store_id` rules enforced (lowercase/digits/hyphen, ≤50 chars, unique, 30-day cooldown)
 - [ ] Alias behavior supported (90-day redirect alias, expiry, reusability, no child re-key)
+- [ ] External channel master confirmed (channel refs `{channelId,url}`; custom `CUSTOM:` store-scoped channels; empty-URL + duplicate rejection; §19 #25)
 
 **PRODUCT**
 - [ ] Slug returned/defined (or confirmation recorded that frontend derives it)
@@ -914,6 +1000,10 @@ API ready for frontend integration.
 - [ ] Photo rules enforced (1–5, exactly one main)
 - [ ] Lifecycle endpoints confirmed (dedicated vs status PATCH)
 - [ ] Featured behavior confirmed (max 10; PUBLISHED/SOLD_OUT eligible; SOLD_OUT keeps; ARCHIVED clears)
+- [ ] Store CTA Options DTO confirmed (`store.ctaOptions`; defaults BUY "Beli" + BARGAIN "Tawar"; CUSTOM add/delete, dedup, label rules) — §19 #22
+- [ ] Product CTA selection DTO confirmed (`product.cta` = exactly one selected store option, default BUY/"Beli"; store- vs product-persistence) — §19 #22
+- [ ] External destinations DTO confirmed (separate field from CTA; presets; CUSTOM label validation) — §19 #22
+- [ ] `/seller` gateway: session exposes store presence for branching (no new endpoint) — §19 #23
 
 **CATEGORY**
 - [ ] 2-level hierarchy
@@ -969,7 +1059,7 @@ API DEPENDENCY / CONFIRMATION REQUIRED
 ```
 
 are **explicitly resolved by the backend developer before implementation**
-(see Section 19 for the consolidated list; items #1–#21 plus register rows).
+(see Section 19 for the consolidated list; items #1–#25 plus register rows).
 
 This task:
 

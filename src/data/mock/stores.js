@@ -4,6 +4,7 @@
  */
 
 import storeLogo from '../../assets/mock/store-logo.svg'
+import { CUSTOM_CHANNEL_LOGO } from './channels'
 
 /** @type {import('../models.js').Store[]} */
 export const stores = [
@@ -19,8 +20,22 @@ export const stores = [
     operatingHours: 'Senin - Sabtu, 09:00 - 18:00',
     whatsapp: '6281234567890',
     channels: [
-      { name: 'Shopee', url: 'https://shopee.co.id/toko-komputer-jaya' },
-      { name: 'Tokopedia', url: 'https://www.tokopedia.com/toko-komputer-jaya' },
+      { channelId: 'SHOPEE', url: 'https://shopee.co.id/toko-komputer-jaya' },
+      { channelId: 'TOKOPEDIA', url: 'https://www.tokopedia.com/toko-komputer-jaya' },
+    ],
+    customChannels: [
+      {
+        id: 'CUSTOM:TOKO-SAYA',
+        storeId: 'toko-komputer-jaya',
+        name: 'Toko Saya',
+        logo: CUSTOM_CHANNEL_LOGO,
+        custom: true,
+      },
+    ],
+    ctaOptions: [
+      { type: 'BUY', label: 'Beli' },
+      { type: 'BARGAIN', label: 'Tawar' },
+      { type: 'CUSTOM', label: 'Tanya Harga' },
     ],
     verified: true,
     announcement: {
@@ -44,8 +59,14 @@ export const stores = [
     operatingHours: 'Senin - Sabtu, 10:00 - 20:00',
     whatsapp: '6281234567890',
     channels: [
-      { name: 'Tokopedia', url: 'https://www.tokopedia.com/techspace-bandung' },
-      { name: 'Shopee', url: 'https://shopee.co.id/techspace_bandung' },
+      { channelId: 'TOKOPEDIA', url: 'https://www.tokopedia.com/techspace-bandung' },
+      { channelId: 'SHOPEE', url: 'https://shopee.co.id/techspace_bandung' },
+    ],
+    customChannels: [],
+    ctaOptions: [
+      { type: 'BUY', label: 'Beli' },
+      { type: 'BARGAIN', label: 'Tawar' },
+      { type: 'CUSTOM', label: 'Tanya Harga' },
     ],
     verified: false,
     autoArchiveDays: 30,

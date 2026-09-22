@@ -251,6 +251,7 @@ Tidak menempatkan di dalam navbar storefront:
 WhatsApp
 Marketplace
 Full Address
+Share (Share berada di floating action bar desktop & mobile)
 
 Full Address tidak boleh diduplikasi secara tidak perlu pada area storefront yang menonjol.
 
@@ -298,28 +299,16 @@ Store Name
 Store Description
       ↓
 Address + Open Hours
-      ↓
-WhatsApp
-      ↓
-Marketplace + Share
+
+Store actions TIDAK berada dalam header mobile.
+
+Store actions disajikan sebagai floating action bar (lihat § 13 Store Action Hierarchy).
 
 Mobile:
 
 Address       Open Hours
 
 berada side-by-side.
-
-Hubungi via WhatsApp:
-
-[       Hubungi via WhatsApp       ]
-
-full width.
-
-Marketplace dan Share:
-
-[ Marketplace ] [ Share ]
-
-side-by-side.
 
 12. Balanced Layout
 
@@ -340,21 +329,35 @@ Jangan memaksa layout menjadi tidak seimbang hanya karena salah satu content leb
 
 13. Store Action Hierarchy
 
+Store actions pada Store Landing disajikan sebagai floating action bar.
+
+Floating action bar muncul ketika header/store info keluar dari viewport (scroll).
+
+Visibilitas:
+
+- Header visible → floating bar hidden.
+- Header keluar viewport → floating bar visible.
+- Footer masuk viewport → floating bar hidden.
+- Footer keluar viewport lagi → floating bar boleh visible kembali.
+
+Implementasi preferensi menggunakan IntersectionObserver.
+
 Label action WhatsApp selalu:
 
 Hubungi via WhatsApp
 
 Dengan Marketplace:
 
-Desktop:
+Desktop (floating bar):
 
-[ Hubungi via WhatsApp ] [ Marketplace ] [ Share ]
+[ Hubungi via WhatsApp ] [ Marketplace ] [ Share (lebih kecil) ]
 
-Mobile:
+Mobile (floating bar):
 
-[          Hubungi via WhatsApp          ]
+[ Hubungi via WhatsApp ] [ Marketplace ] [ Share (lebih kecil) ]
 
-[ Marketplace ] [   Share   ]
+Share pada mobile berada di floating action bar yang sama (desktop & mobile);
+Share TIDAK ada di navbar.
 
 Tanpa Marketplace (seller tidak mengkonfigurasi external channel):
 
@@ -362,9 +365,16 @@ Desktop:
 
 [ Hubungi via WhatsApp ] [ Share ]
 
-Mobile:
+Mobile (floating bar):
 
-[     Hubungi via WhatsApp (proporsi lebih besar, 3:2)     ] [ Share ]
+[ Hubungi via WhatsApp ] [ Share ]
+
+Marketplace pada floating bar TIDAK menggunakan dropdown:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+
+Menu hanya menampilkan external channels yang dikonfigurasi seller.
 
 WhatsApp merupakan primary contact action.
 
@@ -532,10 +542,23 @@ Grid harus tetap readable pada mobile.
 
 Product Listing page (= /{storeId}/products) merupakan halaman listing utama.
 
+Toolbar:
+
+Desktop:
+
+[ Search (full width) ] [ Filter (compact) ]
+
+pada baris yang sama. Filter berisi Category, Condition, dan Sort (tanpa
+category chips).
+
+Mobile:
+
+[ Search (full width) ]
+[ Filter ] [ Urutkan ]
+
 Menyediakan:
 
 Search
-Category filter
 Filter
 Sort
 Product grid
@@ -644,7 +667,7 @@ Tidak ada availability sort option.
 
 23. Marketplace UI
 
-Marketplace tidak menggunakan icon/logo.
+Marketplace tidak menggunakan icon/logo sebagai requirement V1.
 
 Channel hanya ditampilkan berdasarkan konfigurasi seller.
 
@@ -655,13 +678,19 @@ Marketplace
 ├── Tokopedia
 └── Website
 
-Desktop:
+Desktop dan Mobile:
 
-Popover / Dropdown
+Modal / Bottom Sheet
 
-Mobile:
+Bukan dropdown/popover.
 
-Bottom Sheet
+Menu hanya menampilkan external channels yang dikonfigurasi seller.
+
+Untuk seller-side "Tambah External" (Store External maupun Product External):
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+- Item hasil tambah ditampilkan dengan icon + name + URL + tombol remove.
 
 Tidak membuat marketplace page.
 
@@ -693,16 +722,18 @@ Desktop
 │ Product Gallery     │ Product Name         │
 │ (fixed)             │ Price (bold)         │
 │                     │ Category / Condition │
-│                     │ Actions              │
+│                     │ Actions (CTA + Share)│
 │                     │ Details              │
 │                     │ Description          │
 └─────────────────────┴──────────────────────┘
 
 Gallery berada di kiri dan fixed.
 
-Product information berada di kanan; panel info scroll di dalam area tersebut.
+Info card di kanan (Brand, product info, harga, kategori/kondisi, CTA + Share)
+tetap fixed dan selalu terlihat; hanya bagian Product Details dan Description
+yang scroll di dalam area tersebut.
 
-Footer berada di luar area scroll.
+Product Detail TIDAK memiliki footer.
 
 Brand ditampilkan secara eksplisit pada Product Detail. Contoh tampilan penulisan nama brand diikuti colon:
 
@@ -711,6 +742,15 @@ Brand ditampilkan secara eksplisit pada Product Detail. Contoh tampilan penulisa
 Bagian External Product Links TIDAK ditampilkan pada Product Detail.
 
 External Product Links tetap ada sebagai field data product (form product dan API), tetapi tidak dirender di halaman Product Detail customer-facing.
+
+### Gallery — Lihat Full
+
+Gallery Product Detail menyediakan mode fullscreen "Lihat Full":
+
+- overlay hitam penuh layar,
+- navigasi foto swipe horizontal,
+- tombol close (×),
+- state UI internal, bukan route.
 
 26. Product Detail — Mobile
 
@@ -728,13 +768,17 @@ Price (bold)
    ↓
 Category / Condition
    ↓
-Actions
+Actions (CTA + Share)
    ↓
 Product Details
    ↓
 Description
 
 Long description menggunakan expand/collapse jika diperlukan.
+
+Product Detail mobile: Actions (CTA + Share) disajikan sebagai floating action bar terkunci di dasar viewport yang selalu visible (rasio CTA : Share = 70 : 30) sehingga tombol aksi tetap terjangkau saat halaman digulir — pola visual mengikuti floating action bar Store Landing (§ 13), tanpa perilaku hide/show berbasis viewport. Actions tidak lagi inline pada mobile; pada desktop Actions inline di dalam info card.
+
+Product Detail mobile TIDAK menggunakan bottom navigation dan TIDAK memiliki footer.
 
 27. Product Detail Hierarchy
 
@@ -760,13 +804,27 @@ Product Unggulan indicator terpisah secara visual dari Brand.
 
 ### Product Detail Actions
 
-Primary action adalah "Hubungi via WhatsApp".
+Primary action adalah CTA product (Beli / Tawar / Custom).
 
-Marketplace dan Share tersedia sebagai secondary actions.
+Share adalah secondary action.
 
-Marketplace hanya ditampilkan jika store memiliki setidaknya satu external channel aktif.
+Rasio desktop dan mobile:
 
-Pada mobile, "Hubungi via WhatsApp" tetap menjadi primary action.
+CTA : Share = 70 : 30
+
+CTA TIDAK menggunakan WhatsApp maupun Marketplace (store channels).
+
+CTA membuka menu destination product:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+- Bukan dropdown.
+
+CTA tidak tersedia jika menu destination external product kosong:
+
+- tidak ada fallback, tidak mengarang destination,
+- CTA tidak ditampilkan,
+- kebutuhan ini dicatat sebagai API/product dependency.
 
 28. Sold Out — Product Status
 
@@ -793,8 +851,7 @@ Produk SOLD_OUT yang masih dalam jendela auto archive tetap dapat dibuka di Prod
 Menampilkan:
 
 indikasi "Sold Out" yang jelas
-WhatsApp tidak tersedia
-Marketplace tidak tersedia
+CTA tidak tersedia
 Share tetap tersedia
 
 Share product SOLD_OUT tetap menggunakan:
@@ -1049,7 +1106,8 @@ Product Details
 Description
 Condition
 Price
-External Product Links
+Product CTA (Call-to-Action): selection satu opsi dari Store CTA Options (Beli | Tawar | label kustom; default Beli) — bukan definisi baru
+External Product Links / Destinations
 Product Unggulan
 
 Actions:
@@ -1083,14 +1141,18 @@ Price
 Optional:
 
 Brand
+Product CTA (Call-to-Action) — selection opsi (default `BUY`/"Beli" selalu tersedia, tidak memblokir Publish)
 Product Details / attributes
-External Product Links
+External Product Links / Destinations
 Product Unggulan
 
 Catatan:
 
 - Price bernilai 0 (gratis) adalah valid untuk Publish.
 - Product Details / attributes tidak wajib untuk Publish.
+- Product CTA dan External Product Links / Destinations tidak wajib untuk Publish.
+- Product memilih tepat satu opsi CTA dari Store CTA Options (default `BUY`/"Beli"); CTA TIDAK berisi daftar destination.
+- Menu destination external (Product CTA destinations maupun External Product Links) TIDAK menggunakan dropdown; memakai modal (desktop) / bottom sheet (mobile).
 - Slug adalah komponen URL kanonik (readable), unique dalam satu store, dan dikelola backend.
 
 UI harus membedakan field required dan optional dengan jelas.
@@ -1111,7 +1173,7 @@ Customer-facing display harus tetap clean dan readable.
 
 Tidak semua possible attributes harus diwajibkan.
 
-Product Details sendiri wajib untuk Publish.
+Product Details bersifat opsional untuk Publish.
 
 38. Description
 
@@ -1350,6 +1412,7 @@ Full Address (opsional, free-text)
 Operating Hours
 WhatsApp
 External Sales Channels
+Store CTA Options — daftar reusable: BUY ("Beli") dan BARGAIN ("Tawar") permanent default tidak dapat dihapus; seller dapat menambah/menghapus opsi CUSTOM dengan label kustom (CUSTOM yang masih dipakai product tidak dapat dihapus; CUSTOM tidak boleh diduplikasi)
 Announcement
 
 Auto Archive TIDAK berada di My Store. Auto Archive terletak pada halaman Archive (lihat §40 Archive UI).
@@ -1615,24 +1678,121 @@ Tidak semua action membutuhkan confirmation.
 
 55. External Channel UI
 
-External channel memiliki:
+External channel adalah referensi ke shared channel master (CMS):
 
 type ExternalChannel = {
-  name: string
+  channelId: string   // referensi ke ChannelDefinition (master)
   url: string
 }
 
-Tidak ada field id pada persisted model/API contract.
+type ExternalProductLink = {
+  channelId: string
+  url: string
+}
 
-Tidak menambahkan:
+Definition channel (master):
+
+type ChannelDefinition = {
+  id: string      // 'SHOPEE' | 'TOKOPEDIA' | 'LAZADA' | 'CUSTOM:...'
+  name: string
+  logo: string    // material-symbol token, frontend-owned
+  custom?: boolean
+  storeId?: string // hanya untuk custom channel (store-scoped)
+}
+
+Model/definitions yang sama berlaku untuk Store External channels dan Product
+External links; masing-masing menyimpan konteks URL sendiri (STORE vs PRODUCT).
+
+Tidak ada field id per-referensi pada persisted model/API contract.
+
+Tidak menambahkan per-referensi:
 
 id
 iconUrl
+logoUrl (per referensi)
 description
 displayOrder
 analytics
+integrationType
 
 ke UI requirement V1 tanpa keputusan baru.
+
+Konteks STORE / PRODUCT adalah konteks URL, BUKAN definisi channel terpisah.
+
+CUSTOM channel: store-scoped, id ber-prefix `CUSTOM:`, icon generic
+(frontend-owned), tidak tampil pada store lain. Duplikasi channel dalam satu
+store/product config ditolak.
+
+Channel master V1 mock berisi persis 3 channel (Shopee / Tokopedia / Lazada);
+TikTok Shop & Blibli tersisa sebagai hint display (destinationPresets) —
+termasuk/tidaknya pada production CMS needs backend confirmation.
+
+### Destination Presets (Product External)
+
+Destinations external product memakai shared channel master untuk tampilan UI:
+
+Shopee
+Tokopedia
+Lazada
+(seller dapat menambah CUSTOM channel untuk destination lain, mis. Website,
+Instagram)
+
+TikTok Shop dan Blibli hanya tersisa sebagai hint display (destinationPresets)
+— BUKAN bagian channel master V1 mock; apakah production CMS menyertakannya
+needs backend confirmation.
+
+Icon dan label channel adalah frontend-owned (mapping channel_id → material
+symbol token); backend tidak mengirim icon assets.
+
+Dengan CUSTOM:
+
+- nama channel (label kustom, store-scoped)
+- URL
+
+### Product CTA UI
+
+CTA adalah opsi store (Store CTA Options); product memilih tepat satu opsi:
+
+type CTAOption = {
+  type: 'BUY' | 'BARGAIN' | 'CUSTOM'
+  label: string
+}
+
+type ProductCTA = {
+  type: 'BUY' | 'BARGAIN' | 'CUSTOM'
+  label: string
+}
+
+Store CTA Options:
+
+- Default permanent: BUY ("Beli") dan BARGAIN ("Tawar") — tidak dapat dihapus.
+- Seller dapat menambahkan CUSTOM dengan label kustom; CUSTOM yang tidak digunakan di product boleh dihapus. Opsi CUSTOM tidak boleh diduplikasi (batas jumlah opsi & batas panjang label: needs backend/product confirmation).
+
+Product:
+
+- menyeleksi satu opsi dari daftar store (default `BUY`/"Beli");
+- TIDAK pernah membuat definisi CTA baru.
+
+Terminology UI:
+
+BUY → Beli
+BARGAIN → Tawar
+CUSTOM → label kustom (dari store option)
+
+Icon CTA frontend-owned; seller tidak meng-upload icon CTA.
+
+### Tambah External — Picker
+
+Pemilihan destination/channel pada form (Store External maupun Product External) TIDAK menggunakan dropdown:
+
+- Desktop: modal.
+- Mobile: bottom sheet.
+
+Setelah dipilih/tambah, item ditampilkan dengan icon + name + URL + tombol remove.
+
+URL wajib diisi untuk setiap item yang dikonfigurasi (My Store save / Product
+Publish diblokir saat ada URL kosong); error inline per-channel: "URL external
+wajib diisi."
 
 56. Customer Interest UI
 
@@ -1874,10 +2034,13 @@ ProductCard
 ProductGrid
 ProductFilters
 ProductSort
-MarketplaceSelector
+DestinationPicker (modal/bottom sheet untuk Store External dan Product External)
+MarketplaceSelector → digantikan/refactor ke DestinationPicker
 ShareButton
 StoreHeader
-StoreActions
+StoreActions (floating action bar)
+FloatingActionBar
+ProductCTASelector
 Announcement
 EmptyState
 LoadingState
@@ -1945,11 +2108,18 @@ lebih baik daripada component yang memiliki product data hardcoded di dalamnya.
 
 72. Mock Data
 
-Mock data boleh digunakan selama frontend development.
+Mock data adalah development data source resmi selama frontend development
+(API backend belum tersedia).
 
 Namun harus jelas bahwa:
 
 Mock Data ≠ Production Data
+
+Jangan menghapus/menonaktifkan mock data/assets yang masih digunakan. Semua
+fitur baru wajib menyediakan/update mock data untuk kebutuhan UI dan QA.
+
+Production/API mode tidak boleh silent-fallback ke mock; larangan itu hanya
+untuk fake production API fallback, bukan untuk development mock data.
 
 Mock data harus mudah diganti dengan API response.
 
@@ -2061,13 +2231,15 @@ TypeScript/build tidak error
 
 79. Storefront Footer
 
-Footer ditampilkan pada Store Landing dan Product Detail.
+Footer bersifat compact dan hanya ditampilkan pada Store Landing.
+
+Product Detail TIDAK memiliki footer.
 
 Bagian:
 
 Store Identity
-- Store Logo
 - Store Name
+- Store Description / Bio
 
 Contact
 - WhatsApp / Contact
@@ -2078,14 +2250,24 @@ External Sales Channels
 Address
 - Full Address jika tersedia
 
-Kataloga
-- Tentang Kataloga (hanya link/konten existing)
+Footer TIDAK memuat:
 
-External channels tetap:
+- Store Logo (logo hanya di navbar dan Store Header)
+- Tentang Kataloga
+- kumpulan link informasi Kataloga
 
-{ name, url }
+Baris paling bawah footer adalah satu baris centered:
 
-Tidak ada persisted channel ID.
+- © 2026 Kataloga · Made with Kataloga
+
+dengan "Made with Kataloga" clickable menuju `/`.
+
+External channels menunjuk ke shared channel master (CMS) sebagai referensi:
+
+{ channelId, url }
+
+Definisi channel (name/logo) di-resolve dari master; custom channel
+(store-scoped) ber-prefix `CUSTOM:`. Tidak ada channel ID per-referensi.
 
 Tidak ada field marketplace-specific:
 

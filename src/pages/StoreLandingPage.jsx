@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useStoreCatalog } from '../hooks/useStoreCatalog'
 import { useAuth } from '../hooks/useAuth'
+import { useFloatingActionVisibility } from '../hooks/useFloatingActionVisibility'
 import { INTEREST_TYPE, INTEREST_CONTEXT } from '../constants/enums'
 import { recordInterest } from '../services/customerInterestService'
 import { consumePendingAction, setPendingAction } from '../utils/pendingAction'
@@ -17,16 +18,19 @@ import AnnouncementBanner from '../components/storefront/AnnouncementBanner'
 import FeaturedProducts from '../components/storefront/FeaturedProducts'
 import CatalogSection from '../components/storefront/CatalogSection'
 import StoreFooter from '../components/storefront/StoreFooter'
+import StoreActions from '../components/storefront/StoreActions'
 import ShareSheet from '../components/storefront/ShareSheet'
 import StoreLandingSkeleton from '../components/storefront/StoreLandingSkeleton'
 import EmptyState from '../components/shared/EmptyState'
 
 /**
  * Public storefront for a seller store (/{storeId}). Catalog (search /
- * filter / sort), featured products, announcement and the WhatsApp /
- * Marketplace / Share actions. WhatsApp and Marketplace clicks are the only
- * actions that record Customer Interest; guests are routed through Login
- * first and the action auto-continues after they return.
+ * filter / sort), featured products, announcement, a compact footer, and the
+ * WhatsApp / Marketplace actions presented as a floating action bar (Share only
+ * on the desktop bar; mobile Share lives in the navbar). WhatsApp and
+ * Marketplace clicks are the only actions that record Customer Interest;
+ * guests are routed through Login first and the action auto-continues after
+ * they return.
  */
 function StoreLandingPage() {
   const { storeId } = useParams()
@@ -34,6 +38,10 @@ function StoreLandingPage() {
   const { user, authLoaded } = useAuth()
   const { status, store, products, categories, error, reload } = useStoreCatalog(storeId)
   const [shareTarget, setShareTarget] = useState(null)
+
+  const headerRef = useRef(null)
+  const footerRef = useRef(null)
+  const showFloatingActions = useFloatingActionVisibility(headerRef, footerRef)
 
   const returnPath = buildStoreUrl(storeId)
 
@@ -220,15 +228,10 @@ function StoreLandingPage() {
 
   return (
     <div className="min-h-svh bg-surface">
-      <StoreNavbar store={store} />
+      <StoreNavbar store={store} onShareMobile={handleShareStore} />
 
       <main className="mx-auto max-w-[1140px] px-4 pb-16 pt-20 md:px-6 md:pt-24">
-        <StoreHeader
-          store={store}
-          onWhatsApp={handleWhatsApp}
-          onSelectChannel={handleSelectChannel}
-          onShareStore={handleShareStore}
-        />
+        <StoreHeader store={store} innerRef={headerRef} />
 
         <AnnouncementBanner announcement={store.announcement} />
 
@@ -253,6 +256,15 @@ function StoreLandingPage() {
         store={store}
         onWhatsApp={handleWhatsApp}
         onSelectChannel={handleSelectChannel}
+        innerRef={footerRef}
+      />
+
+      <StoreActions
+        store={store}
+        show={showFloatingActions}
+        onWhatsApp={handleWhatsApp}
+        onSelectChannel={handleSelectChannel}
+        onShareStore={handleShareStore}
       />
 
       <ShareSheet
