@@ -8,9 +8,9 @@ import { filterRecentActivities, FILTER_ALL } from '../../utils/recentActivityFi
 
 /**
  * Full Recent Activity list (route /seller/activities), reached from
- * Dashboard → Recent Activity → Lihat Semua. Shows only the locked seven
- * seller/store activity types, filtered by type and a single date. Provides
- * "Kembali" to Dashboard.
+ * Dashboard → Recent Activity → Lihat Semua. Shows the canonical seller/store
+ * activity types, filtered by type and a single date. Provides "Kembali" to
+ * Dashboard.
  */
 function RecentActivitiesPage() {
   const [state, setState] = useState({ status: 'loading', activities: [], error: '' })

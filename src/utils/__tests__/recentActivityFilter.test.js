@@ -35,7 +35,7 @@ const activities = [
 ]
 
 describe('ACTIVITY_TYPE_ORDER', () => {
-  it('lists exactly the seven canonical types in documentation order', () => {
+  it('lists every canonical activity type in documentation order', () => {
     expect(ACTIVITY_TYPE_ORDER).toEqual([
       ACTIVITY_TYPE.PRODUCT_PUBLISHED,
       ACTIVITY_TYPE.PRODUCT_EDITED,
@@ -43,6 +43,10 @@ describe('ACTIVITY_TYPE_ORDER', () => {
       ACTIVITY_TYPE.PRODUCT_REACTIVATED,
       ACTIVITY_TYPE.PRODUCT_ARCHIVED,
       ACTIVITY_TYPE.PRODUCT_RESTORED,
+      ACTIVITY_TYPE.CATEGORY_CREATED,
+      ACTIVITY_TYPE.CATEGORY_UPDATED,
+      ACTIVITY_TYPE.ANNOUNCEMENT_CREATED,
+      ACTIVITY_TYPE.ANNOUNCEMENT_UPDATED,
       ACTIVITY_TYPE.STORE_UPDATED,
     ])
   })

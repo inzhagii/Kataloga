@@ -40,7 +40,7 @@ function ProductDescription({ description }) {
           aria-expanded={expanded}
           className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-blue-700"
         >
-          {expanded ? 'Tutup' : 'Baca selengkapnya'}
+          {expanded ? 'Tutup' : 'Lihat selengkapnya'}
           <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
             {expanded ? 'expand_less' : 'expand_more'}
           </span>

@@ -69,4 +69,14 @@ describe('StoreFooter', () => {
     expect(html).toContain('© 2026 Kataloga')
     expect(html).toContain('Made with Kataloga')
   })
+
+  it('renders a single centered bottom row with Made with Kataloga linking to /', () => {
+    const html = render(demoStore, {})
+    const copyright = html.indexOf('© 2026 Kataloga')
+    const homeLink = html.indexOf('href="/"')
+    const madeWith = html.indexOf('Made with Kataloga')
+    expect(copyright).toBeGreaterThanOrEqual(0)
+    expect(homeLink).toBeGreaterThan(copyright)
+    expect(madeWith).toBeGreaterThan(homeLink)
+  })
 })

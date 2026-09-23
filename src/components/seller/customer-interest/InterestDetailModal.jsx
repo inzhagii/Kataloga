@@ -23,10 +23,11 @@ import CustomerAvatar from './CustomerAvatar'
  *   record: import('../../../data/models.js').CustomerInterest | null,
  *   interests: import('../../../data/models.js').CustomerInterest[],
  *   productById: Map<number, object>,
+ *   definitions?: import('../../../data/models.js').ChannelDefinition[],
  *   onClose: () => void,
  * }} props
  */
-function InterestDetailModal({ record, interests, productById, onClose }) {
+function InterestDetailModal({ record, interests, productById, definitions = [], onClose }) {
   const [activeRecord, setActiveRecord] = useState(record)
 
   useEffect(() => {
@@ -147,7 +148,12 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
                 Aktivitas
               </span>
               <div className="mt-2">
-                <ChannelBadge channelType={current.channelType} channel={current.channel} />
+                <ChannelBadge
+                  channelType={current.channelType}
+                  channel={current.channel}
+                  channelId={current.channelId}
+                  definitions={definitions}
+                />
               </div>
             </div>
             <div className="rounded-xl border border-outline-variant/40 bg-surface p-3">
@@ -213,7 +219,12 @@ function InterestDetailModal({ record, interests, productById, onClose }) {
                                   Aktif
                                 </span>
                               ) : null}
-                              <ChannelBadge channelType={act.channelType} channel={act.channel} />
+                              <ChannelBadge
+                                channelType={act.channelType}
+                                channel={act.channel}
+                                channelId={act.channelId}
+                                definitions={definitions}
+                              />
                             </span>
                           </div>
                           <p className="text-[11px] text-on-surface-variant">

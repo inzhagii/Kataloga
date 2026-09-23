@@ -9,13 +9,16 @@ import { describe, expect, it } from 'vitest'
 import { CHANNEL_SOURCE } from '../../constants/enums'
 import { CMS_CHANNELS, CUSTOM_CHANNEL_LOGO, CUSTOM_CHANNEL_ID_PREFIX } from '../../data/mock/channels'
 import {
+  CUSTOM_CHANNEL_NAME_DUPLICATE,
   EXTERNAL_URL_REQUIRED,
+  buildCustomChannelDefinition,
   channelDefinitionSource,
   hasDuplicateChannelId,
   isChannelRef,
   isCustomChannelDefinition,
   listStoreChannelDefinitions,
   resolveChannelDefinition,
+  resolveChannelRefsForDisplay,
   validateChannelRefs,
 } from '../channels'
 
@@ -119,6 +122,113 @@ describe('channel definitions (shared master + custom)', () => {
     const storeBDefinitions = listStoreChannelDefinitions(bStore, CMS_CHANNELS)
     expect(storeBDefinitions.some((definition) => definition.id === 'CUSTOM:TOKO-SAYA')).toBe(false)
     expect(bStore.channels.some((ref) => ref.channelId === 'CUSTOM:TOKO-SAYA')).toBe(false)
+  })
+})
+
+describe('resolveChannelRefsForDisplay', () => {
+  it('resolves CMS references to name + logo display records', () => {
+    const result = resolveChannelRefsForDisplay(
+      [
+        { channelId: 'SHOPEE', url: 'https://shopee.co.id/x' },
+        { channelId: 'TOKOPEDIA', url: 'https://www.tokopedia.com/y' },
+      ],
+      CMS_CHANNELS,
+    )
+    expect(result).toEqual([
+      { channelId: 'SHOPEE', url: 'https://shopee.co.id/x', name: 'Shopee', logo: 'shopping_bag' },
+      {
+        channelId: 'TOKOPEDIA',
+        url: 'https://www.tokopedia.com/y',
+        name: 'Tokopedia',
+        logo: 'storefront',
+      },
+    ])
+  })
+
+  it('resolves a store custom channel through the store definitions set', () => {
+    const definitions = listStoreChannelDefinitions(aStore, CMS_CHANNELS)
+    const result = resolveChannelRefsForDisplay(
+      [{ channelId: 'CUSTOM:TOKO-SAYA', url: 'https://example.com/toko-saya' }],
+      definitions,
+    )
+    expect(result).toEqual([
+      {
+        channelId: 'CUSTOM:TOKO-SAYA',
+        url: 'https://example.com/toko-saya',
+        name: 'Toko Saya',
+        logo: CUSTOM_CHANNEL_LOGO,
+      },
+    ])
+  })
+
+  it('falls back to the raw id + generic logo for an unresolvable reference', () => {
+    const result = resolveChannelRefsForDisplay(
+      [{ channelId: 'UNKNOWN_CHANNEL', url: 'https://example.com/x' }],
+      CMS_CHANNELS,
+    )
+    expect(result).toEqual([
+      {
+        channelId: 'UNKNOWN_CHANNEL',
+        url: 'https://example.com/x',
+        name: 'UNKNOWN_CHANNEL',
+        logo: CUSTOM_CHANNEL_LOGO,
+      },
+    ])
+  })
+
+  it('passes legacy plain {name,url} records through unchanged', () => {
+    const plain = { name: 'Shopee', url: 'https://shopee.co.id/x' }
+    const result = resolveChannelRefsForDisplay([plain], CMS_CHANNELS)
+    expect(result[0]).toBe(plain)
+  })
+
+  it('returns an empty list for an empty configuration', () => {
+    expect(resolveChannelRefsForDisplay([], CMS_CHANNELS)).toEqual([])
+    expect(resolveChannelRefsForDisplay(undefined, CMS_CHANNELS)).toEqual([])
+  })
+})
+
+describe('buildCustomChannelDefinition', () => {
+  it('builds a store-scoped custom channel with a CUSTOM: id and generic logo', () => {
+    const definition = buildCustomChannelDefinition({
+      storeId: 'toko-komputer-jaya',
+      name: 'Toko Saya',
+    })
+    expect(definition).toEqual({
+      id: 'CUSTOM:TOKO-SAYA',
+      storeId: 'toko-komputer-jaya',
+      name: 'Toko Saya',
+      logo: CUSTOM_CHANNEL_LOGO,
+      custom: true,
+    })
+  })
+
+  it('rejects an empty/blank name', () => {
+    expect(() =>
+      buildCustomChannelDefinition({ storeId: 's', name: '   ' }),
+    ).toThrow('Nama channel custom wajib diisi.')
+  })
+
+  it('rejects a name that duplicates an existing custom channel (case-insensitive)', () => {
+    expect(() =>
+      buildCustomChannelDefinition({
+        storeId: 'toko-komputer-jaya',
+        name: 'toko SAYA',
+        existingNames: ['Toko Saya'],
+      }),
+    ).toThrow(CUSTOM_CHANNEL_NAME_DUPLICATE)
+  })
+
+  it('normalizes the id (uppercase, dashes) and avoids channel id collisions', () => {
+    const first = buildCustomChannelDefinition({ storeId: 's', name: 'Toko & Saya co.' })
+    expect(first.id).toBe('CUSTOM:TOKO-SAYA-CO')
+
+    const collision = buildCustomChannelDefinition({
+      storeId: 's',
+      name: 'Web Store',
+      existingChannelIds: ['CUSTOM:WEB-STORE'],
+    })
+    expect(collision.id).toBe('CUSTOM:WEB-STORE-2')
   })
 })
 

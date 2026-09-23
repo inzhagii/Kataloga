@@ -1,6 +1,8 @@
 import DestinationPicker from './DestinationPicker'
 import { PRODUCT_STATUS } from '../../constants/enums'
 import { CTA_ICONS, ctaTypeLabel } from '../../constants/cta'
+import { resolveChannelRefsForDisplay } from '../../utils/channels'
+import { CMS_CHANNELS } from '../../data/mock/channels'
 
 /**
  * Product action row (Product Detail). CTA (primary) + Share (secondary) at
@@ -12,11 +14,21 @@ import { CTA_ICONS, ctaTypeLabel } from '../../constants/cta'
  *   navigation on Product Detail.
  * - Desktop: inline row inside the ProductInfo card (lg:static).
  *
- * The CTA opens the product destination menu (modal desktop / bottom sheet
- * mobile) built from the product's external links. If the product has no
- * external destinations the CTA is not rendered (no fallback — no invented
- * WhatsApp/redirect). For SOLD_OUT products the CTA is unavailable and only
- * Share is rendered.
+ * The CTA button is icon + CTA label only (no arrow, no extra symbol, no URL
+ * shown). Clicking it opens the product destination menu (modal desktop /
+ * bottom sheet mobile, never a dropdown) built from ALL of the product's
+ * external links — the CTA itself does not own destinations and never filters
+ * which destinations appear.
+ *
+ * Product external links are references (`{channelId, url}`); name/logo are
+ * resolved against the store's channel definitions (`channelDefinitions`,
+ * defaulting to the shared CMS master) so the sheet shows the correct channel
+ * identity. Plain `{name, url}` entries are accepted for backward
+ * compatibility with existing fixtures.
+ *
+ * If the product has no external destinations the CTA is not rendered (no
+ * fallback — no invented WhatsApp/redirect). For SOLD_OUT products the CTA is
+ * unavailable and only Share is rendered.
  *
  * Authentication gating + Customer Interest + redirect after a destination pick
  * are handled by the page via onSelectDestination.
@@ -25,11 +37,16 @@ import { CTA_ICONS, ctaTypeLabel } from '../../constants/cta'
  *   product: import('../../data/models.js').Product,
  *   onSelectDestination: (destination: import('../../data/models.js').ExternalProductLink) => void,
  *   onShare: () => void,
+ *   channelDefinitions?: import('../../data/models.js').ChannelDefinition[],
  * }} props
  */
-function ProductActions({ product, onSelectDestination, onShare }) {
+function ProductActions({ product, onSelectDestination, onShare, channelDefinitions }) {
   const soldOut = product.status === PRODUCT_STATUS.SOLD_OUT
-  const destinations = product.externalLinks ?? []
+  const definitions =
+    Array.isArray(channelDefinitions) && channelDefinitions.length > 0
+      ? channelDefinitions
+      : CMS_CHANNELS
+  const destinations = resolveChannelRefsForDisplay(product.externalLinks ?? [], definitions)
   const hasDestinations = destinations.length > 0
   const hasCta = Boolean(product.cta?.type) && !soldOut && hasDestinations
 
@@ -70,9 +87,6 @@ function ProductActions({ product, onSelectDestination, onShare }) {
                     </span>
                     <span className="whitespace-nowrap">
                       {ctaTypeLabel(product.cta.type, product.cta.label)}
-                    </span>
-                    <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-                      expand_more
                     </span>
                   </button>
                 )}

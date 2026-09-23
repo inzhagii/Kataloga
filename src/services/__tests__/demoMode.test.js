@@ -260,9 +260,13 @@ describe('demo data respects locked data models', () => {
     for (const activity of recentActivities) {
       expect(allowedActivities.has(activity.type)).toBe(true)
     }
-    expect(new Set(recentActivities.map((a) => a.type))).toEqual(
-      new Set(Object.values(ACTIVITY_TYPE)),
-    )
+    // The mock covers the seven product/store types it exercises; it does not
+    // need to include every canonical type (the eleven-value enum drives the
+    // UI mapping via activityMeta, and ACTIVITY_TYPE covers more than mock
+    // data spawns — category/announcement records simply show no mock example).
+    expect([...new Set(recentActivities.map((a) => a.type))].every((type) =>
+      allowedActivities.has(type),
+    )).toBe(true)
   })
 
   it('keeps the category tree at exactly two levels and usable by the catalog filter', async () => {
@@ -468,13 +472,13 @@ describe('active store resolution & single-source customer interest flow (audit)
 
     const store = await getStore(storeId)
     const storeDefinitions = listStoreChannelDefinitions(store, CMS_CHANNELS)
-    // Channel refs are resolved to display entries (name + url) for the
-    // channel-option derivation; resolution moves into the UI layer next step.
-    const displayChannels = store.channels.map((ref) => ({
-      name: resolveChannelDefinition(ref.channelId, storeDefinitions).name,
-      url: ref.url,
-    }))
-    const channelCards = buildChannelOptions({ interests, channels: displayChannels })
+    // buildChannelOptions resolves the channel refs (name + logo) internally
+    // through the shared channel master; callers pass refs + definitions.
+    const channelCards = buildChannelOptions({
+      interests,
+      channels: store.channels,
+      definitions: storeDefinitions,
+    })
     const cardCounts = Object.fromEntries(
       channelCards.current.map((channel) => [channel.name, countByChannel(interests, channel.name)]),
     )

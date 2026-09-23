@@ -11,13 +11,15 @@ import StoreContactSection from '../../components/seller/mystore/StoreContactSec
 import StoreCtaOptionsSection from '../../components/seller/mystore/StoreCtaOptionsSection'
 import AnnouncementSection from '../../components/seller/mystore/AnnouncementSection'
 import { withDefaultCtaOptions } from '../../constants/cta'
+import { CMS_CHANNELS } from '../../data/mock/channels'
+import { buildCustomChannelDefinition } from '../../utils/channels'
 import { useMyStore } from '../../hooks/useMyStore'
 import { useRegionData } from '../../hooks/useRegionData'
 import { canChangeStoreId, checkStoreIdAvailable, updateStore } from '../../services/storeService'
 import { recordStoreUpdated } from '../../services/activityService'
 import { normalizePhone } from '../../services/authService'
 import { normalizeStoreId, validateStoreId } from '../../utils/storeId'
-import { validateStoreInformation } from '../../utils/storeValidation'
+import { validateStoreInformation, validateStoreChannels } from '../../utils/storeValidation'
 
 function SectionToggleButton({ open, onToggle }) {
   return (
@@ -78,12 +80,16 @@ function MyStoreEditor({ store, onSaved }) {
     whatsapp: store.whatsapp || '',
     logoUrl: store.logoUrl || '',
   })
-  const [channels, setChannels] = useState(
-    (store.channels || []).map((channel, index) => ({
-      id: `channel-${index}`,
-      name: channel.name,
-      url: channel.url,
+  const [channels, setChannels] = useState(() =>
+    (store.channels || []).map((channel) => ({
+      channelId: channel.channelId,
+      url: channel.url ?? '',
     })),
+  )
+  const [customChannels, setCustomChannels] = useState(() => store.customChannels || [])
+  const channelDefinitions = useMemo(
+    () => [...CMS_CHANNELS, ...customChannels],
+    [customChannels],
   )
   const [announcementEnabled, setAnnouncementEnabled] = useState(
     Boolean(store.announcement?.isEnabled),
@@ -155,11 +161,30 @@ function MyStoreEditor({ store, onSaved }) {
   }
 
   function validate() {
-    return validateStoreInformation(form).valid
+    const result = validateStoreInformation(form)
+    if (channels.length > 0) {
+      Object.assign(result.errors, validateStoreChannels(channels).errors)
+    }
+    result.valid = Object.keys(result.errors).length === 0
+    return result
+  }
+
+  function handleCustomChannelCreate(name) {
+    const definition = buildCustomChannelDefinition({
+      storeId: store.storeId,
+      name,
+      existingChannelIds: customChannels.map((item) => item.id),
+      existingNames: customChannels.map((item) => item.name),
+    })
+    setCustomChannels((current) => [...current, definition])
+    setDirty(true)
+    return definition
   }
 
   async function handleSave() {
-    if (!validate()) {
+    const result = validate()
+    if (!result.valid) {
+      setErrors(result.errors)
       return
     }
     const nextStoreId = normalizeStoreId(form.storeId)
@@ -195,9 +220,15 @@ function MyStoreEditor({ store, onSaved }) {
         fullAddress: form.fullAddress.trim(),
         operatingHours: form.operatingHours.trim(),
         whatsapp: form.whatsapp.trim() ? normalizePhone(form.whatsapp.trim()) : '',
-        channels: channels
-          .map((channel) => ({ name: channel.name.trim(), url: channel.url.trim() }))
-          .filter((channel) => Boolean(channel.name) && Boolean(channel.url)),
+        channels: channels.map((channel) => ({
+          channelId: channel.channelId,
+          url: String(channel.url ?? '').trim(),
+        })),
+        customChannels: customChannels.map((definition) => ({
+          ...definition,
+          storeId: store.storeId,
+          name: definition.name.trim(),
+        })),
         announcement: {
           title: announcementTitle.trim(),
           message: announcementMessage.trim(),
@@ -313,12 +344,22 @@ function MyStoreEditor({ store, onSaved }) {
             errors={errors}
             setField={setField}
             channels={channels}
+            definitions={channelDefinitions}
             onChannelsChange={(value) => {
               setChannels(value)
               setChannelError('')
+              setErrors((current) => {
+                const next = { ...current }
+                Object.keys(next).forEach((key) => {
+                  if (key.startsWith('channel-')) {
+                    delete next[key]
+                  }
+                })
+                return next
+              })
               setDirty(true)
             }}
-            onChannelError={setChannelError}
+            onCustomChannelCreate={handleCustomChannelCreate}
           >
             <SectionToggleButton {...toggleProps('contact')} />
           </StoreContactSection>

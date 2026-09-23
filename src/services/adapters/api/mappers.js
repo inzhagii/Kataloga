@@ -135,6 +135,9 @@ export function toBrand(dto) {
  * Customer interest DTO (snake_case) to frontend model (camelCase).
  * Identity is preserved as-is: a missing name stays null (never coerced to a
  * fake placeholder) so the UI can fall back to email/phone when present.
+ * A `channel_id` reference (when the backend provides one) is passed through
+ * so the UI can resolve the channel display from the shared channel master;
+ * legacy records without it keep the `channel` name snapshot.
  * @param {object} dto - Customer interest DTO ({ id, store_id, customer_name, ... }).
  * @returns {import('../../../data/models.js').CustomerInterest}
  */
@@ -150,6 +153,7 @@ export function toCustomerInterest(dto) {
     productName: dto.product_name ?? null,
     channelType: dto.channel_type,
     channel: dto.channel ?? '',
+    channelId: dto.channel_id ?? null,
     externalUrl: dto.external_url ?? null,
     context: dto.context ?? null,
     date: dto.date,

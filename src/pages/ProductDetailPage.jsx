@@ -6,6 +6,8 @@ import { INTEREST_TYPE, INTEREST_CONTEXT } from '../constants/enums'
 import { recordInterest } from '../services/customerInterestService'
 import { consumePendingAction, setPendingAction } from '../utils/pendingAction'
 import { buildStoreProductUrl, resolveProductSlug } from '../utils/storefrontUrl'
+import { listStoreChannelDefinitions } from '../utils/channels'
+import { CMS_CHANNELS } from '../data/mock/channels'
 import StoreNavbar from '../components/storefront/StoreNavbar'
 import ProductGallery from '../components/storefront/ProductGallery'
 import ProductInfo from '../components/storefront/ProductInfo'
@@ -219,17 +221,20 @@ function ProductDetailPage() {
               <ProductGallery product={product} storeName={store.name} />
             </div>
 
-            <div className="flex min-w-0 flex-col gap-5 sm:gap-6 lg:h-full lg:min-h-0 lg:gap-0 lg:overflow-y-auto lg:overflow-x-hidden lg:pb-8 lg:pr-1 pb-28">
+            <div className="flex min-w-0 flex-col gap-5 sm:gap-6 pb-28 lg:h-full lg:min-h-0 lg:gap-0 lg:overflow-hidden lg:pb-0">
               <ProductInfo
                 product={product}
                 onSelectDestination={handleSelectDestination}
                 onShare={handleShare}
+                channelDefinitions={listStoreChannelDefinitions(store, CMS_CHANNELS)}
               />
-              <div className="lg:pt-6">
-                <ProductDetailsSection product={product} />
-              </div>
-              <div className="lg:pt-6">
-                <ProductDescription description={product.description} />
+              <div className="flex min-w-0 flex-col lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overflow-x-hidden lg:pr-1 lg:pb-8">
+                <div className="lg:pt-6">
+                  <ProductDetailsSection product={product} />
+                </div>
+                <div className="mt-5 sm:mt-6 lg:mt-0 lg:pt-6">
+                  <ProductDescription description={product.description} />
+                </div>
               </div>
             </div>
           </div>

@@ -3,45 +3,17 @@ import { SORT_OPTIONS } from '../../constants/storefront'
 import BottomSheet from './BottomSheet'
 
 /**
- * Catalog sort control. Desktop uses a compact native select; mobile uses a
- * bottom sheet. Both share the same SORT_OPTIONS and apply changes
- * immediately (no explicit apply step).
+ * Catalog sort control for mobile only: a "Urutkan" trigger that opens a
+ * bottom sheet, applying the selection immediately (no explicit apply step).
+ * On desktop sort is not a separate toolbar control — it lives inside the
+ * Filter popover (FilterControl) — so this component renders nothing on
+ * md+ screens.
  */
 function SortControl({ sort, onChange }) {
   const [open, setOpen] = useState(false)
 
   return (
     <>
-      {/* Desktop select */}
-      <div className="hidden items-center gap-2 md:flex">
-        <label
-          htmlFor="catalog-sort"
-          className="whitespace-nowrap text-xs text-on-surface-variant"
-        >
-          Urutkan:
-        </label>
-        <div className="relative">
-          <select
-            id="catalog-sort"
-            value={sort}
-            onChange={(event) => onChange(event.target.value)}
-            className="cursor-pointer appearance-none rounded-xl border border-outline-variant/30 bg-surface-container-lowest py-2 pl-3.5 pr-8 text-xs font-medium text-on-surface shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <span
-            className="material-symbols-outlined pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant"
-            aria-hidden="true"
-          >
-            expand_more
-          </span>
-        </div>
-      </div>
-
       {/* Mobile trigger + sheet */}
       <button
         type="button"

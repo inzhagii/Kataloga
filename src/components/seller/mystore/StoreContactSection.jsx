@@ -2,15 +2,21 @@ import SectionCard from '../products/form/SectionCard'
 import ExternalChannelsEditor from './ExternalChannelsEditor'
 
 /**
- * Store contact: WhatsApp number and generic external sales channels.
+ * Store contact: WhatsApp number and external sales channels.
+ *
+ * Channels are { channelId, url } references resolved through the shared
+ * channel master; the section only wires the editor, My Store save owns
+ * validation/persistence. Per-channel URL errors arrive on `errors` keyed
+ * `channel-<index>` so the editor can highlight the affected row.
  *
  * @param {{
  *   form: { whatsapp: string },
  *   errors: Record<string, string>,
  *   setField: (field: string, value: string) => void,
- *   channels: { id: string, name: string, url: string }[],
- *   onChannelsChange: (value: { id: string, name: string, url: string }[]) => void,
- *   onChannelError: (message: string) => void,
+ *   channels: { channelId: string, url: string }[],
+ *   definitions: import('../../../data/models.js').ChannelDefinition[],
+ *   onChannelsChange: (value: { channelId: string, url: string }[]) => void,
+ *   onCustomChannelCreate: (name: string) => import('../../../data/models.js').CustomChannelDefinition,
  *   children: React.ReactNode,
  * }} props
  */
@@ -19,8 +25,9 @@ function StoreContactSection({
   errors,
   setField,
   channels,
+  definitions,
   onChannelsChange,
-  onChannelError,
+  onCustomChannelCreate,
   children,
 }) {
   return (
@@ -73,8 +80,10 @@ function StoreContactSection({
 
         <ExternalChannelsEditor
           channels={channels}
+          definitions={definitions}
+          errors={errors}
           onChange={onChannelsChange}
-          onError={onChannelError}
+          onCustomChannelCreate={onCustomChannelCreate}
         />
       </div>
     </SectionCard>

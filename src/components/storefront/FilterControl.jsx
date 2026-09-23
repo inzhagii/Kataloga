@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CONDITION_OPTIONS } from '../../constants/storefront'
+import { CONDITION_OPTIONS, SORT_OPTIONS } from '../../constants/storefront'
 import BottomSheet from './BottomSheet'
 
 /**
@@ -8,8 +8,20 @@ import BottomSheet from './BottomSheet'
  * first, then the Sub Kategori scoped to the selected Kategori Utama. Desktop
  * opens a compact popover, mobile opens a bottom sheet — both share the same
  * content and business behavior.
+ *
+ * When `sort` + `onSortChange` are provided, the desktop popover also shows a
+ * Sort ("Urutkan") section that applies immediately (no apply step). The
+ * mobile sheet never includes Sort — mobile keeps the separate "Urutkan"
+ * control, so sort stays out of the mobile filter sheet.
  */
-function FilterControl({ tree, appliedCategory = 'all', appliedCondition = 'all', onApply }) {
+function FilterControl({
+  tree,
+  appliedCategory = 'all',
+  appliedCondition = 'all',
+  sort,
+  onSortChange,
+  onApply,
+}) {
   const roots = tree?.roots ?? []
   const childrenByRoot = tree?.childrenByRoot ?? {}
 
@@ -157,7 +169,27 @@ function FilterControl({ tree, appliedCategory = 'all', appliedCondition = 'all'
     </div>
   )
 
-  const filterContent = (
+  const hasSort = typeof onSortChange === 'function'
+
+  const sortSection = (
+    <div>
+      <span className="text-xs font-semibold uppercase tracking-wider text-secondary">Urutkan</span>
+      <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Urutkan produk">
+        {SORT_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={pillClasses(sort === option.value)}
+            onClick={() => onSortChange(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+
+  const filterBody = (withSort) => (
     <div className="flex flex-col gap-5">
       {categoryStep}
 
@@ -176,6 +208,8 @@ function FilterControl({ tree, appliedCategory = 'all', appliedCondition = 'all'
           ))}
         </div>
       </div>
+
+      {withSort ? sortSection : null}
 
       <div className="flex items-center gap-3">
         <button
@@ -217,7 +251,7 @@ function FilterControl({ tree, appliedCategory = 'all', appliedCondition = 'all'
 
       {open ? (
         <div className="absolute right-0 top-full z-30 mt-2 w-[340px] rounded-2xl bg-surface-container-lowest p-4 shadow-xl">
-          {filterContent}
+          {filterBody(hasSort)}
         </div>
       ) : null}
     </div>
@@ -239,7 +273,7 @@ function FilterControl({ tree, appliedCategory = 'all', appliedCondition = 'all'
 
       <div className="md:hidden">
         <BottomSheet open={open} onClose={() => setOpen(false)} title="Filter Produk" icon="tune">
-          {filterContent}
+          {filterBody(false)}
         </BottomSheet>
       </div>
     </>

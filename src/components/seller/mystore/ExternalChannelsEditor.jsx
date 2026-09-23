@@ -1,58 +1,58 @@
-import { useState } from 'react'
+import ChannelPicker from '../../shared/ChannelPicker'
+import { CMS_CHANNELS } from '../../../data/mock/channels'
+import { resolveChannelRefsForDisplay } from '../../../utils/channels'
 
-function nextChannelId() {
-  return `channel-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-}
+const FIELD_CLASS =
+  'w-full rounded-lg border bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20'
 
-function isValidUrl(value) {
-  if (!value.trim()) {
-    return false
-  }
-  try {
-    const url = new URL(value.trim())
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
+const FIELD_ERROR_CLASS = 'border-error bg-error-container/30'
 
 /**
- * Generic external sales channels (e.g. Shopee/Tokopedia marketplace links).
- * Channels are free-form name + URL, configurable per store, with no
- * fixed platform list or storefront icons (locked requirement).
+ * External Sales Channel editor (My Store).
+ *
+ * Channels are persisted as { channelId, url } references over the shared
+ * channel master (CMS channels + the store's own custom channels). The seller
+ * picks a channel from a modal/bottom-sheet selector (never a dropdown), then
+ * only types the URL — the channel name/logo come from its definition. A store
+ * configuration never references the same channel twice (the selector disables
+ * already-added channels).
+ *
+ * An added channel stays editable with an empty URL; My Store save blocks on it
+ * (inline red error per channel, "URL external wajib diisi.") instead of
+ * silently dropping the row.
  *
  * @param {{
- *   channels: { id: string, name: string, url: string }[],
- *   onChange: (value: { id: string, name: string, url: string }[]) => void,
- *   onError: (message: string) => void,
+ *   channels: { channelId: string, url: string }[],
+ *   definitions: import('../../../data/models.js').ChannelDefinition[],
+ *   errors: Record<string, string>,
+ *   onChange: (channels: { channelId: string, url: string }[]) => void,
+ *   onCustomChannelCreate: (name: string) => import('../../../data/models.js').CustomChannelDefinition,
  * }} props
  */
-function ExternalChannelsEditor({ channels, onChange, onError }) {
-  const [adding, setAdding] = useState(false)
-  const [draft, setDraft] = useState({ name: '', url: '' })
+function ExternalChannelsEditor({
+  channels,
+  definitions = CMS_CHANNELS,
+  errors = {},
+  onChange,
+  onCustomChannelCreate,
+}) {
+  const list = channels ?? []
+  const resolved = resolveChannelRefsForDisplay(list, definitions)
+  const selectedChannelIds = list.map((channel) => channel.channelId).filter(Boolean)
 
-  function addChannel() {
-    const name = draft.name.trim()
-    const url = draft.url.trim()
-    if (!name || !url) {
-      onError('Nama dan URL channel wajib diisi.')
+  function addChannel(definition) {
+    if (list.some((channel) => channel.channelId === definition.id)) {
       return
     }
-    if (!isValidUrl(url)) {
-      onError('URL channel tidak valid. Gunakan URL lengkap (https://...).')
-      return
-    }
-    onChange([...channels, { id: nextChannelId(), name, url }])
-    setDraft({ name: '', url: '' })
-    setAdding(false)
+    onChange([...list, { channelId: definition.id, url: '' }])
   }
 
-  function updateChannel(id, field, value) {
-    onChange(channels.map((channel) => (channel.id === id ? { ...channel, [field]: value } : channel)))
+  function updateChannel(index, url) {
+    onChange(list.map((channel, channelIndex) => (channelIndex === index ? { ...channel, url } : channel)))
   }
 
-  function removeChannel(id) {
-    onChange(channels.filter((channel) => channel.id !== id))
+  function removeChannel(index) {
+    onChange(list.filter((_, channelIndex) => channelIndex !== index))
   }
 
   return (
@@ -62,104 +62,82 @@ function ExternalChannelsEditor({ channels, onChange, onError }) {
           External Sales Channel{' '}
           <span className="font-normal lowercase text-secondary">(opsional)</span>
         </span>
-        {adding ? (
-          <button
-            type="button"
-            onClick={() => {
-              setAdding(false)
-              setDraft({ name: '', url: '' })
-            }}
-            className="text-xs font-semibold text-secondary transition-colors hover:text-on-surface"
-          >
-            Batal
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setAdding(true)}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
-          >
-            <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-              add
-            </span>
-            Tambah Channel
-          </button>
-        )}
+        <ChannelPicker
+          triggerLabel="+ Tambah External Channel"
+          sheetTitle="Tambah External Channel"
+          sheetIcon="link"
+          definitions={definitions}
+          selectedChannelIds={selectedChannelIds}
+          onSelect={addChannel}
+          onAddCustom={onCustomChannelCreate}
+        />
       </div>
 
       <p className="mb-3 text-[11px] leading-relaxed text-secondary">
-        Tautan marketplace atau channel penjualan lain yang kamu pakai. Customer akan memilih
-        channel ini saat menekan tombol Marketplace.
+        Channel penjualan luar yang kamu pakai — pilih dari daftar lalu isi URL. Nama dan ikon
+        mengikuti channel tersebut. Customer memilih channel ini saat menekan tombol Marketplace.
       </p>
 
-      {channels.length === 0 && !adding ? (
+      {list.length === 0 ? (
         <p className="rounded-lg bg-surface-container-low px-3 py-2.5 text-xs text-on-surface-variant">
-          Belum ada channel. Tambahkan tautan ke marketplace atau halaman penjualan kamu.
+          Belum ada channel. Gunakan "+ Tambah External Channel" untuk memilih dari daftar.
         </p>
       ) : null}
 
       <ul className="space-y-3">
-        {channels.map((channel) => (
-          <li key={channel.id} className="flex items-start gap-2">
-            <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
-              <input
-                type="text"
-                value={channel.name}
-                onChange={(event) => updateChannel(channel.id, 'name', event.target.value)}
-                placeholder="Nama channel (contoh: Shopee)"
-                aria-label="Nama channel"
-                className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-              <input
-                type="url"
-                value={channel.url}
-                onChange={(event) => updateChannel(channel.id, 'url', event.target.value)}
-                placeholder="https://..."
-                aria-label="URL channel"
-                className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => removeChannel(channel.id)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-secondary transition-colors hover:bg-error-container hover:text-error"
-              aria-label={`Hapus channel ${channel.name}`}
+        {resolved.map((channel, index) => {
+          const channelError = errors[`channel-${index}`]
+          return (
+            <li
+              key={channel.channelId}
+              className="flex items-start gap-2.5 rounded-lg border border-outline-variant/40 bg-surface p-3"
             >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                delete
-              </span>
-            </button>
-          </li>
-        ))}
+              <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-[200px_1fr]">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span
+                    className="material-symbols-outlined shrink-0 text-[18px] text-on-surface-variant"
+                    aria-hidden="true"
+                  >
+                    {channel.logo}
+                  </span>
+                  <span className="truncate text-sm font-semibold text-on-surface">
+                    {channel.name}
+                  </span>
+                </div>
+                <div>
+                  <input
+                    type="url"
+                    value={channel.url}
+                    onChange={(event) => updateChannel(index, event.target.value)}
+                    placeholder="https://..."
+                    aria-label={`URL channel ${channel.name}`}
+                    aria-invalid={Boolean(channelError)}
+                    className={`${FIELD_CLASS} ${channelError ? FIELD_ERROR_CLASS : 'border-outline-variant'}`}
+                  />
+                  {channelError ? (
+                    <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-error">
+                      <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                        error
+                      </span>
+                      {channelError}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeChannel(index)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-secondary transition-colors hover:bg-error-container hover:text-error"
+                aria-label={`Hapus channel ${channel.name}`}
+              >
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  delete
+                </span>
+              </button>
+            </li>
+          )
+        })}
       </ul>
-
-      {adding ? (
-        <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-primary/30 bg-primary-container/30 p-3 sm:grid-cols-2">
-          <input
-            type="text"
-            value={draft.name}
-            onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
-            placeholder="Nama channel"
-            aria-label="Nama channel baru"
-            className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-          <input
-            type="url"
-            value={draft.url}
-            onChange={(event) => setDraft((current) => ({ ...current, url: event.target.value }))}
-            placeholder="https://..."
-            aria-label="URL channel baru"
-            className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-outline transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-          <button
-            type="button"
-            onClick={addChannel}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-on-primary transition-all hover:brightness-110 sm:col-span-2"
-          >
-            Simpan Channel
-          </button>
-        </div>
-      ) : null}
     </div>
   )
 }

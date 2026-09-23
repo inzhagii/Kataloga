@@ -56,9 +56,10 @@ describe('StoreNavbar', () => {
     expect(html).toContain('alt="Logo Toko Komputer Jaya"')
   })
 
-  it('does not render WhatsApp or Marketplace actions', () => {
+  it('does not render WhatsApp, Marketplace or Share actions', () => {
     const html = render(null, baseStore)
     expect(html).not.toContain('WhatsApp')
     expect(html).not.toContain('Marketplace')
+    expect(html).not.toContain('Bagikan')
   })
 })

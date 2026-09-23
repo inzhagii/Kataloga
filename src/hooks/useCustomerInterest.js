@@ -4,6 +4,8 @@ import { listCustomerInterests } from '../services/customerInterestService'
 import { listSellerProducts } from '../services/productService'
 import { listCategories } from '../services/categoryService'
 import { INTEREST_TYPE } from '../constants/enums'
+import { CMS_CHANNELS } from '../data/mock/channels'
+import { listStoreChannelDefinitions } from '../utils/channels'
 import { buildChannelOptions } from '../utils/customerInterestChannels'
 import { buildFilterOptions } from '../utils/customerInterestFilter'
 
@@ -84,10 +86,19 @@ export function useCustomerInterest() {
     return map
   }, [state.products])
 
+  const channelDefinitions = useMemo(
+    () => listStoreChannelDefinitions(state.store, CMS_CHANNELS),
+    [state.store],
+  )
+
   const channelOptions = useMemo(
     () =>
-      buildChannelOptions({ interests: state.interests, channels: state.store?.channels ?? [] }),
-    [state.interests, state.store],
+      buildChannelOptions({
+        interests: state.interests,
+        channels: state.store?.channels ?? [],
+        definitions: channelDefinitions,
+      }),
+    [state.interests, state.store, channelDefinitions],
   )
 
   const filterOptions = useMemo(
@@ -120,6 +131,7 @@ export function useCustomerInterest() {
     summary,
     productById,
     channelOptions,
+    channelDefinitions,
     filterOptions,
     reload: () => setReloadKey((value) => value + 1),
   }

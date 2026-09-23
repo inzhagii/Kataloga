@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { filterAndSortProducts, buildCatalogCategoryTree } from '../../utils/productSearch'
 import SearchBar from './SearchBar'
-import CategoryChips from './CategoryChips'
 import FilterControl from './FilterControl'
 import SortControl from './SortControl'
 import ProductCard from './ProductCard'
@@ -76,27 +75,27 @@ function CatalogSection({ storeId, storeName, products, categories = [], onShare
         </div>
       </div>
 
-      <SearchBar value={query} onChange={setQuery} placeholder="Cari produk di toko ini..." />
-
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="md:min-w-0 md:flex-1">
-          <CategoryChips
-            tree={categoryTree}
-            active={category}
-            onSelect={setCategory}
-          />
+          <SearchBar value={query} onChange={setQuery} placeholder="Cari produk di toko ini..." />
         </div>
         <div className="flex items-center gap-3 md:shrink-0">
-          <FilterControl
-            tree={categoryTree}
-            appliedCategory={category}
-            appliedCondition={condition}
-            onApply={(nextCategory, nextCondition) => {
-              setCategory(nextCategory)
-              setCondition(nextCondition)
-            }}
-          />
-          <SortControl sort={sort} onChange={setSort} />
+          <div className="min-w-0 flex-1 md:flex-none">
+            <FilterControl
+              tree={categoryTree}
+              appliedCategory={category}
+              appliedCondition={condition}
+              sort={sort}
+              onSortChange={setSort}
+              onApply={(nextCategory, nextCondition) => {
+                setCategory(nextCategory)
+                setCondition(nextCondition)
+              }}
+            />
+          </div>
+          <div className="min-w-0 flex-1 md:hidden">
+            <SortControl sort={sort} onChange={setSort} />
+          </div>
         </div>
       </div>
 

@@ -1,13 +1,15 @@
 /**
  * Recent Activity service.
  * Timeline restricted to seller/store activity. The canonical activity types
- * are exactly the locked seven (docs/PRODUCT.md, docs/API-CONTRACT.md):
+ * are the eleven documented ones (docs/AGENTS.md §20):
  *
  *   PRODUCT_PUBLISHED, PRODUCT_EDITED, PRODUCT_SOLD_OUT,
- *   PRODUCT_REACTIVATED, PRODUCT_ARCHIVED, PRODUCT_RESTORED, STORE_UPDATED
+ *   PRODUCT_REACTIVATED, PRODUCT_ARCHIVED, PRODUCT_RESTORED,
+ *   CATEGORY_CREATED, CATEGORY_UPDATED, ANNOUNCEMENT_CREATED,
+ *   ANNOUNCEMENT_UPDATED, STORE_UPDATED
  *
  * Customer activity (WhatsApp/Marketplace clicks, views, shares, category
- * events) is NEVER part of Recent Activity.
+ * browsing, login/logout) is NEVER part of Recent Activity.
  *
  * Returns mock data now; will call the Activity API later.
  */
@@ -24,7 +26,7 @@ const ALLOWED_TYPES = new Set(Object.values(ACTIVITY_TYPE))
 /**
  * List the most recent seller/store activities, newest first.
  * Scoped to the store owned by the acting session (mock mode) and restricted
- * to the canonical seven types in both modes, so a stray legacy record can
+ * to the canonical activity types in both modes, so a stray legacy record can
  * never surface in Recent Activity.
  * @returns {Promise<import('../data/models.js').RecentActivity[]>}
  */

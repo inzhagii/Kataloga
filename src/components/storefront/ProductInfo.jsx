@@ -9,8 +9,12 @@ import ProductActions from './ProductActions'
  * Product Details card. Actions are CTA (primary) + Share (secondary) — no
  * WhatsApp, no Marketplace on Product Detail. For SOLD_OUT products only Share
  * stays available.
+ *
+ * `channelDefinitions` (the store's CMS + custom channel definitions) is
+ * forwarded to ProductActions so the CTA destination sheet can resolve
+ * `{channelId, url}` product links into names/logos.
  */
-function ProductInfo({ product, onSelectDestination, onShare }) {
+function ProductInfo({ product, onSelectDestination, onShare, channelDefinitions }) {
   const conditionLabel = product.condition === CONDITION.SECOND ? 'Second' : 'New'
   const isSoldOut = product.status === PRODUCT_STATUS.SOLD_OUT
 
@@ -84,7 +88,12 @@ function ProductInfo({ product, onSelectDestination, onShare }) {
         </div>
       ) : null}
 
-      <ProductActions product={product} onSelectDestination={onSelectDestination} onShare={onShare} />
+      <ProductActions
+        product={product}
+        onSelectDestination={onSelectDestination}
+        onShare={onShare}
+        channelDefinitions={channelDefinitions}
+      />
     </div>
   )
 }

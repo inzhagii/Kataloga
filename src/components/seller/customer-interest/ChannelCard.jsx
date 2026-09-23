@@ -3,18 +3,20 @@ import WhatsAppIcon from '../../ui/WhatsAppIcon'
 
 /**
  * Single channel card in the Customer Interest channel row. Cards are derived
- * from real channel data (WhatsApp + configured external channels), never
- * hardcoded. Clicking a card toggles the channel filter; pressing again
- * clears it. Locked hierarchy (docs/UI_RULES.md):
+ * from real channel data (WhatsApp + configured external channels resolved
+ * through the shared channel master), never hardcoded. Clicking a card toggles
+ * the channel filter; pressing again clears it. Locked hierarchy
+ * (docs/UI_RULES.md):
  *   1. Channel name on top
  *   2. Channel icon aligned right
  *   3. Activity count large and bold as the focal point
  *   4. Supporting text "aktivitas minat"
- * Icon is a visual anchor only — no brand logos (channels are generic).
+ * The icon is the channel definition's frontend-owned logo token (or the
+ * WhatsApp glyph) — no brand logo assets are stored or uploaded.
  * On mobile cards may scroll horizontally; on desktop they share the row
  * width equally.
  * @param {{
- *   channel: { id: string, name: string, kind: string },
+ *   channel: { id: string, name: string, kind: string, logo?: string|null },
  *   count: number,
  *   active: boolean,
  *   onClick: () => void,
@@ -48,7 +50,9 @@ function ChannelCard({ channel, count, active, onClick }) {
           {isWhatsApp ? (
             <WhatsAppIcon size={17} />
           ) : (
-            <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+            <span className="material-symbols-outlined text-[20px]">
+              {channel.logo ?? 'shopping_bag'}
+            </span>
           )}
         </span>
       </div>

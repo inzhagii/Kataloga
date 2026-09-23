@@ -1,13 +1,14 @@
 import { storeLocationLabel } from '../../utils/storeLocation'
+import StoreActions from './StoreActions'
 
 /**
- * Public store profile header: logo (+ verification badge), name, description,
- * city/operating hours. Store actions (WhatsApp / Marketplace / Share) are NOT
- * part of the header — they live in the floating action bar (docs/PRODUCT.md
- * #7 and #8). `innerRef` exposes the section element so the page can observe
- * its visibility.
+ * Public store profile header ("Store Information" card): logo (+ verification
+ * badge), name, description, city/operating hours, and below them the store
+ * actions — WhatsApp (full width) on its own row, Marketplace + Share
+ * side-by-side beneath it. Actions are inline (never a floating bar). `innerRef`
+ * exposes the section element for optional visibility observation.
  */
-function StoreHeader({ store, innerRef }) {
+function StoreHeader({ store, innerRef, onWhatsApp, onSelectChannel, onShareStore }) {
   return (
     <section ref={innerRef} className="mb-6 rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-sm sm:mb-8 sm:p-6 md:p-8">
       <div className="flex w-full flex-col items-center text-center">
@@ -77,6 +78,15 @@ function StoreHeader({ store, innerRef }) {
           </span>
         </div>
       </div>
+
+      {onWhatsApp || onSelectChannel || onShareStore ? (
+        <StoreActions
+          store={store}
+          onWhatsApp={onWhatsApp}
+          onSelectChannel={onSelectChannel}
+          onShareStore={onShareStore}
+        />
+      ) : null}
     </section>
   )
 }

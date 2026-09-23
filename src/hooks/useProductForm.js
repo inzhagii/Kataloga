@@ -13,8 +13,11 @@ import { validateDraftBasics, validateProductForPublish } from '../utils/product
 import { formatPrice, formatPriceInput, parsePriceInput } from '../utils/price'
 
 /**
- * Build the product payload sent to the product service, cleaning up empty
- * rows so only completed details/links are persisted.
+ * Build the product payload sent to the product service. External links are
+ * persisted as channel references ({ channelId, url }) over the shared channel
+ * master (docs/PRODUCT.md §16) — rows are never silently dropped after they
+ * have been selected; an empty URL is preserved so Publish validation can block
+ * on it instead of producing a fake success.
  * @param {object} form
  * @returns {import('../data/models.js').Product}
  */
@@ -32,9 +35,10 @@ function toProductPayload(form) {
       .filter((detail) => detail.label.trim() && detail.value.trim())
       .map((detail) => ({ label: detail.label.trim(), value: detail.value.trim() })),
     description: form.description,
-    externalLinks: (form.externalLinks || [])
-      .filter((link) => link.name.trim() && link.url.trim())
-      .map((link) => ({ name: link.name.trim(), url: link.url.trim() })),
+    externalLinks: (form.externalLinks || []).map((link) => ({
+      channelId: link.channelId,
+      url: String(link.url ?? '').trim(),
+    })),
     cta: normalizeCta(form.cta),
     featured: Boolean(form.featured),
   }
@@ -179,8 +183,14 @@ export function useProductForm({ mode, initialProduct = null }) {
     )
   }
 
-  function addExternalLink() {
-    setField('externalLinks', [...state.form.externalLinks, { name: '', url: '' }])
+  function addExternalLink(channelId) {
+    if (!channelId) {
+      return
+    }
+    if (state.form.externalLinks.some((link) => link.channelId === channelId)) {
+      return
+    }
+    setField('externalLinks', [...state.form.externalLinks, { channelId, url: '' }])
   }
 
   function updateExternalLink(index, patch) {
@@ -190,6 +200,11 @@ export function useProductForm({ mode, initialProduct = null }) {
         linkIndex === index ? { ...link, ...patch } : link,
       ),
     )
+    if (typeof patch.url === 'string' && state.errors?.[`channel-${index}`]) {
+      const nextErrors = { ...state.errors }
+      delete nextErrors[`channel-${index}`]
+      setState({ errors: nextErrors })
+    }
   }
 
   function removeExternalLink(index) {

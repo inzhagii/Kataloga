@@ -15,7 +15,8 @@ export const FILTER_ALL = 'all'
 
 /**
  * Canonical activity types in documentation presentation order
- * (docs/PRODUCT.md §20 and docs/UX-FLOW.md §24).
+ * (docs/AGENTS.md §20). PRODUCT_EDITED is the internal canonical form of the
+ * external "PRODUCT_UPDATED" product-update event.
  */
 export const ACTIVITY_TYPE_ORDER = [
   ACTIVITY_TYPE.PRODUCT_PUBLISHED,
@@ -24,6 +25,10 @@ export const ACTIVITY_TYPE_ORDER = [
   ACTIVITY_TYPE.PRODUCT_REACTIVATED,
   ACTIVITY_TYPE.PRODUCT_ARCHIVED,
   ACTIVITY_TYPE.PRODUCT_RESTORED,
+  ACTIVITY_TYPE.CATEGORY_CREATED,
+  ACTIVITY_TYPE.CATEGORY_UPDATED,
+  ACTIVITY_TYPE.ANNOUNCEMENT_CREATED,
+  ACTIVITY_TYPE.ANNOUNCEMENT_UPDATED,
   ACTIVITY_TYPE.STORE_UPDATED,
 ]
 

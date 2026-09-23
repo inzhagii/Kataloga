@@ -35,7 +35,7 @@ const DEFAULT_FILTERS = {
 }
 
 function CustomerInterestPage() {
-  const { status, error, interests, productById, categories, channelOptions, filterOptions, reload } =
+  const { status, error, interests, productById, categories, channelOptions, channelDefinitions, filterOptions, reload } =
     useCustomerInterest()
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -242,6 +242,7 @@ function CustomerInterestPage() {
           interests={filtered}
           allInterests={interests}
           productById={productById}
+          definitions={channelDefinitions}
           onSelect={setSelected}
         />
       )}
@@ -251,6 +252,7 @@ function CustomerInterestPage() {
           record={selected}
           interests={interests}
           productById={productById}
+          definitions={channelDefinitions}
           onClose={() => setSelected(null)}
         />
       ) : null}

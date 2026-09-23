@@ -11,7 +11,7 @@
  */
 
 import { CHANNEL_SOURCE } from '../constants/enums'
-import { CUSTOM_CHANNEL_ID_PREFIX } from '../data/mock/channels'
+import { CUSTOM_CHANNEL_ID_PREFIX, CUSTOM_CHANNEL_LOGO } from '../data/mock/channels'
 
 /**
  * True when `ref` is a persisted channel reference ({ channelId, url }).
@@ -92,7 +92,88 @@ export function hasDuplicateChannelId(refs = []) {
   return duplicate
 }
 
+/**
+ * Resolve a list of channel references to ready-to-render display records
+ * ({ channelId, url, name, logo }). Name/logo come from the resolved channel
+ * definition (CMS or the store's custom channels); an unresolvable channelId
+ * falls back to the raw id as the name and the generic custom logo. Plain
+ * `{name, url}` entries (legacy display records) pass through unchanged.
+ *
+ * Used by channel selectors / destination sheets (Store marketplace picker,
+ * Product CTA destination picker) so refs are never rendered with blank names.
+ * @param {Array<{ channelId?: string, url?: string, name?: string }>|undefined} refs
+ * @param {import('../data/models.js').ChannelDefinition[]} definitions
+ * @returns {Array<{ channelId: string, url: string, name: string, logo: string }>}
+ */
+export function resolveChannelRefsForDisplay(refs = [], definitions = []) {
+  return refs.map((ref) => {
+    if (!isChannelRef(ref)) {
+      return ref
+    }
+    const definition = resolveChannelDefinition(ref.channelId, definitions)
+    return {
+      channelId: ref.channelId,
+      url: ref.url,
+      name: definition?.name ?? ref.channelId,
+      logo: definition?.logo ?? CUSTOM_CHANNEL_LOGO,
+    }
+  })
+}
+
 export const EXTERNAL_URL_REQUIRED = 'URL external wajib diisi.'
+export const CUSTOM_CHANNEL_NAME_REQUIRED = 'Nama channel custom wajib diisi.'
+export const CUSTOM_CHANNEL_NAME_DUPLICATE = 'Channel custom dengan nama tersebut sudah ada.'
+
+/**
+ * Build a seller-created custom channel definition (docs/PRODUCT.md §16).
+ * Custom channels are store-scoped: the id starts with `CUSTOM:`, points back
+ * to the owning `storeId`, and always uses the generic logo. The id is derived
+ * from the trimmed name (normalized to uppercase alphanumerics + dashes) and
+ * de-duplicated against the store's existing custom channel ids. An empty name
+ * or a name that duplicates an existing custom channel (case-insensitive) is
+ * rejected so one store never has two definitions spelled identically.
+ * @param {{
+ *   storeId: string,
+ *   name: string,
+ *   existingChannelIds?: string[],
+ *   existingNames?: string[],
+ * }} options
+ * @returns {import('../data/models.js').CustomChannelDefinition}
+ */
+export function buildCustomChannelDefinition({
+  storeId,
+  name,
+  existingChannelIds = [],
+  existingNames = [],
+}) {
+  const trimmed = String(name ?? '').trim()
+  if (!trimmed) {
+    throw new Error(CUSTOM_CHANNEL_NAME_REQUIRED)
+  }
+  if (existingNames.some((item) => item.toLowerCase() === trimmed.toLowerCase())) {
+    throw new Error(CUSTOM_CHANNEL_NAME_DUPLICATE)
+  }
+
+  let base =
+    trimmed
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'CHANNEL'
+  let id = `${CUSTOM_CHANNEL_ID_PREFIX}${base}`
+  let suffix = 2
+  while (existingChannelIds.includes(id)) {
+    id = `${CUSTOM_CHANNEL_ID_PREFIX}${base}-${suffix}`
+    suffix += 1
+  }
+
+  return {
+    id,
+    storeId,
+    name: trimmed,
+    logo: CUSTOM_CHANNEL_LOGO,
+    custom: true,
+  }
+}
 
 /**
  * Validate persisted channel references (store channels or product external

@@ -174,6 +174,10 @@
  * @property {string|null} productName - Product name snapshot, or null for store-level activity.
  * @property {'WHATSAPP_CLICK'|'MARKETPLACE_CLICK'} channelType - Interest type.
  * @property {string} channel - Selected channel name snapshot ("WhatsApp" or external channel).
+ * @property {string|null} [channelId] - Optional shared channel-master id for the interaction
+ *   (e.g. "SHOPEE" or a store-scoped "CUSTOM:..." id). When present, the UI resolves the
+ *   channel name/logo from the shared channel definition; legacy records without it keep the
+ *   `channel` name snapshot as the display source.
  * @property {string|null} [externalUrl] - External target URL captured at record time.
  * @property {'Store Landing'|'Product Detail'} context - Storefront context where the
  *   interaction happened (docs/UX-FLOW.md), stored with the event so historical
@@ -201,7 +205,9 @@
  * @typedef {Object} RecentActivity
  * @property {number} id - Activity ID.
  * @property {string} storeId - Store that owns the activity.
- * @property {import('../constants/enums.js').ACTIVITY_TYPE} type - Activity type (canonical set of 7).
+ * @property {import('../constants/enums.js').ACTIVITY_TYPE} type - Activity type
+ *   (the canonical eleven seller/store types; product updates use the internal
+ *   canonical PRODUCT_EDITED, the external "PRODUCT_UPDATED" is mapped here).
  * @property {string} message - Human-readable activity description.
  * @property {number|null} [productId] - Related product ID (null for store-level events).
  * @property {string|null} [productName] - Related product name snapshot (null for store-level events).

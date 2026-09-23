@@ -14,10 +14,11 @@ import CustomerAvatar from './CustomerAvatar'
  *   interests: import('../../../data/models.js').CustomerInterest[],
  *   allInterests: import('../../../data/models.js').CustomerInterest[],
  *   productById: Map<number, import('../../../data/models.js').Product>,
+ *   definitions?: import('../../../data/models.js').ChannelDefinition[],
  *   onSelect: (interest: import('../../../data/models.js').CustomerInterest) => void,
  * }} props
  */
-function InterestList({ interests, allInterests, productById, onSelect }) {
+function InterestList({ interests, allInterests, productById, definitions = [], onSelect }) {
   if (interests.length === 0) {
     return null
   }
@@ -82,7 +83,12 @@ function InterestList({ interests, allInterests, productById, onSelect }) {
                   </td>
                   <td className="px-4 py-3.5">
                     <div className="flex flex-col items-start gap-1">
-                      <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                      <ChannelBadge
+                        channelType={record.channelType}
+                        channel={record.channel}
+                        channelId={record.channelId}
+                        definitions={definitions}
+                      />
                       {record.context ? (
                         <span className="text-[11px] text-on-surface-variant">
                           {record.context}
@@ -153,7 +159,12 @@ function InterestList({ interests, allInterests, productById, onSelect }) {
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">
-                  <ChannelBadge channelType={record.channelType} channel={record.channel} />
+                  <ChannelBadge
+                    channelType={record.channelType}
+                    channel={record.channel}
+                    channelId={record.channelId}
+                    definitions={definitions}
+                  />
                   {record.context ? (
                     <span className="text-[10px] text-on-surface-variant">{record.context}</span>
                   ) : null}

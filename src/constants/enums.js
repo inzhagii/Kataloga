@@ -49,12 +49,14 @@ export const INTEREST_CONTEXT = {
 }
 
 /**
- * Recent Activity types. Exactly the seven locked seller/store activity types
- * (docs/PRODUCT.md / docs/API-CONTRACT.md). Category and Announcement events
- * are NOT part of Recent Activity and must never appear here.
+ * Recent Activity types. The eleven canonical seller/store activity types the
+ * UI must render (docs/AGENTS.md §20): product lifecycle events, category and
+ * announcement management events, and store updates.
  *
  * PRODUCT_EDITED is the existing/internal canonical name for the external
  * "PRODUCT_UPDATED" concept — the mapping is explicit in the activity mapper.
+ * Customer activity (WhatsApp/marketplace clicks, views, shares, login, etc.)
+ * is NEVER part of Recent Activity.
  */
 export const ACTIVITY_TYPE = {
   PRODUCT_PUBLISHED: 'PRODUCT_PUBLISHED',
@@ -63,5 +65,9 @@ export const ACTIVITY_TYPE = {
   PRODUCT_REACTIVATED: 'PRODUCT_REACTIVATED',
   PRODUCT_ARCHIVED: 'PRODUCT_ARCHIVED',
   PRODUCT_RESTORED: 'PRODUCT_RESTORED',
+  CATEGORY_CREATED: 'CATEGORY_CREATED',
+  CATEGORY_UPDATED: 'CATEGORY_UPDATED',
+  ANNOUNCEMENT_CREATED: 'ANNOUNCEMENT_CREATED',
+  ANNOUNCEMENT_UPDATED: 'ANNOUNCEMENT_UPDATED',
   STORE_UPDATED: 'STORE_UPDATED',
 }

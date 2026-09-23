@@ -75,6 +75,7 @@ describe('toCustomerInterest mapping', () => {
       product_name: 'Laptop Asus ROG',
       channel_type: 'MARKETPLACE_CLICK',
       channel: 'Shopee',
+      channel_id: 'SHOPEE',
       external_url: 'https://shopee.example/toko-x',
       context: 'Product Detail',
       date: '2026-09-12T07:30:00.000Z',
@@ -90,6 +91,7 @@ describe('toCustomerInterest mapping', () => {
       productName: 'Laptop Asus ROG',
       channelType: 'MARKETPLACE_CLICK',
       channel: 'Shopee',
+      channelId: 'SHOPEE',
       externalUrl: 'https://shopee.example/toko-x',
       context: 'Product Detail',
       date: '2026-09-12T07:30:00.000Z',
@@ -107,6 +109,7 @@ describe('toCustomerInterest mapping', () => {
     })
     expect(interest.customerName).toBeNull()
     expect(interest.customerEmail).toBe('anon@example.com')
+    expect(interest.channelId).toBeNull()
   })
 
   it('defaults missing identity/context fields to null', () => {

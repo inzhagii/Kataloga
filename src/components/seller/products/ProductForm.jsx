@@ -4,6 +4,8 @@ import { useProductForm } from '../../../hooks/useProductForm'
 import { listCategories } from '../../../services/categoryService'
 import { listBrands } from '../../../services/brandService'
 import { getMyStore } from '../../../services/storeService'
+import { CMS_CHANNELS } from '../../../data/mock/channels'
+import { listStoreChannelDefinitions } from '../../../utils/channels'
 import ProductPhotosSection from './form/ProductPhotosSection'
 import ProductBasicInfoSection from './form/ProductBasicInfoSection'
 import ProductDetailsSection from './form/ProductDetailsSection'
@@ -36,6 +38,7 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
   const [categories, setCategories] = useState([])
   const [brands, setBrands] = useState([])
   const [ctaOptions, setCtaOptions] = useState([])
+  const [channelDefinitions, setChannelDefinitions] = useState(CMS_CHANNELS)
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false)
 
   const {
@@ -88,11 +91,13 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
       .then((store) => {
         if (active) {
           setCtaOptions(store?.ctaOptions ?? [])
+          setChannelDefinitions(store ? listStoreChannelDefinitions(store, CMS_CHANNELS) : CMS_CHANNELS)
         }
       })
       .catch(() => {
         if (active) {
           setCtaOptions([])
+          setChannelDefinitions(CMS_CHANNELS)
         }
       })
     return () => {
@@ -200,8 +205,10 @@ function ProductForm({ mode = 'create', initialProduct = null }) {
           setField={setField}
           setPrice={setPrice}
         />
-        <ProductExternalLinksSection
+<ProductExternalLinksSection
           form={form}
+          errors={errors}
+          channelDefinitions={channelDefinitions}
           addExternalLink={addExternalLink}
           updateExternalLink={updateExternalLink}
           removeExternalLink={removeExternalLink}

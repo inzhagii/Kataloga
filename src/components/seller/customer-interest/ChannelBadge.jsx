@@ -1,15 +1,28 @@
 import { INTEREST_TYPE } from '../../../constants/enums'
+import { resolveInterestChannel } from '../../../utils/customerInterestChannels'
 import WhatsAppIcon from '../../ui/WhatsAppIcon'
 
 /**
  * Channel badge for a customer interest activity.
- * WhatsApp uses a single WhatsApp-green accent; marketplace shows the exact
- * configured channel name with brand-ish colors for known channels and a
- * neutral fallback otherwise. No logos or integration icons (channels are
- * generic).
- * @param {{ channelType: 'WHATSAPP_CLICK'|'MARKETPLACE_CLICK', channel: string|null }} props
+ * An optional `channelId` resolves the channel name/logo through the shared
+ * channel master (CMS + the store's custom channels); a legacy record without
+ * a channelId keeps its recorded `channel` name snapshot and resolves the logo
+ * from a matching definition or the frontend-owned destination preset. WhatsApp
+ * uses the single WhatsApp-accent treatment; marketplace badges keep the
+ * name-based color hint (Shopee / Tokopedia / Blibli) with no uploaded logos.
+ * @param {{
+ *   channelType: 'WHATSAPP_CLICK'|'MARKETPLACE_CLICK',
+ *   channel: string|null,
+ *   channelId?: string|null,
+ *   definitions?: import('../../../data/models.js').ChannelDefinition[],
+ * }} props
  */
-function ChannelBadge({ channelType, channel }) {
+function ChannelBadge({
+  channelType,
+  channel,
+  channelId,
+  definitions = [],
+}) {
   if (channelType === INTEREST_TYPE.WHATSAPP_CLICK) {
     return (
       <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-whatsapp-container px-2.5 py-1 text-[11px] font-semibold text-on-whatsapp-container">
@@ -19,7 +32,10 @@ function ChannelBadge({ channelType, channel }) {
     )
   }
 
-  const channelName = channel || 'Marketplace'
+  const { name: channelName, logo } = resolveInterestChannel(
+    { channelType, channel, channelId },
+    definitions,
+  )
   let badgeClass = 'bg-orange-100 text-orange-800 border border-orange-200'
   if (channelName === 'Tokopedia') {
     badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-200'
@@ -34,7 +50,7 @@ function ChannelBadge({ channelType, channel }) {
       className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${badgeClass}`}
     >
       <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
-        shopping_bag
+        {logo}
       </span>
       <span>{channelName}</span>
     </span>

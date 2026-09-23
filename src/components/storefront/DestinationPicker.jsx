@@ -5,8 +5,12 @@ import { destinationIcon } from '../../constants/destinationPresets'
 /**
  * Shared destination/channel picker (modal on desktop, bottom sheet on mobile —
  * never a dropdown). Used for choosing an external sales channel (store) or a
- * product CTA destination. Destinations are plain {name, url}; icons are
- * derived frontend-owned from the V1 presets.
+ * product CTA destination.
+ *
+ * Destinations can be plain `{name, url}` OR channel records already resolved
+ * for display via the channel master (`{channelId, url, name, logo}`). Each
+ * item renders an icon + channel name + arrow; the icon prefers the resolved
+ * `logo` (frontend-owned Material symbol) and falls back to the V1 preset map.
  *
  * The picker only renders the trigger + sheet; authentication gating and any
  * navigation after selection are handled by the caller.
@@ -83,7 +87,7 @@ function DestinationPicker({
         <div className="flex flex-col gap-1">
           {items.map((item) => (
             <button
-              key={`${item.name}-${item.url}`}
+              key={item.channelId ?? `${item.name}-${item.url}`}
               type="button"
               onClick={() => pick(item)}
               className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-on-surface transition-colors hover:bg-surface-container"
@@ -93,7 +97,7 @@ function DestinationPicker({
                   className="material-symbols-outlined shrink-0 text-[18px] text-on-surface-variant"
                   aria-hidden="true"
                 >
-                  {destinationIcon(item.name)}
+                  {item.logo ?? destinationIcon(item.name)}
                 </span>
                 <span className="truncate font-medium">{item.name}</span>
               </span>

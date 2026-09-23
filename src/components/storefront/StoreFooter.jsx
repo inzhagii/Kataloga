@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import WhatsAppIcon from '../ui/WhatsAppIcon'
 import { buildMapsSearchUrl } from '../../utils/storeLocation'
 
@@ -11,7 +12,9 @@ const FOOTER_HEADING_CLASS = 'text-xs font-semibold uppercase tracking-wider tex
  * Footer"): Store Name + Description, WhatsApp contact, the store's configured
  * external channels (+arbitrary {name,url}), and the optional Full Address.
  * It does NOT render a Store Logo, "Tentang Kataloga", or any other marketing
- * block. The bottom row (`© 2026 Kataloga` + `Made with Kataloga`) is centered.
+ * block. The bottom row is a single centered line: `© 2026 Kataloga · Made
+ * with Kataloga`, with "Made with Kataloga" linking back to the Kataloga
+ * homepage.
  *
  * WhatsApp is presented as a normal footer contact item (recognizable icon +
  * "WhatsApp" text), never a filled green button. Clicking it still runs the
@@ -111,9 +114,13 @@ function StoreFooter({ store = {}, onWhatsApp, onSelectChannel, innerRef }) {
           ) : null}
         </div>
 
-        <div className="mt-12 flex flex-col items-center gap-1.5 border-t border-outline-variant/30 pt-6 text-xs text-on-surface-variant">
-          <p>© 2026 Kataloga</p>
-          <p>Made with Kataloga</p>
+        <div className="mt-12 flex justify-center border-t border-outline-variant/30 pt-6 text-xs text-on-surface-variant">
+          <p className="whitespace-nowrap">
+            © 2026 Kataloga ·{' '}
+            <Link to="/" className="transition-colors hover:text-primary">
+              Made with Kataloga
+            </Link>
+          </p>
         </div>
       </div>
     </footer>

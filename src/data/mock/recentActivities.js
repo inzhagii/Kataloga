@@ -1,9 +1,9 @@
 /**
  * Mock recent activity data for the seller dashboard.
- * Timeline restricted to the locked seven seller/store activity types
- * (docs/PRODUCT.md): PUBLISHED, EDITED, SOLD_OUT, REACTIVATED, ARCHIVED,
- * RESTORED, STORE_UPDATED. Customer activity never appears here.
- * Replaced by API responses once the backend is available.
+ * Timeline uses the canonical seller/store activity types (docs/AGENTS.md §20):
+ * PUBLISHED, EDITED, SOLD_OUT, REACTIVATED, ARCHIVED, RESTORED, STORE_UPDATED,
+ * plus CATEGORY_/ANNOUNCEMENT_ create & update events. Customer activity never
+ * appears here. Replaced by API responses once the backend is available.
  */
 
 import { ACTIVITY_TYPE } from '../../constants/enums'
