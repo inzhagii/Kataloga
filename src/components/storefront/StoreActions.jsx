@@ -5,8 +5,11 @@ import WhatsAppIcon from '../ui/WhatsAppIcon'
  * Store Landing actions, rendered inline at the bottom of the Store
  * Information card (docs/PRODUCT.md #8). These are NOT a floating bar:
  *
- *   Row 1: [Hubungi via WhatsApp] (full width).
- *   Row 2: [Marketplace] [Share] side-by-side (equal width).
+ *   Row 1: [Hubungi via WhatsApp] (its own row).
+ *   Row 2: [Marketplace] [Share] side-by-side.
+ *
+ * The action block shares the same container width (`max-w-2xl`) as the store
+ * description/information content, so all action buttons align with it.
  *
  * Share is NOT in the navbar — it lives only in this block. Without channels
  * the block keeps WhatsApp + Share side-by-side (no Marketplace row).
@@ -48,22 +51,24 @@ function StoreActions({ store, onWhatsApp, onSelectChannel, onShareStore }) {
 
   return (
     <div className="mt-5 border-t border-outline-variant/20 pt-5 sm:mt-6 sm:pt-6">
-      {hasChannels ? (
-        <div className="flex w-full flex-col items-stretch gap-2.5">
-          <div className="w-full min-w-0">{whatsappButton}</div>
-          <div className="flex w-full min-w-0 items-stretch gap-2.5">
-            <div className="min-w-0 flex-1">
-              <MarketplaceSelector store={store} onSelectChannel={onSelectChannel} />
+      <div className="mx-auto w-full max-w-2xl">
+        {hasChannels ? (
+          <div className="flex w-full flex-col items-stretch gap-2.5">
+            <div className="w-full min-w-0">{whatsappButton}</div>
+            <div className="flex w-full min-w-0 items-stretch gap-2.5">
+              <div className="min-w-0 flex-1">
+                <MarketplaceSelector store={store} onSelectChannel={onSelectChannel} />
+              </div>
+              <div className="min-w-0 flex-1">{shareButton}</div>
             </div>
-            <div className="min-w-0 flex-1">{shareButton}</div>
           </div>
-        </div>
-      ) : (
-        <div className="flex w-full min-w-0 items-stretch gap-2.5">
-          <div className="min-w-0 flex-1">{whatsappButton}</div>
-          <div className="min-w-0 shrink-0">{shareButton}</div>
-        </div>
-      )}
+        ) : (
+          <div className="flex w-full min-w-0 items-stretch gap-2.5">
+            <div className="min-w-0 flex-1">{whatsappButton}</div>
+            <div className="min-w-0 shrink-0">{shareButton}</div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

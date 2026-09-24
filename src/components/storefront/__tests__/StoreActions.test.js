@@ -2,7 +2,7 @@
  * Consumer test: StoreActions renders the WhatsApp primary action plus
  * Marketplace and Share inside the Store Information card. It is INLINE (never
  * a fixed/floating bar, no IntersectionObserver/show toggle): WhatsApp is its
- * own full-width row, Marketplace + Share sit side-by-side below. Share is
+ * own row, Marketplace + Share sit side-by-side below. Share is
  * never in the navbar. Without channels the block keeps WhatsApp + Share
  * side-by-side (no Marketplace row). Uses react-dom/server (no DOM test
  * library) and React.createElement without JSX (Vitest include matches
@@ -58,11 +58,13 @@ describe('StoreActions (inline actions)', () => {
     expect(html).not.toContain('hidden min-w-0 shrink-0 md:block')
   })
 
-  it('stacks WhatsApp full-width on top with Marketplace and Share side-by-side below', () => {
+  it('sizes the action block to the same max-w-2xl container as the store description, with WhatsApp on top and Marketplace + Share side-by-side below', () => {
     const html = render({
       ...baseStore,
       channels: [{ channelId: 'SHOPEE', url: 'https://shopee.co.id/example' }],
     })
+    // Action buttons reuse the description container width (max-w-2xl), not custom fixed widths.
+    expect(html).toContain('mx-auto w-full max-w-2xl')
     // Column container: WhatsApp is its own row, Marketplace + Share are a second row.
     expect(html).toContain('flex w-full flex-col items-stretch gap-2.5')
     const whatsappAt = html.indexOf('Hubungi via WhatsApp')
@@ -71,7 +73,7 @@ describe('StoreActions (inline actions)', () => {
     expect(whatsappAt).toBeGreaterThanOrEqual(0)
     expect(marketplaceAt).toBeGreaterThan(whatsappAt)
     expect(bagikanAt).toBeGreaterThan(marketplaceAt)
-    // Both Marketplace and Share sit in equal-width (flex-1) slots on the row.
+    // Both Marketplace and Share fill the shared container row (flex-1), side by side.
     expect(html.split('min-w-0 flex-1').length - 1).toBe(2)
   })
 
