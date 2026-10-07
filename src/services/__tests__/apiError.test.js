@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError, createApiError, isApiError } from '../ApiError'
-import { request, setAccessToken } from '../apiClient'
+import { request, setCsrfToken, setUnauthorizedHandler } from '../apiClient'
 
 function stubFetchResponse({ status, data }) {
   const ok = status < 400
@@ -16,7 +16,8 @@ function stubFetchResponse({ status, data }) {
 
 afterEach(() => {
   vi.unstubAllGlobals()
-  setAccessToken(null)
+  setCsrfToken(null)
+  setUnauthorizedHandler(null)
 })
 
 describe('createApiError mapping', () => {
@@ -27,6 +28,8 @@ describe('createApiError mapping', () => {
     [403, 'forbidden'],
     [404, 'not_found'],
     [409, 'conflict'],
+    [419, 'session_expired'],
+    [429, 'rate_limited'],
     [500, 'server'],
     [504, 'server'],
   ])('maps status %i to type %s', (status, type) => {
@@ -36,7 +39,7 @@ describe('createApiError mapping', () => {
   })
 
   it('maps unknown non-server statuses to validation', () => {
-    expect(createApiError({ status: 429, data: {} }).type).toBe('validation')
+    expect(createApiError({ status: 418, data: {} }).type).toBe('validation')
   })
 
   it('extracts a backend message from data.message and data.error.message', () => {
@@ -105,6 +108,7 @@ describe('request (API client boundary)', () => {
   })
 
   it('throws a mapped ApiError for an error response', async () => {
+    setCsrfToken('csrf-abc')
     stubFetchResponse({ status: 409, data: { message: 'Store ID sudah digunakan.' } })
     const error = await request({ path: '/store', method: 'POST', body: {} }).catch((e) => e)
     expect(error).toBeInstanceOf(ApiError)
@@ -119,13 +123,38 @@ describe('request (API client boundary)', () => {
     expect(error.type).toBe('network')
   })
 
-  it('attaches the bearer token when one is set', async () => {
+  it('sends session credentials and the CSRF header on state-changing requests', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, text: async () => 'null' })
     vi.stubGlobal('fetch', fetchMock)
-    setAccessToken('token-abc')
+    setCsrfToken('csrf-abc')
+    await request({ path: '/store', method: 'POST', body: { name: 'X' } })
+    const [url, options] = fetchMock.mock.calls[0]
+    expect(url).toBe('/store')
+    expect(options.credentials).toBe('include')
+    expect(options.headers['X-XSRF-TOKEN']).toBe('csrf-abc')
+    expect(options.headers.Authorization).toBeUndefined()
+  })
+
+  it('omits the CSRF header on reads and still sends credentials', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, text: async () => 'null' })
+    vi.stubGlobal('fetch', fetchMock)
     await request({ path: '/me' })
-    expect(fetchMock).toHaveBeenCalledWith('/me', expect.objectContaining({ headers: expect.any(Object) }))
     const [, options] = fetchMock.mock.calls[0]
-    expect(options.headers.Authorization).toBe('Bearer token-abc')
+    expect(options.credentials).toBe('include')
+    expect(options.headers['X-XSRF-TOKEN']).toBeUndefined()
+  })
+
+  it('invokes the session handler once on 401 and 419 without retrying', async () => {
+    const handler = vi.fn()
+    setUnauthorizedHandler(handler)
+    setCsrfToken('csrf-abc')
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: false, status: 419, text: async () => JSON.stringify({}) })
+    vi.stubGlobal('fetch', fetchMock)
+    const error = await request({ path: '/store', method: 'POST', body: {} }).catch((e) => e)
+    expect(error.type).toBe('session_expired')
+    expect(handler).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })

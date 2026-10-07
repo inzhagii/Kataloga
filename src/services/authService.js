@@ -133,6 +133,16 @@ export function isValidIdentifier(value) {
 }
 
 /**
+ * Whether the app runs in demo/mock mode, where the fixed demo OTP code is
+ * shown as an on-screen hint. Pages use this instead of importing the
+ * low-level apiConfig directly.
+ * @returns {boolean}
+ */
+export function isDemoAuthMode() {
+  return !isApiMode()
+}
+
+/**
  * Canonical key for OTP challenges: emails are lowercased, phones normalized.
  * @param {string} value
  * @returns {string}

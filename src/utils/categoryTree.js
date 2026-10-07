@@ -76,6 +76,49 @@ export function countProductsByCategory(products) {
 }
 
 /**
+ * Total product usage per category id, including descendants.
+ *
+ * A Kategori Utama's usage is the aggregate of the products assigned to it
+ * directly plus every product in its descendant Sub Kategori (docs/PRODUCT.md
+ * §14: "Kategori Utama count mencakup seluruh product di descendant-nya").
+ * A Sub Kategori's usage is only its own directly-assigned products. The walk
+ * is recursive so the helper stays correct if the hierarchy ever deepens
+ * beyond the current two levels, and it never counts a product twice: each
+ * product is attributed once by name and then rolled up the ancestor chain.
+ *
+ * @param {import('../data/models.js').Category[]} categories
+ * @param {import('../data/models.js').Product[]} products
+ * @returns {Record<number, number>} Category id → inclusive product usage.
+ */
+export function buildCategoryUsageCounts(categories, products) {
+  const directCounts = countProductsByCategory(products)
+  const childrenByParent = {}
+  categories.forEach((category) => {
+    if (category.parentId === null) {
+      return
+    }
+    const siblings = childrenByParent[category.parentId] ?? []
+    siblings.push(category)
+    childrenByParent[category.parentId] = siblings
+  })
+
+  const usage = {}
+  function sumFor(category) {
+    if (usage[category.id] !== undefined) {
+      return usage[category.id]
+    }
+    const own = directCounts[category.name] ?? 0
+    const children = childrenByParent[category.id] ?? []
+    const total = children.reduce((sum, child) => sum + sumFor(child), own)
+    usage[category.id] = total
+    return total
+  }
+
+  categories.forEach(sumFor)
+  return usage
+}
+
+/**
  * True when another category at the same level already uses the name
  * (case-insensitive). Used to prevent duplicate names scoped to a store.
  * @param {import('../data/models.js').Category[]} categories

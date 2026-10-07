@@ -15,6 +15,14 @@ import { toCategory, toList } from './mappers'
 const toCategoryList = toList(toCategory)
 
 /**
+ * List categories for the current session/store.
+ *
+ * API DEPENDENCY / CONFIRMATION REQUIRED: the documented contract is a global
+ * session-scoped `GET /categories`; there is no agreed public store-scoped
+ * variant (e.g. `/stores/{storeId}/categories`). The public storefront's
+ * `listCategories(storeId)` therefore only scopes categories in mock mode; in
+ * API mode this global call is used unchanged until the backend confirms a
+ * store-scoped endpoint. Do not invent a new endpoint here.
  * @returns {Promise<import('../../../data/models.js').Category[]>}
  */
 export function listCategories() {

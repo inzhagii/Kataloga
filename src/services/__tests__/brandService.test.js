@@ -92,6 +92,36 @@ describe('deleteBrand', () => {
   })
 })
 
+describe('global/default brands', () => {
+  async function withGlobalBrand() {
+    const { brands } = await import('../../data/mock')
+    brands.push({ id: 900, name: 'Global Test', storeId: null })
+    return brands
+  }
+
+  it('lists Kataloga-managed global brands alongside the store brands', async () => {
+    await withGlobalBrand()
+    actAsStoreA()
+    expect((await listBrands()).map((brand) => brand.name)).toContain('Global Test')
+    actAsStoreB()
+    expect((await listBrands()).map((brand) => brand.name)).toContain('Global Test')
+  })
+
+  it('rejects editing or deleting a global brand', async () => {
+    await withGlobalBrand()
+    actAsStoreA()
+    await expect(updateBrand(900, { name: 'Hacked' })).rejects.toThrow('bawaan Kataloga')
+    await expect(deleteBrand(900)).rejects.toThrow('bawaan Kataloga')
+  })
+
+  it('reserves the global brand name against new store brands and reuses it', async () => {
+    await withGlobalBrand()
+    actAsStoreA()
+    await expect(createBrand({ name: 'global test' })).rejects.toThrow('sudah digunakan')
+    await expect(ensureBrand('GLOBAL TEST')).resolves.toMatchObject({ id: 900, name: 'Global Test' })
+  })
+})
+
 describe('countBrandProducts', () => {
   it('counts the current store products referencing the brand name', async () => {
     actAsStoreA()

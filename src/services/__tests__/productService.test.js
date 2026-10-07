@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   archiveProduct,
   createProduct,
@@ -190,6 +190,20 @@ it('marks a PUBLISHED product SOLD_OUT and reactivates it back to PUBLISHED', as
 })
 
 describe('SOLD_OUT Auto Archive window (public visibility)', () => {
+  // The demo fixtures use fixed absolute `soldOutAt` dates (product 14 =
+  // 2026-09-05, product 16 = 2026-09-10, product 17 = 2026-05-15) while the
+  // window is measured against the wall clock. Pin "now" so the boundary
+  // assertions stay deterministic instead of expiring as real time passes.
+  const REFERENCE_NOW = new Date('2026-09-20T00:00:00.000Z').getTime()
+
+  beforeEach(() => {
+    vi.spyOn(Date, 'now').mockReturnValue(REFERENCE_NOW)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('exposes SOLD_OUT within the store window and hides expired SOLD_OUT', async () => {
     actAsStoreA()
     const publicList = await listPublicProducts(STORE_A_ID)
@@ -321,11 +335,11 @@ describe('Product Unggulan (featured) rules', () => {
     expect(toggled.status).toBe(PRODUCT_STATUS.PUBLISHED)
   })
 
-  it('rejects toggling featured on a SOLD_OUT product', async () => {
+  it('allows toggling featured on a SOLD_OUT product', async () => {
     actAsStoreB()
-    await expect(toggleFeatured(101)).rejects.toThrow(
-      'hanya dapat diaktifkan pada product yang berstatus PUBLISHED',
-    )
+    const toggled = await toggleFeatured(101)
+    expect(toggled.status).toBe(PRODUCT_STATUS.SOLD_OUT)
+    expect(toggled.featured).toBe(true)
   })
 
   it('rejects toggling featured on an ARCHIVED product', async () => {
@@ -391,7 +405,7 @@ describe('Product Unggulan (featured) rules', () => {
     expect(updated.featured).toBe(false)
   })
 
-  it('only ever features PUBLISHED products, but a normal edit preserves Featured on SOLD_OUT', async () => {
+  it('features PUBLISHED and SOLD_OUT products, never DRAFT/ARCHIVED', async () => {
     actAsStoreB()
     const draft = await createProduct({ name: 'Draft unggulan', featured: true })
     expect(draft.status).toBe(PRODUCT_STATUS.DRAFT)
@@ -403,7 +417,7 @@ describe('Product Unggulan (featured) rules', () => {
 
     const soldOutUpdate = await updateProduct(101, { featured: true })
     expect(soldOutUpdate.status).toBe(PRODUCT_STATUS.SOLD_OUT)
-    expect(soldOutUpdate.featured).toBe(false)
+    expect(soldOutUpdate.featured).toBe(true)
 
     const archivedUpdate = await updateProduct(102, { name: 'Celana Chino Slim' })
     expect(archivedUpdate.status).toBe(PRODUCT_STATUS.ARCHIVED)

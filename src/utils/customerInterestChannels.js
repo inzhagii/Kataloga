@@ -18,6 +18,7 @@ import {
   resolveChannelDefinition,
   resolveChannelRefsForDisplay,
 } from './channels'
+import { isWhatsAppChannel, interestTotalClicks } from './customerInterest'
 import { FILTER_ALL } from './customerInterestFilter'
 
 const WHATSAPP_NAME = 'WhatsApp'
@@ -63,7 +64,6 @@ export function resolveChannelLogo(name, definitions) {
  * snapshot and resolve their logo from a matching definition or the preset
  * fallback. WhatsApp is its own display (never resolves to a definition).
  * @param {{
- *   channelType?: string,
  *   channel?: string|null,
  *   channelId?: string|null,
  * }} record
@@ -71,7 +71,7 @@ export function resolveChannelLogo(name, definitions) {
  * @returns {{ name: string, logo: string|null, isWhatsApp: boolean }}
  */
 export function resolveInterestChannel(record, definitions = []) {
-  if (record?.channelType === INTEREST_TYPE.WHATSAPP_CLICK) {
+  if (isWhatsAppChannel(record?.channel)) {
     return { name: WHATSAPP_NAME, logo: null, isWhatsApp: true }
   }
   const channel = String(record?.channel ?? '').trim()
@@ -161,7 +161,9 @@ export function buildChannelOptions({ interests = [], channels = [], definitions
 }
 
 /**
- * Count interest records whose channel snapshot matches `name`.
+ * Count interest clicks whose channel snapshot matches `name`. Sums each
+ * record's folded `totalClicks`, so a channel's count is its total
+ * interactions, not the number of aggregated rows (docs/AGENTS.md §19).
  * @param {import('../data/models.js').CustomerInterest[]} interests
  * @param {string} name
  * @returns {number}
@@ -171,9 +173,9 @@ export function countByChannel(interests, name) {
   if (!target) {
     return 0
   }
-  return interests.filter(
-    (interest) => String(interest.channel || '').trim().toLowerCase() === target,
-  ).length
+  return (interests ?? [])
+    .filter((interest) => String(interest.channel || '').trim().toLowerCase() === target)
+    .reduce((sum, interest) => sum + interestTotalClicks(interest), 0)
 }
 
 /**

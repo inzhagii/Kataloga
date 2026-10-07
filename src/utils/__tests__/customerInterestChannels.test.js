@@ -20,7 +20,6 @@ import { FILTER_ALL } from '../customerInterestFilter'
 function interest(overrides = {}) {
   return {
     id: 1,
-    channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
     channel: 'Shopee',
     date: '2026-09-01T12:00:00.000Z',
     ...overrides,
@@ -108,6 +107,16 @@ describe('countByChannel', () => {
     expect(countByChannel(interests, 'Lazada')).toBe(0)
     expect(countByChannel(interests, '')).toBe(0)
   })
+
+  it('sums the folded totalClicks of each matching record', () => {
+    const interests = [
+      interest({ id: 1, channel: 'WhatsApp', totalClicks: 3 }),
+      interest({ id: 2, channel: 'WhatsApp' }),
+      interest({ id: 3, channel: 'Shopee', totalClicks: 2 }),
+    ]
+    expect(countByChannel(interests, 'WhatsApp')).toBe(4)
+    expect(countByChannel(interests, 'Shopee')).toBe(2)
+  })
 })
 
 describe('isAnyChannel', () => {
@@ -167,41 +176,29 @@ describe('resolveInterestChannel', () => {
   const tokopediaDefinition = { id: 'TOKOPEDIA', name: 'Tokopedia', logo: 'storefront' }
 
   it('keeps WhatsApp as its own display', () => {
-    const result = resolveInterestChannel(
-      { channelType: INTEREST_TYPE.WHATSAPP_CLICK, channel: 'WhatsApp' },
-      CMS_CHANNELS,
-    )
+    const result = resolveInterestChannel({ channel: 'WhatsApp' }, CMS_CHANNELS)
     expect(result).toEqual({ name: 'WhatsApp', logo: null, isWhatsApp: true })
   })
 
   it('resolves a channelId reference to the shared definition name and logo', () => {
-    const result = resolveInterestChannel(
-      { channelType: INTEREST_TYPE.MARKETPLACE_CLICK, channel: '', channelId: 'TOKOPEDIA' },
-      CMS_CHANNELS,
-    )
+    const result = resolveInterestChannel({ channel: '', channelId: 'TOKOPEDIA' }, CMS_CHANNELS)
     expect(result).toEqual({ name: 'Tokopedia', logo: 'storefront', isWhatsApp: false })
   })
 
   it('keeps the legacy channel name snapshot when there is no channelId', () => {
-    const result = resolveInterestChannel(
-      { channelType: INTEREST_TYPE.MARKETPLACE_CLICK, channel: 'Shopee' },
-      CMS_CHANNELS,
-    )
+    const result = resolveInterestChannel({ channel: 'Shopee' }, CMS_CHANNELS)
     expect(result).toEqual({ name: 'Shopee', logo: 'shopping_bag', isWhatsApp: false })
   })
 
   it('matches the legacy name against a definition logo when the id is absent', () => {
-    const result = resolveInterestChannel(
-      { channelType: INTEREST_TYPE.MARKETPLACE_CLICK, channel: 'tokopedia' },
-      [tokopediaDefinition],
-    )
+    const result = resolveInterestChannel({ channel: 'tokopedia' }, [tokopediaDefinition])
     expect(result.name).toBe('tokopedia')
     expect(result.logo).toBe('storefront')
   })
 
   it('falls back to the name snapshot + preset icon for an unresolvable channelId', () => {
     const result = resolveInterestChannel(
-      { channelType: INTEREST_TYPE.MARKETPLACE_CLICK, channel: 'Shopee', channelId: 'UNKNOWN' },
+      { channel: 'Shopee', channelId: 'UNKNOWN' },
       CMS_CHANNELS,
     )
     expect(result.name).toBe('Shopee')
@@ -209,10 +206,7 @@ describe('resolveInterestChannel', () => {
   })
 
   it('defaults a legacy empty channel name to Marketplace with a generic icon', () => {
-    const result = resolveInterestChannel(
-      { channelType: INTEREST_TYPE.MARKETPLACE_CLICK, channel: null },
-      [],
-    )
+    const result = resolveInterestChannel({ channel: null }, [])
     expect(result.name).toBe('Marketplace')
     expect(result.logo).toBe('link')
   })

@@ -17,8 +17,9 @@ import {
   users,
 } from '../../data/mock'
 import { CUSTOM_CHANNEL_LOGO } from '../../data/mock/channels'
+import { INTEREST_CONTEXT } from '../../constants/enums'
 import { resetAuthFlowState, setActiveUser } from '../authService'
-import { setAccessToken, setMockLatency } from '../apiClient'
+import { setCsrfToken, setMockLatency } from '../apiClient'
 
 export const STORE_A_ID = 'toko-komputer-jaya'
 export const STORE_B_ID = 'toko-agung-fashion'
@@ -40,7 +41,7 @@ function restore(key, array) {
 export function resetDatabase() {
   setMockLatency(0)
   setActiveUser(null)
-  setAccessToken(null)
+  setCsrfToken(null)
   resetAuthFlowState()
   restore('products', products)
   restore('stores', stores)
@@ -176,9 +177,9 @@ export const interestB = {
   customerId: 7,
   productId: 100,
   productName: 'Kaos Polos Premium',
-  channelType: 'MARKETPLACE_CLICK',
   channel: 'Instagram',
   externalUrl: 'https://instagram.com/toko-agung-fashion',
+  context: INTEREST_CONTEXT.PRODUCT,
   date: '2026-09-05T08:00:00.000Z',
 }
 

@@ -23,6 +23,12 @@ export const CTA_TYPE = {
   CUSTOM: 'CUSTOM',
 }
 
+/**
+ * Customer Interest activity kind. This is a **derived UI discriminator**, not a
+ * persisted/wire field: the locked contract stores only `channel`, and WhatsApp
+ * is identified by the destination value (`whatsapp`). Do NOT send this as
+ * `channel_type` (there is no such field — docs/API-CONTRACT.md §7).
+ */
 export const INTEREST_TYPE = {
   WHATSAPP_CLICK: 'WHATSAPP_CLICK',
   MARKETPLACE_CLICK: 'MARKETPLACE_CLICK',
@@ -40,12 +46,23 @@ export const CHANNEL_SOURCE = {
 
 /**
  * Storefront context where a Customer Interest interaction originated.
- * Values are the exact user-facing context strings (docs/UX-FLOW.md), used as
- * the canonical internal values so display and filtering share one source.
+ * These are the locked wire values (docs/API-CONTRACT.md §7: `"STORE"` =
+ * Store Landing, `"PRODUCT"` = Product Detail) and the canonical internal
+ * values, so mock and API mode speak the same language. User-facing labels are
+ * resolved separately via INTEREST_CONTEXT_LABEL.
  */
 export const INTEREST_CONTEXT = {
-  STORE_LANDING: 'Store Landing',
-  PRODUCT_DETAIL: 'Product Detail',
+  STORE: 'STORE',
+  PRODUCT: 'PRODUCT',
+}
+
+/**
+ * User-facing labels for the canonical INTEREST_CONTEXT values (docs/UX-FLOW.md).
+ * Display-only; never persisted or sent over the wire.
+ */
+export const INTEREST_CONTEXT_LABEL = {
+  [INTEREST_CONTEXT.STORE]: 'Store Landing',
+  [INTEREST_CONTEXT.PRODUCT]: 'Product Detail',
 }
 
 /**

@@ -39,6 +39,31 @@ export function ctaTypeLabel(type, label) {
 }
 
 /**
+ * Normalize a product CTA selection to exactly one valid option.
+ *
+ * A product always carries exactly one CTA (docs/PRODUCT.md §16): BUY "Beli"
+ * is the documented default. A missing, unknown, or label-less CUSTOM value is
+ * resolved explicitly to that default instead of being silently dropped to
+ * `undefined` (which would look like an intentional absence). A CUSTOM
+ * selection keeps its seller-defined label. "Intentionally unavailable" CTA is
+ * a Product Detail display concern derived from empty destinations — it is NOT
+ * represented by an absent/undefined CTA here.
+ * @param {import('../data/models.js').ProductCTA|{ type?: string, label?: string }|null|undefined} cta
+ * @returns {import('../data/models.js').ProductCTA}
+ */
+export function normalizeCtaOption(cta) {
+  const type = cta?.type
+  if (type === CTA_TYPE.BARGAIN) {
+    return { type: CTA_TYPE.BARGAIN, label: 'Tawar' }
+  }
+  if (type === CTA_TYPE.CUSTOM) {
+    const label = String(cta.label ?? '').trim()
+    return label ? { type: CTA_TYPE.CUSTOM, label } : { type: CTA_TYPE.BUY, label: 'Beli' }
+  }
+  return { type: CTA_TYPE.BUY, label: 'Beli' }
+}
+
+/**
  * Normalize a store CTA options list so the permanent BUY/BARGAIN defaults are
  * always present, followed by the seller's CUSTOM options. Missing defaults are
  * restored from DEFAULT_CTA_OPTIONS; extra fields are stripped to {type,label}.

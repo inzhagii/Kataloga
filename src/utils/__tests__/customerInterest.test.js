@@ -14,6 +14,8 @@ import {
   customerActivities,
   customerSupportingIdentity,
   groupCustomerActivitiesByDate,
+  interestTotalClicks,
+  sumInterestClicks,
 } from '../customerInterest'
 
 function mk(overrides = {}) {
@@ -101,6 +103,34 @@ describe('customer interaction grouping', () => {
     const nameless = mk({ id: 9, customerId: null })
     const all = [...sameCustomer, nameless]
     expect(countCustomerActivities(all, nameless)).toBe(1)
+  })
+})
+
+describe('interest click totals', () => {
+  it('defaults a missing/legacy totalClicks to 1', () => {
+    expect(interestTotalClicks(mk())).toBe(1)
+    expect(interestTotalClicks(mk({ totalClicks: 0 }))).toBe(1)
+    expect(interestTotalClicks(mk({ totalClicks: -2 }))).toBe(1)
+  })
+
+  it('honors an aggregated totalClicks and sums across records', () => {
+    const interests = [
+      mk({ id: 1, totalClicks: 3 }),
+      mk({ id: 2 }),
+      mk({ id: 3, totalClicks: 2 }),
+    ]
+    expect(interestTotalClicks(interests[0])).toBe(3)
+    expect(sumInterestClicks(interests)).toBe(6)
+    expect(sumInterestClicks([])).toBe(0)
+  })
+
+  it('counts a customer activity by folded clicks, not by row count', () => {
+    const interests = [
+      mk({ id: 1, customerId: 7, totalClicks: 2 }),
+      mk({ id: 2, customerId: 7 }),
+      mk({ id: 3, customerId: 8 }),
+    ]
+    expect(countCustomerActivities(interests, interests[0])).toBe(3)
   })
 })
 

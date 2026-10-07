@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildCategoryFilterOptions,
   buildCategoryTree,
+  buildCategoryUsageCounts,
   countProductsByCategory,
   hasDuplicateCategoryName,
   resolveCategoryScope,
@@ -32,6 +33,63 @@ describe('countProductsByCategory', () => {
       { category: 'Aksesoris' },
     ])
     expect(counts).toEqual({ Laptop: 2, Aksesoris: 1 })
+  })
+})
+
+describe('buildCategoryUsageCounts', () => {
+  const tree = [
+    { id: 1, name: 'Computer', parentId: null, custom: true },
+    { id: 2, name: 'Laptop', parentId: 1, custom: true },
+    { id: 3, name: 'Desktop', parentId: 1, custom: true },
+    { id: 4, name: 'Elektronik', parentId: null, custom: false },
+    { id: 5, name: 'Fashion', parentId: null, custom: false },
+  ]
+
+  it('aggregates a Kategori Utama from its descendant Sub Kategori', () => {
+    const usage = buildCategoryUsageCounts(tree, [
+      { category: 'Laptop' },
+      { category: 'Laptop' },
+      { category: 'Laptop' },
+      { category: 'Desktop' },
+      { category: 'Desktop' },
+    ])
+    expect(usage[1]).toBe(5)
+    expect(usage[2]).toBe(3)
+    expect(usage[3]).toBe(2)
+  })
+
+  it('includes products assigned directly to the Kategori Utama', () => {
+    const usage = buildCategoryUsageCounts(tree, [
+      { category: 'Computer' },
+      { category: 'Laptop' },
+    ])
+    expect(usage[1]).toBe(2)
+    expect(usage[2]).toBe(1)
+  })
+
+  it('leaves categories with no products at zero and is safe with no children', () => {
+    const usage = buildCategoryUsageCounts(tree, [])
+    expect(usage[1]).toBe(0)
+    expect(usage[4]).toBe(0)
+    expect(usage[5]).toBe(0)
+  })
+
+  it('rolls up deeper hierarchies without double counting', () => {
+    const deep = [
+      { id: 1, name: 'Root', parentId: null, custom: true },
+      { id: 2, name: 'Mid', parentId: 1, custom: true },
+      { id: 3, name: 'Leaf', parentId: 2, custom: true },
+    ]
+    const usage = buildCategoryUsageCounts(deep, [{ category: 'Leaf' }, { category: 'Mid' }])
+    expect(usage[3]).toBe(1)
+    expect(usage[2]).toBe(2)
+    expect(usage[1]).toBe(2)
+  })
+
+  it('does not leak counts across stores by name collision in disjoint trees', () => {
+    const usage = buildCategoryUsageCounts(tree, [{ category: 'Aksesoris' }])
+    expect(usage[1]).toBe(0)
+    expect(usage[4]).toBe(0)
   })
 })
 

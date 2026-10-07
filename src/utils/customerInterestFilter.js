@@ -7,6 +7,7 @@
  */
 
 import { INTEREST_TYPE } from '../constants/enums'
+import { interestKindOf } from './customerInterest'
 import { isSameCalendarDate, toDMY } from './datetime'
 
 export const FILTER_ALL = 'all'
@@ -128,7 +129,7 @@ export function filterCustomerInterests(interests, options = {}) {
     activity == null || activity === FILTER_ALL || String(activity).trim().toLowerCase() === 'all'
 
   return interests.filter((interest) => {
-    if (!isAnyActivity && interest.channelType !== activity) {
+    if (!isAnyActivity && interestKindOf(interest) !== activity) {
       return false
     }
     if (channel !== FILTER_ALL && String(interest.channel || '').trim() !== channel) {

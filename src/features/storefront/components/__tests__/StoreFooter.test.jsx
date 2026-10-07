@@ -1,0 +1,100 @@
+/**
+ * Static rendering checks for the storefront footer (no DOM test library is
+ * configured; react-dom/server is used for SSR-style assertions).
+ */
+
+import { describe, expect, it } from 'vitest'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { MemoryRouter } from 'react-router-dom'
+import StoreFooter from '../StoreFooter'
+
+function render(store = {}, props = {}) {
+  return renderToStaticMarkup(
+    <MemoryRouter>
+      <StoreFooter store={store} {...props} />
+    </MemoryRouter>,
+  )
+}
+
+const demoStore = {
+  name: 'Toko Komputer Jaya',
+  logoUrl: '/assets/mock/store-logo.svg',
+  fullAddress: 'Jl. Dipatiukur No. 12, Cidadap, Kota Bandung, Jawa Barat 40132',
+  channels: [
+    { name: 'Shopee', url: 'https://shopee.co.id/toko-komputer-jaya' },
+    { name: 'Tokopedia', url: 'https://www.tokopedia.com/toko-komputer-jaya' },
+  ],
+}
+
+describe('StoreFooter', () => {
+  it('shows WhatsApp as a normal footer contact item, never as a green button', () => {
+    const html = render(demoStore, {
+      onWhatsApp: () => {},
+      onSelectChannel: () => {},
+    })
+    expect(html).toContain('WhatsApp')
+    expect(html).not.toContain('bg-whatsapp')
+  })
+
+  it('renders a recognizable WhatsApp icon alongside the WhatsApp text', () => {
+    const html = render(demoStore, { onWhatsApp: () => {} })
+    expect(html).toContain('<svg')
+    expect(html).toContain('WhatsApp')
+  })
+
+  it('lists the store external channels from the generic {name,url} model', () => {
+    const html = render(demoStore, { onSelectChannel: () => {} })
+    for (const channel of demoStore.channels) {
+      expect(html).toContain(channel.name)
+    }
+  })
+
+  it('shows the Alamat section with the full address when it exists', () => {
+    const html = render(demoStore, {})
+    expect(html).toContain('Alamat')
+    expect(html).toContain(demoStore.fullAddress)
+  })
+
+  it('omits the Alamat section when the store has no full address', () => {
+    const html = render({ name: 'Toko Tanpa Lokasi', channels: [] }, {})
+    expect(html).not.toContain('Alamat')
+    expect(html).toContain('Belum ada saluran marketplace.')
+  })
+
+  it('is compact: no Store Logo and no Tentang Kataloga block', () => {
+    const html = render(demoStore, {})
+    expect(html).not.toContain('Tentang Kataloga')
+    expect(html).not.toContain(`Logo ${demoStore.name}`)
+    expect(html).not.toContain('/assets/mock/store-logo.svg')
+    expect(html).toContain('© 2026 Kataloga')
+    expect(html).toContain('Made with Kataloga')
+  })
+
+  it('resolves persisted channel references to channel-master names', () => {
+    const html = render({ name: 'Toko Ref', channels: [{ channelId: 'SHOPEE', url: 'https://shopee.co.id/x' }] })
+    expect(html).toContain('Shopee')
+  })
+
+  it('renders a single centered bottom row with Made with Kataloga linking to /', () => {
+    const html = render(demoStore, {})
+    const copyright = html.indexOf('© 2026 Kataloga')
+    const homeLink = html.indexOf('href="/"')
+    const madeWith = html.indexOf('Made with Kataloga')
+    expect(copyright).toBeGreaterThanOrEqual(0)
+    expect(homeLink).toBeGreaterThan(copyright)
+    expect(madeWith).toBeGreaterThan(homeLink)
+  })
+
+  it('links the Full Address to a Google Maps search', () => {
+    const html = render({ name: 'Toko Maps', fullAddress: 'Jl. Merdeka 1' }, {})
+    expect(html).toContain('Alamat')
+    expect(html).toContain(
+      'https://www.google.com/maps/search/?api=1&amp;query=Jl.%20Merdeka%201',
+    )
+    expect(html).toContain('target="_blank"')
+  })
+
+  it('shows the store name and identity', () => {
+    expect(render(demoStore, {})).toContain('Toko Komputer Jaya')
+  })
+})

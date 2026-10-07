@@ -27,6 +27,12 @@ function storeToDto(store) {
     operatingHours: 'operating_hours',
     whatsapp: 'whatsapp',
     channels: 'channels',
+    // CHANNEL-MASTER / STORE-CTA WIRE SHAPE UNCONFIRMED: keep these store
+    // fields in the request DTO so a save never silently drops them. The exact
+    // snake_case representation must be reconciled with the confirmed backend
+    // contract (docs/API-CONTRACT.md §6).
+    customChannels: 'custom_channels',
+    ctaOptions: 'cta_options',
     autoArchiveDays: 'auto_archive_days',
   }
   Object.entries(fields).forEach(([frontKey, apiKey]) => {

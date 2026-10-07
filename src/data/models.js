@@ -84,7 +84,7 @@
  *   Store. Defaults: BUY "Beli" and BARGAIN "Tawar"; seller may add CUSTOM
  *   options. Reusable across the store's products. Products select ONE of these
  *   (never create their own CTA definitions).
- * @property {number|null} [autoArchiveDays] - Store-level auto archive threshold in days (1-365), null disables it ("Never"). Backend-owned behavior.
+ * @property {number|null} [autoArchiveDays] - Store-level auto archive threshold in days (1 / 7 / 30 / 90 / 180 / 360), null disables it ("Never"). Backend-owned behavior.
  * @property {string} [lastStoreIdChange] - ISO date of last Store ID change.
  * @property {string} [createdAt] - ISO date.
  */
@@ -158,7 +158,9 @@
  * @typedef {Object} Brand
  * @property {number} id - Brand ID.
  * @property {string} name - Brand name.
- * @property {string} storeId - Store that owns the brand.
+ * @property {string|null} storeId - Store that owns the brand, or null for a
+ *   Kataloga-managed global/default brand shared across stores (read-only for
+ *   sellers; docs/PRODUCT.md §14.1).
  */
 
 /**
@@ -172,17 +174,25 @@
  * @property {string|null} [customerPhone] - Customer phone snapshot at record time.
  * @property {number|null} productId - Product ID, or null for store-level activity.
  * @property {string|null} productName - Product name snapshot, or null for store-level activity.
- * @property {'WHATSAPP_CLICK'|'MARKETPLACE_CLICK'} channelType - Interest type.
- * @property {string} channel - Selected channel name snapshot ("WhatsApp" or external channel).
+ * @property {string} channel - Destination/action string snapshot ("WhatsApp" or an external
+ *   channel name). There is no `channel_type` field (docs/API-CONTRACT.md §7); WhatsApp is
+ *   derived by comparing this value to `whatsapp`.
  * @property {string|null} [channelId] - Optional shared channel-master id for the interaction
  *   (e.g. "SHOPEE" or a store-scoped "CUSTOM:..." id). When present, the UI resolves the
  *   channel name/logo from the shared channel definition; legacy records without it keep the
  *   `channel` name snapshot as the display source.
  * @property {string|null} [externalUrl] - External target URL captured at record time.
- * @property {'Store Landing'|'Product Detail'} context - Storefront context where the
- *   interaction happened (docs/UX-FLOW.md), stored with the event so historical
- *   records never have their context guessed from the current route.
- * @property {string} date - ISO date/time.
+ * @property {'STORE'|'PRODUCT'} context - Storefront context where the interaction happened
+ *   (docs/API-CONTRACT.md §7), stored with the event so historical records never have their
+ *   context guessed from the current route.
+ * @property {number} [totalClicks] - Total equivalent clicks aggregated into this logical
+ *   record (same store + customer + product + context + channel). Defaults to 1 for a single
+ *   click; repeated equivalent actions increment it instead of creating a new row
+ *   (docs/AGENTS.md §19). Missing/legacy values are treated as 1.
+ * @property {string} [firstActivityAt] - ISO timestamp of the first click in the segment
+ *   (preserved across aggregation).
+ * @property {string} [lastActivityAt] - ISO timestamp of the most recent click in the segment.
+ * @property {string} date - ISO date/time of the latest activity in the segment (display/sort).
  */
 
 /**

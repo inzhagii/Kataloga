@@ -9,6 +9,40 @@
  */
 
 import { toDMY } from './datetime'
+import { INTEREST_TYPE, INTEREST_CONTEXT_LABEL } from '../constants/enums'
+
+const WHATSAPP_CHANNEL = 'whatsapp'
+
+/**
+ * True when a record's destination is WhatsApp. WhatsApp is derived from the
+ * `channel` value (docs/API-CONTRACT.md §7) — there is no `channel_type` field.
+ * @param {string|null|undefined} channel
+ * @returns {boolean}
+ */
+export function isWhatsAppChannel(channel) {
+  return String(channel ?? '').trim().toLowerCase() === WHATSAPP_CHANNEL
+}
+
+/**
+ * Derive the Customer Interest activity kind from the destination, for UI
+ * filtering/badges only (never persisted or sent over the wire).
+ * @param {import('../data/models.js').CustomerInterest} interest
+ * @returns {string} INTEREST_TYPE.WHATSAPP_CLICK | INTEREST_TYPE.MARKETPLACE_CLICK
+ */
+export function interestKindOf(interest) {
+  return isWhatsAppChannel(interest?.channel)
+    ? INTEREST_TYPE.WHATSAPP_CLICK
+    : INTEREST_TYPE.MARKETPLACE_CLICK
+}
+
+/**
+ * User-facing label for a canonical interest context (`STORE`|`PRODUCT`).
+ * @param {string|null|undefined} context
+ * @returns {string|null}
+ */
+export function interestContextLabel(context) {
+  return INTEREST_CONTEXT_LABEL[context] ?? null
+}
 
 /**
  * Resolve a stable identity key for a customer interest record.
@@ -64,14 +98,40 @@ export function customerSupportingIdentity(interest) {
 }
 
 /**
+ * Resolve how many clicks a logical Customer Interest record represents.
+ * A single click is the default: records without `totalClicks` (legacy or a
+ * one-off interaction) count as 1. Aggregated records carry the folded total
+ * (docs/AGENTS.md §19).
+ * @param {import('../data/models.js').CustomerInterest} interest
+ * @returns {number}
+ */
+export function interestTotalClicks(interest) {
+  const total = Number(interest?.totalClicks)
+  return Number.isFinite(total) && total > 0 ? total : 1
+}
+
+/**
+ * Sum the click totals of a set of Customer Interest records.
+ * @param {import('../data/models.js').CustomerInterest[]} interests
+ * @returns {number}
+ */
+export function sumInterestClicks(interests) {
+  return (interests ?? []).reduce((sum, interest) => sum + interestTotalClicks(interest), 0)
+}
+
+/**
  * Count all activities of the same customer (across the full store list).
+ * Counts every folded click, so an aggregated record of N equivalent clicks
+ * contributes N (docs/AGENTS.md §19).
  * @param {import('../data/models.js').CustomerInterest[]} interests
  * @param {import('../data/models.js').CustomerInterest} interest
  * @returns {number}
  */
 export function countCustomerActivities(interests, interest) {
   const identity = customerIdentityOf(interest)
-  return interests.filter((item) => customerIdentityOf(item) === identity).length
+  return sumInterestClicks(
+    interests.filter((item) => customerIdentityOf(item) === identity),
+  )
 }
 
 /**

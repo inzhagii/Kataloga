@@ -7,7 +7,7 @@ import {
 } from '../categoryService'
 import { createProduct } from '../productService'
 import { PRODUCT_STATUS } from '../../constants/enums'
-import { actAsStoreA, actAsStoreB, beforeEachScenario } from './setup'
+import { STORE_A_ID, actAsStoreA, actAsStoreB, beforeEachScenario } from './setup'
 
 beforeEach(() => {
   beforeEachScenario()
@@ -30,6 +30,24 @@ describe('listCategories isolation', () => {
     expect(names).toContain('Fashion Branded')
     expect(names).not.toContain('Gaming')
     expect(names).not.toContain('Gadget Gaming')
+  })
+
+  it('scopes the list to an explicit storeId regardless of the current session', async () => {
+    // Acting as Store B, but the public storefront asks for Store A's scope.
+    actAsStoreB()
+    const result = await listCategories(STORE_A_ID)
+    const names = result.map((c) => c.name)
+    expect(names).toContain('Gaming')
+    expect(names).not.toContain('Fashion Branded')
+    // Defaults are store-wide and always included.
+    expect(names).toContain('Elektronik')
+  })
+
+  it('scopes to an explicit storeId without any session (guest storefront)', async () => {
+    const result = await listCategories(STORE_A_ID)
+    const names = result.map((c) => c.name)
+    expect(names).toContain('Gaming')
+    expect(names).not.toContain('Fashion Branded')
   })
 })
 

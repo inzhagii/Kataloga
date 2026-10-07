@@ -17,6 +17,7 @@ import {
   isChannelRef,
   isCustomChannelDefinition,
   listStoreChannelDefinitions,
+  ownerStoreIdForChannels,
   resolveChannelDefinition,
   resolveChannelRefsForDisplay,
   validateChannelRefs,
@@ -229,6 +230,27 @@ describe('buildCustomChannelDefinition', () => {
       existingChannelIds: ['CUSTOM:WEB-STORE'],
     })
     expect(collision.id).toBe('CUSTOM:WEB-STORE-2')
+  })
+})
+
+describe('ownerStoreIdForChannels', () => {
+  it('rewrites every custom channel definition to the current store identity', () => {
+    const result = ownerStoreIdForChannels(
+      [customDefinition, { ...customDefinition, id: 'CUSTOM:WEB-STORE', name: 'Web Store' }],
+      'toko-baru',
+    )
+    expect(result).toEqual([
+      { ...customDefinition, storeId: 'toko-baru' },
+      { ...customDefinition, id: 'CUSTOM:WEB-STORE', name: 'Web Store', storeId: 'toko-baru' },
+    ])
+  })
+
+  it('never mutates the input and tolerates empty/undefined lists', () => {
+    const input = [customDefinition]
+    ownerStoreIdForChannels(input, 'toko-baru')
+    expect(input[0].storeId).toBe('toko-komputer-jaya')
+    expect(ownerStoreIdForChannels(undefined, 'x')).toEqual([])
+    expect(ownerStoreIdForChannels([], 'x')).toEqual([])
   })
 })
 

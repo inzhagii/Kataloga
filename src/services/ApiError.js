@@ -10,10 +10,12 @@
 const FALLBACK_MESSAGES = {
   network: 'Gagal terhubung ke server. Periksa koneksi Anda lalu coba lagi.',
   unauthorized: 'Sesi Anda telah berakhir. Silakan login kembali.',
+  session_expired: 'Sesi Anda telah berakhir. Silakan login kembali.',
   forbidden: 'Anda tidak memiliki izin untuk melakukan aksi ini.',
   not_found: 'Data tidak ditemukan.',
   validation: 'Data yang dikirim tidak valid. Periksa kembali input Anda.',
   conflict: 'Data yang Anda simpan tidak dapat diproses karena sudah digunakan.',
+  rate_limited: 'Terlalu banyak percobaan. Silakan coba lagi beberapa saat lagi.',
   server: 'Terjadi kesalahan pada server. Silakan coba lagi.',
   parse: 'Respons server tidak dapat diproses.',
 }
@@ -24,7 +26,9 @@ const STATUS_TO_TYPE = {
   403: 'forbidden',
   404: 'not_found',
   409: 'conflict',
+  419: 'session_expired',
   422: 'validation',
+  429: 'rate_limited',
 }
 
 export class ApiError extends Error {

@@ -11,7 +11,10 @@
  * Customer activity (WhatsApp/Marketplace clicks, views, shares, category
  * browsing, login/logout) is NEVER part of Recent Activity.
  *
- * Returns mock data now; will call the Activity API later.
+ * Recent Activity is **backend-created** (docs/AGENTS.md §20): the frontend
+ * only reads the timeline. API mode therefore issues no POST — the backend
+ * records the event as a side effect of the seller mutation. Only the
+ * development mock persists a local record (needed for demo/QA).
  */
 
 import { recentActivities } from '../data/mock'
@@ -44,18 +47,25 @@ function keepCanonical(list) {
 }
 
 /**
- * Record a new recent activity and persist it to the mock timeline.
- * The store is resolved from the authenticated session, and optional product
- * context (productId/productName) is stored with the event so historical
- * records remain self-describing.
+ * Record a new recent activity in the development mock timeline. Recent
+ * Activity is backend-created (docs/AGENTS.md §20), so in API mode this is a
+ * deliberate no-op: the frontend must never POST /activities, and the backend
+ * records the event as a side effect of the seller mutation. The store is
+ * resolved from the authenticated session and optional product context
+ * (productId/productName) is stored so historical mock records stay
+ * self-describing.
  * @param {import('../constants/enums.js').ACTIVITY_TYPE} type
  * @param {string} message
  * @param {{ productId?: number|null, productName?: string|null }} [context]
- * @returns {Promise<import('../data/models.js').RecentActivity>}
+ * @returns {Promise<import('../data/models.js').RecentActivity|null>}
+ *   The persisted mock record, or null in API mode (backend-owned).
  */
 export function recordActivity(type, message, context = {}) {
   if (!ALLOWED_TYPES.has(type)) {
     return Promise.reject(new Error(`Activity type tidak dikenali: ${type}`))
+  }
+  if (isApiMode()) {
+    return Promise.resolve(null)
   }
   const activity = {
     id: recentActivities.reduce((max, item) => Math.max(max, item.id), 0) + 1,
@@ -65,9 +75,6 @@ export function recordActivity(type, message, context = {}) {
     productId: context.productId ?? null,
     productName: context.productName ?? null,
     date: new Date().toISOString(),
-  }
-  if (isApiMode()) {
-    return activityApi.recordActivity(type, message, context)
   }
   recentActivities.unshift(activity)
   return withLatency(activity)

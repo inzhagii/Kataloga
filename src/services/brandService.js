@@ -24,14 +24,32 @@ function nextBrandId() {
 }
 
 /**
- * Brands belonging to the current store. Cross-store brands never appear, so
- * lookup, naming, product counting and deletion stay isolated.
+ * Whether a brand is a Kataloga-managed global/default brand. Global brands
+ * have no owning store (`storeId == null`), are shared across stores and are
+ * read-only for sellers (docs/PRODUCT.md §14.1).
+ * @param {import('../data/models.js').Brand} brand
+ * @returns {boolean}
+ */
+export function isGlobalBrand(brand) {
+  return brand?.storeId == null
+}
+
+/**
+ * Brands visible to the current store: the Kataloga-managed global/default
+ * brands (`storeId == null`) plus the current store's own brands. Cross-store
+ * custom brands never appear, so lookup, naming, product counting and deletion
+ * stay isolated.
  * @returns {import('../data/models.js').Brand[]}
  */
 function visibleBrands() {
   const currentStoreId = getCurrentStoreId()
-  return brands.filter((brand) => brand.storeId === currentStoreId)
+  return brands.filter(
+    (brand) => brand.storeId == null || brand.storeId === currentStoreId,
+  )
 }
+
+const GLOBAL_BRAND_READONLY_MESSAGE =
+  'Brand bawaan Kataloga tidak dapat diubah atau dihapus.'
 
 /**
  * Number of current-store products referencing a brand by name. Counts every
@@ -100,6 +118,9 @@ export function updateBrand(brandId, payload) {
   if (!brand) {
     return Promise.reject(new Error('Brand tidak ditemukan.'))
   }
+  if (isGlobalBrand(brand)) {
+    return Promise.reject(new Error(GLOBAL_BRAND_READONLY_MESSAGE))
+  }
 
   const nextName = payload.name === undefined ? brand.name : payload.name.trim()
   if (!nextName) {
@@ -135,6 +156,9 @@ export function deleteBrand(brandId) {
   const brand = visibleBrands().find((item) => item.id === Number(brandId))
   if (!brand) {
     return Promise.reject(new Error('Brand tidak ditemukan.'))
+  }
+  if (isGlobalBrand(brand)) {
+    return Promise.reject(new Error(GLOBAL_BRAND_READONLY_MESSAGE))
   }
   const used = countBrandProducts(brand)
   if (used > 0) {

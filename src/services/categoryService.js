@@ -25,29 +25,46 @@ function nextCategoryId() {
 }
 
 /**
+ * Categories visible to a store: built-in/default categories (store-wide,
+ * no `storeId`) plus the custom categories scoped to that store. Cross-store
+ * custom categories never appear, so lookup, naming, parenting and deletion
+ * stay isolated.
+ * @param {string|null|undefined} storeId
+ * @returns {import('../data/models.js').Category[]}
+ */
+function categoriesForStore(storeId) {
+  return categories.filter(
+    (category) => !category.custom || !category.storeId || category.storeId === storeId,
+  )
+}
+
+/**
  * Categories visible to the current store: built-in/default categories plus
- * the custom categories scoped to this store. Cross-store custom categories
- * never appear, so lookup, naming, parenting and deletion stay isolated.
+ * the custom categories scoped to this store.
  * @returns {import('../data/models.js').Category[]}
  */
 function visibleCategories() {
-  const currentStoreId = getCurrentStoreId()
-  return categories.filter(
-    (category) => !category.custom || !category.storeId || category.storeId === currentStoreId,
-  )
+  return categoriesForStore(getCurrentStoreId())
 }
 
 /**
  * List categories for the current store: built-in/default categories plus
  * the custom categories scoped to this store, so category data from another
  * store never appears.
+ *
+ * When `storeId` is provided the list is scoped to that store instead of the
+ * authenticated seller's store. The public storefront uses this to scope the
+ * customer category filter to the store being viewed (a guest has no session
+ * store), without changing the seller management behavior.
+ * @param {string} [storeId]
  * @returns {Promise<import('../data/models.js').Category[]>}
  */
-export function listCategories() {
+export function listCategories(storeId) {
   if (isApiMode()) {
     return categoryApi.listCategories()
   }
-  return withLatency(visibleCategories())
+  const scopeStoreId = storeId ?? getCurrentStoreId()
+  return withLatency(categoriesForStore(scopeStoreId))
 }
 
 /**

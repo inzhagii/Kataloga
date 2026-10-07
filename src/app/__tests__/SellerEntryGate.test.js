@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
-import { AuthContext } from '../../contexts/authContext'
+import { AuthContext } from '../providers/authContext'
 import SellerEntryGate from '../SellerEntryGate'
 
 const navigateSpy = vi.fn((props) => createElement('div', null, `REDIRECT:${props.to}`))

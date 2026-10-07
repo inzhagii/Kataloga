@@ -1,4 +1,4 @@
-import PagePlaceholder from '../components/shared/PagePlaceholder'
+import PagePlaceholder from '../components/ui/PagePlaceholder'
 
 function NotFoundPage() {
   return (

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import BottomSheet from '../storefront/BottomSheet'
+import BottomSheet from '../ui/BottomSheet'
 import { CUSTOM_CHANNEL_NAME_REQUIRED } from '../../utils/channels'
 
 /**

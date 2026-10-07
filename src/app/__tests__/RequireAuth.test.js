@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { AuthContext } from '../../contexts/authContext'
+import { AuthContext } from '../providers/authContext'
 import RequireAuth from '../RequireAuth'
 import { sanitizeReturnPath } from '../../utils/returnUrl'
 

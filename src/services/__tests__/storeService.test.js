@@ -238,12 +238,12 @@ describe('Auto Archive setting (store-level)', () => {
     expect((await getStore(STORE_A_ID)).autoArchiveDays).toBeNull()
   })
 
-  it('accepts the 1 and 365 boundary values', async () => {
+  it('accepts the 1 and 360 boundary values', async () => {
     actAsStoreA()
     await updateStore(STORE_A_ID, { autoArchiveDays: 1 })
     expect((await getStore(STORE_A_ID)).autoArchiveDays).toBe(1)
-    await updateStore(STORE_A_ID, { autoArchiveDays: 365 })
-    expect((await getStore(STORE_A_ID)).autoArchiveDays).toBe(365)
+    await updateStore(STORE_A_ID, { autoArchiveDays: 360 })
+    expect((await getStore(STORE_A_ID)).autoArchiveDays).toBe(360)
   })
 })
 

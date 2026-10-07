@@ -6,6 +6,8 @@
  * path already produces frontend models directly.
  */
 
+import { normalizeCtaOption } from '../../../constants/cta'
+
 /**
  * @param {object} dto - User DTO ({ id, email, phone, name, has_store, store_id, avatar_url }).
  * @returns {import('../../../data/models.js').User}
@@ -48,6 +50,13 @@ export function toStore(dto) {
       name: channel.name,
       url: channel.url,
     })),
+    // CHANNEL-MASTER / STORE-CTA WIRE SHAPE UNCONFIRMED: pass the store's
+    // custom channel definitions and reusable CTA options through so the Store
+    // model stays complete (a save/reload must not silently drop them). The
+    // exact DTO shape (nested snake_case vs the frontend model) is reconciled
+    // with the confirmed backend contract (docs/API-CONTRACT.md §6).
+    customChannels: Array.isArray(dto.custom_channels) ? dto.custom_channels : undefined,
+    ctaOptions: Array.isArray(dto.cta_options) ? dto.cta_options : undefined,
     verified: Boolean(dto.verified),
     announcement: dto.announcement
       ? {
@@ -96,7 +105,7 @@ export function toProduct(dto) {
           url: link.url ?? '',
         }))
       : [],
-    cta: dto.cta ? { type: dto.cta.type, label: dto.cta.label } : undefined,
+    cta: normalizeCtaOption(dto.cta),
     status: dto.status,
     featured: Boolean(dto.featured),
     soldOutAt: dto.sold_out_at ?? undefined,
@@ -135,13 +144,21 @@ export function toBrand(dto) {
  * Customer interest DTO (snake_case) to frontend model (camelCase).
  * Identity is preserved as-is: a missing name stays null (never coerced to a
  * fake placeholder) so the UI can fall back to email/phone when present.
- * A `channel_id` reference (when the backend provides one) is passed through
- * so the UI can resolve the channel display from the shared channel master;
- * legacy records without it keep the `channel` name snapshot.
+ * There is no `channel_type`: `channel` is the destination/action string and
+ * `context` is `STORE`|`PRODUCT` (docs/API-CONTRACT.md §7). A `channel_id`
+ * reference (when the backend provides one) is passed through so the UI can
+ * resolve the channel display from the shared channel master; legacy records
+ * without it keep the `channel` name snapshot.
+ *
+ * Aggregation fields (docs/AGENTS.md §19): `total_clicks` counts every
+ * equivalent click folded into this logical record; `first_activity_at` /
+ * `last_activity_at` bound the segment. A legacy/single-click DTO without them
+ * yields `totalClicks: 1` and first/last falling back to `date`.
  * @param {object} dto - Customer interest DTO ({ id, store_id, customer_name, ... }).
  * @returns {import('../../../data/models.js').CustomerInterest}
  */
 export function toCustomerInterest(dto) {
+  const date = dto.date ?? dto.last_activity_at ?? null
   return {
     id: dto.id,
     storeId: dto.store_id,
@@ -151,12 +168,14 @@ export function toCustomerInterest(dto) {
     customerPhone: dto.customer_phone ?? null,
     productId: dto.product_id ?? null,
     productName: dto.product_name ?? null,
-    channelType: dto.channel_type,
     channel: dto.channel ?? '',
     channelId: dto.channel_id ?? null,
     externalUrl: dto.external_url ?? null,
     context: dto.context ?? null,
-    date: dto.date,
+    totalClicks: dto.total_clicks ?? 1,
+    firstActivityAt: dto.first_activity_at ?? date,
+    lastActivityAt: dto.last_activity_at ?? date,
+    date,
   }
 }
 

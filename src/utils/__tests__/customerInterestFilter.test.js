@@ -50,9 +50,8 @@ function interest(overrides = {}) {
     customerPhone: '081100',
     productId: 1,
     productName: 'Laptop Asus ROG',
-    channelType: INTEREST_TYPE.WHATSAPP_CLICK,
     channel: 'WhatsApp',
-    context: 'Product Detail',
+    context: 'PRODUCT',
     date: '2026-09-10T12:00:00.000Z',
     ...overrides,
   }
@@ -65,7 +64,6 @@ const interests = [
     customerName: 'Ani',
     customerEmail: null,
     customerPhone: null,
-    channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
     channel: 'Shopee',
     date: '2026-09-10T14:00:00.000Z',
   }),
@@ -76,7 +74,6 @@ const interests = [
     customerPhone: '081200',
     productId: 2,
     productName: 'Smartphone Samsung Galaxy',
-    channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
     channel: 'Tokopedia',
     date: '2026-09-11T09:00:00.000Z',
   }),
@@ -87,7 +84,6 @@ const interests = [
     customerPhone: null,
     productId: 2,
     productName: 'Smartphone Samsung Galaxy',
-    channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
     channel: 'WhatsApp',
     date: '2026-09-12T10:00:00.000Z',
   }),
@@ -98,9 +94,8 @@ const interests = [
     customerPhone: '081300',
     productId: null,
     productName: null,
-    channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
     channel: 'Lazada',
-    context: 'Store Landing',
+    context: 'STORE',
     date: '2026-09-13T08:00:00.000Z',
   }),
 ]
@@ -168,7 +163,7 @@ describe('filterCustomerInterests', () => {
   it('filters by activity type', () => {
     expect(
       ids(filterCustomerInterests(interests, { ...defaults, activity: INTEREST_TYPE.WHATSAPP_CLICK })),
-    ).toEqual([100])
+    ).toEqual([100, 103])
     expect(
       ids(
         filterCustomerInterests(interests, {
@@ -176,7 +171,7 @@ describe('filterCustomerInterests', () => {
           activity: INTEREST_TYPE.MARKETPLACE_CLICK,
         }),
       ),
-    ).toEqual([101, 102, 103, 104])
+    ).toEqual([101, 102, 104])
   })
 
   it('filters by a single date in DD.MM.YYYY', () => {

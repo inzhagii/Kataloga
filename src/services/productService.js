@@ -29,8 +29,8 @@ const STATUS_CHANGE_GUARD_MESSAGE =
 const ARCHIVED_FEATURED_MESSAGE =
   'Product yang diarsipkan tidak dapat menjadi Featured. Restore ke draft terlebih dahulu.'
 
-const FEATURE_PUBLISHED_ONLY_MESSAGE =
-  'Product Unggulan hanya dapat diaktifkan pada product yang berstatus PUBLISHED.'
+const FEATURE_UNSUPPORTED_STATUS_MESSAGE =
+  'Product Unggulan hanya dapat diaktifkan pada product yang berstatus PUBLISHED atau SOLD_OUT.'
 
 const FEATURED_LIMIT_MESSAGE =
   'Maksimal 10 Product Unggulan per toko. Hapus salah satu Featured terlebih dahulu.'
@@ -69,11 +69,24 @@ function nextProductId() {
 }
 
 /**
- * Featured guard: only PUBLISHED products may be Product Unggulan. DRAFT,
- * SOLD_OUT and ARCHIVED are never featured, and a store is capped at 10
- * Product Unggulan among its PUBLISHED products. Returns the conflict
- * message, or null when the target state is allowed. Pass `productId ===
- * null` for creation.
+ * Whether a product status can hold the Product Unggulan flag. Only PUBLISHED
+ * and SOLD_OUT products may be featured (docs/PRODUCT.md §Product Unggulan);
+ * DRAFT is never featured and ARCHIVED always clears it.
+ * @param {string} status
+ * @returns {boolean}
+ */
+function canBeFeatured(status) {
+  return (
+    status === PRODUCT_STATUS.PUBLISHED || status === PRODUCT_STATUS.SOLD_OUT
+  )
+}
+
+/**
+ * Featured guard: only PUBLISHED and SOLD_OUT products may be Product
+ * Unggulan. DRAFT and ARCHIVED are never featured, and a store is capped at 10
+ * Product Unggulan (across every status that can hold the flag). Returns the
+ * conflict message, or null when the target state is allowed. Pass
+ * `productId === null` for creation.
  * @param {string} storeId
  * @param {number | null} productId
  * @param {boolean} nextFeatured
@@ -88,19 +101,15 @@ function featuredGuardMessage(storeId, productId, nextFeatured) {
     if (product.status === PRODUCT_STATUS.ARCHIVED) {
       return ARCHIVED_FEATURED_MESSAGE
     }
-    if (product.status !== PRODUCT_STATUS.PUBLISHED) {
-      return FEATURE_PUBLISHED_ONLY_MESSAGE
+    if (!canBeFeatured(product.status)) {
+      return FEATURE_UNSUPPORTED_STATUS_MESSAGE
     }
     if (product.featured) {
       return null
     }
   }
   const featuredCount = products.filter(
-    (item) =>
-      item.storeId === storeId &&
-      item.id !== productId &&
-      item.status === PRODUCT_STATUS.PUBLISHED &&
-      item.featured,
+    (item) => item.storeId === storeId && item.id !== productId && item.featured,
   ).length
   return featuredCount >= 10 ? FEATURED_LIMIT_MESSAGE : null
 }
@@ -263,7 +272,7 @@ export function createProduct(payload) {
     externalLinks: payload.externalLinks ?? [],
     cta: payload.cta ?? defaultCtaOption(getCurrentStoreId()),
     status: initialStatus,
-    featured: Boolean(payload.featured) && initialStatus === PRODUCT_STATUS.PUBLISHED,
+    featured: Boolean(payload.featured) && canBeFeatured(initialStatus),
     createdAt: now,
     updatedAt: now,
   }
@@ -309,7 +318,7 @@ export function updateProduct(productId, payload) {
   const requestedFeatured =
     payload.featured !== undefined ? Boolean(payload.featured) : product.featured
   const nextFeatured =
-    payload.featured !== undefined && product.status === PRODUCT_STATUS.PUBLISHED
+    payload.featured !== undefined && canBeFeatured(product.status)
       ? requestedFeatured
       : product.featured
   if (payload.featured !== undefined && nextFeatured !== product.featured) {
@@ -356,9 +365,9 @@ export function publishProduct(productId) {
 
 /**
  * Toggle the featured flag on a product. Enforces the max-10 Product Unggulan
- * limit per store among PUBLISHED products (backend remains the final
- * authority) and only ever promotes a PUBLISHED product: DRAFT, SOLD_OUT and
- * ARCHIVED are never Product Unggulan.
+ * limit per store (backend remains the final authority) and only ever promotes
+ * a PUBLISHED or SOLD_OUT product: DRAFT and ARCHIVED are never Product
+ * Unggulan.
  * @param {number} productId
  * @returns {Promise<import('../data/models.js').Product>}
  */

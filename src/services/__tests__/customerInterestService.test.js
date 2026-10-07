@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { listCustomerInterests, recordInterest, isStoreOwner } from '../customerInterestService'
-import { INTEREST_TYPE, INTEREST_CONTEXT } from '../../constants/enums'
+import { INTEREST_CONTEXT } from '../../constants/enums'
 import {
   beforeEachScenario,
   STORE_A_ID,
@@ -14,20 +14,18 @@ beforeEach(() => {
 })
 
 describe('recordInterest', () => {
-  it('records a WHATSAPP_CLICK with the expected shape', async () => {
+  it('records a WhatsApp click with the expected shape', async () => {
     const interest = await recordInterest({
       storeId: STORE_B_ID,
       customerName: 'Budi',
       customerId: 7,
       productId: 100,
       productName: 'Kaos Polos Premium',
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
       externalUrl: null,
     })
     expect(interest).toMatchObject({
       storeId: STORE_B_ID,
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
       productId: 100,
       customerId: 7,
@@ -35,53 +33,88 @@ describe('recordInterest', () => {
     expect(interest.date).toBeTruthy()
   })
 
-  it('records a MARKETPLACE_CLICK with the exact selected channel, not a generic name', async () => {
+  it('records a marketplace click with the exact selected channel, not a generic name', async () => {
     const interest = await recordInterest({
       storeId: STORE_B_ID,
       customerName: 'Rina',
       customerId: 8,
       productId: 101,
       productName: 'Jaket Denim Vintage',
-      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: 'Instagram',
       externalUrl: 'https://instagram.com/toko-agung-fashion',
     })
-    expect(interest.channelType).toBe(INTEREST_TYPE.MARKETPLACE_CLICK)
     expect(interest.channel).toBe('Instagram')
     expect(interest.externalUrl).toBe('https://instagram.com/toko-agung-fashion')
   })
 
-  it('creates separate records per click (no dedup)', async () => {
+  it('folds repeated equivalent clicks into one logical record', async () => {
     const first = await recordInterest({
       storeId: STORE_B_ID,
       customerName: 'Budi',
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      customerId: 7,
+      productId: 100,
       channel: 'WhatsApp',
+      context: INTEREST_CONTEXT.PRODUCT,
     })
     const second = await recordInterest({
       storeId: STORE_B_ID,
       customerName: 'Budi',
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      customerId: 7,
+      productId: 100,
       channel: 'WhatsApp',
+      context: INTEREST_CONTEXT.PRODUCT,
     })
-    expect(first.id).not.toBe(second.id)
+    expect(second.id).toBe(first.id)
+    expect(second.totalClicks).toBe(2)
+    expect(second.firstActivityAt).toBe(first.firstActivityAt)
+    expect(new Date(second.lastActivityAt) >= new Date(first.lastActivityAt)).toBe(true)
+
+    const stored = await listCustomerInterests(STORE_B_ID)
+    expect(
+      stored.filter((i) => i.customerId === 7 && i.productId === 100 && i.channel === 'WhatsApp'),
+    ).toHaveLength(1)
   })
 
-  it('rejects any channel type other than the two allowed ones', async () => {
+  it('creates a new logical record when the context differs', async () => {
+    const productClick = await recordInterest({
+      storeId: STORE_B_ID,
+      customerName: 'Budi',
+      customerId: 7,
+      productId: 100,
+      channel: 'WhatsApp',
+      context: INTEREST_CONTEXT.PRODUCT,
+    })
+    const storeClick = await recordInterest({
+      storeId: STORE_B_ID,
+      customerName: 'Budi',
+      customerId: 7,
+      productId: null,
+      channel: 'WhatsApp',
+      context: INTEREST_CONTEXT.STORE,
+    })
+    expect(storeClick.id).not.toBe(productClick.id)
+    expect(storeClick.totalClicks).toBe(1)
+  })
+
+  it('never merges anonymous clicks with no identifiable owner', async () => {
+    const first = await recordInterest({ storeId: STORE_B_ID, customerName: null, channel: 'WhatsApp' })
+    const second = await recordInterest({ storeId: STORE_B_ID, customerName: null, channel: 'WhatsApp' })
+    expect(second.id).not.toBe(first.id)
+  })
+
+  it('rejects a record without a channel destination', async () => {
     await expect(
       recordInterest({
         storeId: STORE_B_ID,
         customerName: 'X',
-        channelType: 'PRODUCT_VIEW',
-        channel: 'Product',
+        channel: '',
       }),
     ).rejects.toThrow('tidak valid')
     await expect(
       recordInterest({
         storeId: STORE_B_ID,
         customerName: 'X',
-        channelType: 'SHARE',
-        channel: 'Share',
+        channel: '   ',
       }),
     ).rejects.toThrow('tidak valid')
   })
@@ -95,8 +128,7 @@ describe('recordInterest', () => {
       customerPhone: '081234567001',
       productId: 100,
       productName: 'Kaos Polos Premium',
-      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      context: INTEREST_CONTEXT.PRODUCT,
       channel: 'WhatsApp',
     })
     expect(interest).toMatchObject({
@@ -106,20 +138,19 @@ describe('recordInterest', () => {
       customerPhone: '081234567001',
       productId: 100,
       productName: 'Kaos Polos Premium',
-      context: INTEREST_CONTEXT.PRODUCT_DETAIL,
+      context: INTEREST_CONTEXT.PRODUCT,
     })
   })
 
-  it('keeps a store-level record context as Store Landing with nullable product', async () => {
+  it('keeps a store-level record context as STORE with nullable product', async () => {
     const interest = await recordInterest({
       storeId: STORE_B_ID,
       customerName: null,
       customerEmail: 'visitor@example.com',
-      context: INTEREST_CONTEXT.STORE_LANDING,
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
+      context: INTEREST_CONTEXT.STORE,
       channel: 'WhatsApp',
     })
-    expect(interest.context).toBe(INTEREST_CONTEXT.STORE_LANDING)
+    expect(interest.context).toBe(INTEREST_CONTEXT.STORE)
     expect(interest.productId).toBeNull()
     expect(interest.productName).toBeNull()
   })
@@ -130,7 +161,6 @@ describe('recordInterest', () => {
     const interest = await recordInterest({
       storeId: STORE_B_ID,
       customerName: 'Rina',
-      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: removedChannel.name,
       externalUrl: removedChannel.url,
     })
@@ -146,10 +176,21 @@ describe('recordInterest', () => {
     const interest = await recordInterest({
       storeId: STORE_B_ID,
       customerName: 'Budi',
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
     })
     expect(interest.context).toBeNull()
+  })
+
+  it('derives identity from the active session when the caller omits it', async () => {
+    actAsStoreB()
+    const interest = await recordInterest({
+      storeId: STORE_A_ID,
+      channel: 'WhatsApp',
+    })
+    expect(interest).toMatchObject({
+      customerId: 2,
+      customerName: 'Agung Fashion',
+    })
   })
 })
 
@@ -162,7 +203,6 @@ describe('self-store exclusion', () => {
       storeId: STORE_A_ID,
       customerName: 'Pemilik Toko',
       customerId: 1,
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
     })
     expect(recorded).toBeNull()
@@ -179,7 +219,6 @@ describe('self-store exclusion', () => {
       storeId: STORE_A_ID,
       customerName: 'Agung',
       customerId: 2,
-      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: 'Shopee',
     })
     expect(recorded).not.toBeNull()
@@ -193,7 +232,6 @@ describe('self-store exclusion', () => {
       storeId: STORE_A_ID,
       customerName: 'Pengunjung',
       customerId: null,
-      channelType: INTEREST_TYPE.WHATSAPP_CLICK,
       channel: 'WhatsApp',
     })
     expect(recorded).not.toBeNull()
@@ -211,7 +249,6 @@ describe('listCustomerInterests', () => {
         id: 200,
         storeId: STORE_B_ID,
         customerName: 'Older',
-        channelType: INTEREST_TYPE.WHATSAPP_CLICK,
         channel: 'WhatsApp',
         date: '2026-09-01T00:00:00.000Z',
       },
@@ -219,7 +256,6 @@ describe('listCustomerInterests', () => {
         id: 201,
         storeId: STORE_B_ID,
         customerName: 'Newer',
-        channelType: INTEREST_TYPE.WHATSAPP_CLICK,
         channel: 'WhatsApp',
         date: '2026-09-10T00:00:00.000Z',
       },

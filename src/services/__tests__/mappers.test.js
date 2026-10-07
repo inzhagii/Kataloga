@@ -5,7 +5,52 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { toStore, toBrand, toCustomerInterest, toRecentActivity } from '../adapters/api/mappers'
+import { toStore, toProduct, toBrand, toCustomerInterest, toRecentActivity } from '../adapters/api/mappers'
+
+describe('toStore custom channels & CTA options mapping', () => {
+  it('passes through custom_channels and cta_options when the DTO provides them', () => {
+    const customChannels = [
+      { id: 'CUSTOM:WEB', storeId: 'toko-x', name: 'Web', logo: 'link', custom: true },
+    ]
+    const ctaOptions = [
+      { type: 'BUY', label: 'Beli' },
+      { type: 'CUSTOM', label: 'Tanya Harga' },
+    ]
+    const store = toStore({
+      store_id: 'toko-x',
+      custom_channels: customChannels,
+      cta_options: ctaOptions,
+    })
+    expect(store.customChannels).toEqual(customChannels)
+    expect(store.ctaOptions).toEqual(ctaOptions)
+  })
+
+  it('leaves them undefined when the DTO omits them (nothing silently invented)', () => {
+    const store = toStore({ store_id: 'toko-x' })
+    expect(store.customChannels).toBeUndefined()
+    expect(store.ctaOptions).toBeUndefined()
+  })
+})
+
+describe('toProduct CTA mapping', () => {
+  it('keeps a valid BUY/BARGAIN/CUSTOM selection intact', () => {
+    expect(toProduct({ cta: { type: 'BARGAIN', label: 'Tawar' } }).cta).toEqual({
+      type: 'BARGAIN',
+      label: 'Tawar',
+    })
+    expect(toProduct({ cta: { type: 'CUSTOM', label: 'Tanya Harga' } }).cta).toEqual({
+      type: 'CUSTOM',
+      label: 'Tanya Harga',
+    })
+  })
+
+  it('falls back to the documented default BUY when the CTA is missing or invalid', () => {
+    const fallback = { type: 'BUY', label: 'Beli' }
+    expect(toProduct({}).cta).toEqual(fallback)
+    expect(toProduct({ cta: { type: 'CUSTOM', label: '  ' } }).cta).toEqual(fallback)
+    expect(toProduct({ cta: { type: 'UNKNOWN', label: 'x' } }).cta).toEqual(fallback)
+  })
+})
 
 describe('toStore announcement mapping', () => {
   it('maps the wire announcement to { title, message, isEnabled }', () => {
@@ -73,11 +118,10 @@ describe('toCustomerInterest mapping', () => {
       customer_phone: '081234567001',
       product_id: 20,
       product_name: 'Laptop Asus ROG',
-      channel_type: 'MARKETPLACE_CLICK',
       channel: 'Shopee',
       channel_id: 'SHOPEE',
       external_url: 'https://shopee.example/toko-x',
-      context: 'Product Detail',
+      context: 'PRODUCT',
       date: '2026-09-12T07:30:00.000Z',
     })
     expect(interest).toEqual({
@@ -89,13 +133,40 @@ describe('toCustomerInterest mapping', () => {
       customerPhone: '081234567001',
       productId: 20,
       productName: 'Laptop Asus ROG',
-      channelType: 'MARKETPLACE_CLICK',
       channel: 'Shopee',
       channelId: 'SHOPEE',
       externalUrl: 'https://shopee.example/toko-x',
-      context: 'Product Detail',
+      context: 'PRODUCT',
+      totalClicks: 1,
+      firstActivityAt: '2026-09-12T07:30:00.000Z',
+      lastActivityAt: '2026-09-12T07:30:00.000Z',
       date: '2026-09-12T07:30:00.000Z',
     })
+  })
+
+  it('maps the aggregation fields and falls back to date for legacy DTOs', () => {
+    const aggregated = toCustomerInterest({
+      id: 8,
+      store_id: 'toko-x',
+      channel: 'WhatsApp',
+      total_clicks: 3,
+      first_activity_at: '2026-09-01T00:00:00.000Z',
+      last_activity_at: '2026-09-10T00:00:00.000Z',
+      date: '2026-09-10T00:00:00.000Z',
+    })
+    expect(aggregated.totalClicks).toBe(3)
+    expect(aggregated.firstActivityAt).toBe('2026-09-01T00:00:00.000Z')
+    expect(aggregated.lastActivityAt).toBe('2026-09-10T00:00:00.000Z')
+
+    const legacy = toCustomerInterest({
+      id: 9,
+      store_id: 'toko-x',
+      channel: 'WhatsApp',
+      date: '2026-09-12T07:30:00.000Z',
+    })
+    expect(legacy.totalClicks).toBe(1)
+    expect(legacy.firstActivityAt).toBe('2026-09-12T07:30:00.000Z')
+    expect(legacy.lastActivityAt).toBe('2026-09-12T07:30:00.000Z')
   })
 
   it('keeps a missing customer name null instead of a placeholder like "-"', () => {
@@ -103,7 +174,6 @@ describe('toCustomerInterest mapping', () => {
       id: 6,
       store_id: 'toko-x',
       customer_email: 'anon@example.com',
-      channel_type: 'WHATSAPP_CLICK',
       channel: 'WhatsApp',
       date: '2026-09-12T07:30:00.000Z',
     })
@@ -116,7 +186,6 @@ describe('toCustomerInterest mapping', () => {
     const interest = toCustomerInterest({
       id: 7,
       store_id: 'toko-x',
-      channel_type: 'WHATSAPP_CLICK',
       channel: 'WhatsApp',
       date: '2026-09-12T07:30:00.000Z',
     })

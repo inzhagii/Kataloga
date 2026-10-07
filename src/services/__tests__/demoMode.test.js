@@ -30,7 +30,12 @@ import {
 } from '../productService'
 import { buildCatalogCategoryTree, filterAndSortProducts } from '../../utils/productSearch'
 import { countByChannel, buildChannelOptions, FILTER_ALL } from '../../utils/customerInterestChannels'
-import { countCustomerActivities, customerActivities } from '../../utils/customerInterest'
+import {
+  countCustomerActivities,
+  customerActivities,
+  interestKindOf,
+  sumInterestClicks,
+} from '../../utils/customerInterest'
 import { filterCustomerInterests } from '../../utils/customerInterestFilter'
 import {
   PRODUCT_STATUS,
@@ -39,7 +44,15 @@ import {
   INTEREST_CONTEXT,
   ACTIVITY_TYPE,
 } from '../../constants/enums'
-import { products, stores, customerInterests, recentActivities, CMS_CHANNELS } from '../../data/mock'
+import {
+  products,
+  stores,
+  brands,
+  categories,
+  customerInterests,
+  recentActivities,
+  CMS_CHANNELS,
+} from '../../data/mock'
 import {
   validateChannelRefs,
   resolveChannelDefinition,
@@ -248,11 +261,12 @@ describe('demo data respects locked data models', () => {
   })
 
   it('only records documented customer interest and activity types', () => {
-    const allowedTypes = new Set(Object.values(INTEREST_TYPE))
+    const allowedContexts = new Set(Object.values(INTEREST_CONTEXT))
     for (const interest of customerInterests) {
-      expect(allowedTypes.has(interest.channelType)).toBe(true)
+      expect(String(interest.channel ?? '').trim()).not.toBe('')
+      expect(allowedContexts.has(interest.context)).toBe(true)
     }
-    expect(new Set(customerInterests.map((i) => i.channelType))).toEqual(
+    expect(new Set(customerInterests.map((i) => interestKindOf(i)))).toEqual(
       new Set(Object.values(INTEREST_TYPE)),
     )
 
@@ -267,6 +281,89 @@ describe('demo data respects locked data models', () => {
     expect([...new Set(recentActivities.map((a) => a.type))].every((type) =>
       allowedActivities.has(type),
     )).toBe(true)
+  })
+
+  it('resolves every product reference in fixtures across ALL stores', () => {
+    const storeIds = new Set(products.map((p) => p.storeId))
+    for (const storeId of storeIds) {
+      const byId = new Map(
+        products.filter((p) => p.storeId === storeId).map((p) => [p.id, p]),
+      )
+      const references = [
+        ...customerInterests.filter((i) => i.storeId === storeId),
+        ...recentActivities.filter((a) => a.storeId === storeId),
+      ]
+      for (const record of references) {
+        if (record.productId == null) {
+          expect(record.productName ?? null).toBeNull()
+          continue
+        }
+        const product = byId.get(record.productId)
+        expect(product, `${storeId} #${record.id} -> product ${record.productId}`).toBeTruthy()
+        expect(record.productName).toBe(product.name)
+      }
+    }
+  })
+
+  it('keeps every product/category/brand reference resolvable within its store scope', () => {
+    const storeIds = new Set(stores.map((s) => s.storeId))
+
+    for (const product of products) {
+      expect(storeIds.has(product.storeId), `product ${product.id} store ${product.storeId}`).toBe(
+        true,
+      )
+
+      // Category must be a default (store-agnostic) category or one scoped to
+      // this product's own store.
+      const visibleCategoryNames = new Set(
+        categories
+          .filter((category) => !category.custom || category.storeId === product.storeId)
+          .map((category) => category.name),
+      )
+      expect(
+        visibleCategoryNames.has(product.category),
+        `product ${product.id} category ${product.category}`,
+      ).toBe(true)
+
+      // Brand is optional; when set it must be a global brand or one scoped to
+      // this product's own store.
+      if (product.brand) {
+        const visibleBrandNames = new Set(
+          brands
+            .filter((brand) => brand.storeId == null || brand.storeId === product.storeId)
+            .map((brand) => brand.name),
+        )
+        expect(
+          visibleBrandNames.has(product.brand),
+          `product ${product.id} brand ${product.brand}`,
+        ).toBe(true)
+      }
+    }
+
+    const categoryById = new Map(categories.map((category) => [category.id, category]))
+    for (const category of categories) {
+      if (category.parentId == null) {
+        continue
+      }
+      const parent = categoryById.get(category.parentId)
+      expect(parent, `category ${category.id} parent ${category.parentId}`).toBeTruthy()
+      // Exactly two levels: a parent is always a root, never nested deeper.
+      expect(parent.parentId).toBeNull()
+      // A store-scoped custom sub category may only hang off its own store.
+      if (category.custom && category.storeId) {
+        expect(
+          parent.custom && parent.storeId === category.storeId,
+          `category ${category.id} parent scope`,
+        ).toBe(true)
+      }
+    }
+
+    for (const brand of brands) {
+      if (brand.storeId == null) {
+        continue
+      }
+      expect(storeIds.has(brand.storeId), `brand ${brand.id} store ${brand.storeId}`).toBe(true)
+    }
   })
 
   it('keeps the category tree at exactly two levels and usable by the catalog filter', async () => {
@@ -326,14 +423,12 @@ describe('demo data respects locked data models', () => {
       customerId: 99,
       productId: 1,
       productName: 'ASUS VivoBook 14',
-      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: chosenDefinition.name,
       externalUrl: chosen.url,
     })
 
     const interests = await listCustomerInterests(STORE_A_ID)
     expect(interests[0]).toMatchObject({
-      channelType: INTEREST_TYPE.MARKETPLACE_CLICK,
       channel: chosenDefinition.name,
       externalUrl: chosen.url,
     })
@@ -387,8 +482,9 @@ describe('demo customer interest dataset (TechSpace Bandung)', () => {
   it('keeps store isolation, documented types, contexts and no self-store records', async () => {
     const interests = await listCustomerInterests('techspace-bandung')
     expect(interests.every((i) => i.storeId === 'techspace-bandung')).toBe(true)
-    expect(interests).toHaveLength(22)
-    expect(new Set(interests.map((i) => i.channelType))).toEqual(
+    expect(interests).toHaveLength(17)
+    expect(sumInterestClicks(interests)).toBe(22)
+    expect(new Set(interests.map((i) => interestKindOf(i)))).toEqual(
       new Set(Object.values(INTEREST_TYPE)),
     )
     expect(new Set(interests.map((i) => i.context))).toEqual(
@@ -416,11 +512,14 @@ describe('demo customer interest dataset (TechSpace Bandung)', () => {
     }
 
     const productById = new Map(storeProducts.map((p) => [p.id, p]))
-    expect(filterCustomerInterests(interests, { channel: 'WhatsApp', productById })).toHaveLength(9)
+    // Filtering keeps aggregated logical records to one row each, so channel
+    // filters return their segment counts; click totals are asserted via
+    // countByChannel/sumInterestClicks above.
+    expect(filterCustomerInterests(interests, { channel: 'WhatsApp', productById })).toHaveLength(7)
     expect(
       filterCustomerInterests(interests, { channel: 'Tokopedia', productById }),
-    ).toHaveLength(6)
-    expect(filterCustomerInterests(interests, { channel: 'Shopee', productById })).toHaveLength(7)
+    ).toHaveLength(5)
+    expect(filterCustomerInterests(interests, { channel: 'Shopee', productById })).toHaveLength(5)
     expect(
       filterCustomerInterests(interests, {
         channel: 'Tokopedia',
@@ -430,7 +529,7 @@ describe('demo customer interest dataset (TechSpace Bandung)', () => {
     ).toHaveLength(0)
     expect(
       filterCustomerInterests(interests, { activity: INTEREST_TYPE.MARKETPLACE_CLICK, productById }),
-    ).toHaveLength(13)
+    ).toHaveLength(10)
   })
 
   it('produces meaningful per-customer histories with multiple dates', async () => {
@@ -447,8 +546,8 @@ describe('demo customer interest dataset (TechSpace Bandung)', () => {
     ).toBe(true)
     expect(andiHistory.some((i) => i.channel === 'WhatsApp')).toBe(true)
     expect(andiHistory.some((i) => i.channel === 'Tokopedia')).toBe(true)
-    expect(andiHistory.some((i) => i.context === INTEREST_CONTEXT.STORE_LANDING)).toBe(true)
-    expect(andiHistory.some((i) => i.context === INTEREST_CONTEXT.PRODUCT_DETAIL)).toBe(true)
+    expect(andiHistory.some((i) => i.context === INTEREST_CONTEXT.STORE)).toBe(true)
+    expect(andiHistory.some((i) => i.context === INTEREST_CONTEXT.PRODUCT)).toBe(true)
 
     const dateSet = new Set(andiHistory.map((i) => i.date.slice(0, 10)))
     expect(dateSet.size).toBeGreaterThan(2)
@@ -468,7 +567,7 @@ describe('active store resolution & single-source customer interest flow (audit)
 
     const storeId = getCurrentStoreId()
     const interests = await listCustomerInterests(storeId)
-    expect(interests).toHaveLength(22)
+    expect(interests).toHaveLength(17)
 
     const store = await getStore(storeId)
     const storeDefinitions = listStoreChannelDefinitions(store, CMS_CHANNELS)

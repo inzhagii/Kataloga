@@ -11,7 +11,7 @@
  */
 
 import { CHANNEL_SOURCE } from '../constants/enums'
-import { CUSTOM_CHANNEL_ID_PREFIX, CUSTOM_CHANNEL_LOGO } from '../data/mock/channels'
+import { CMS_CHANNELS, CUSTOM_CHANNEL_ID_PREFIX, CUSTOM_CHANNEL_LOGO } from '../data/mock/channels'
 
 /**
  * True when `ref` is a persisted channel reference ({ channelId, url }).
@@ -65,7 +65,7 @@ export function resolveChannelDefinition(channelId, definitions) {
  * @param {import('../data/models.js').ChannelDefinition[]} cmsChannels
  * @returns {import('../data/models.js').ChannelDefinition[]}
  */
-export function listStoreChannelDefinitions(store, cmsChannels = []) {
+export function listStoreChannelDefinitions(store, cmsChannels = CMS_CHANNELS) {
   const custom = Array.isArray(store?.customChannels) ? store.customChannels : []
   return [...cmsChannels, ...custom]
 }
@@ -173,6 +173,22 @@ export function buildCustomChannelDefinition({
     logo: CUSTOM_CHANNEL_LOGO,
     custom: true,
   }
+}
+
+/**
+ * Rewrite the owning `storeId` of every custom channel definition to the
+ * provided (current) store identity. A Store ID rename must propagate to the
+ * store's custom channel definitions so they never keep the stale previous
+ * Store ID. Pure: returns new objects and never mutates the input.
+ * @param {import('../data/models.js').CustomChannelDefinition[]} [definitions]
+ * @param {string} storeId
+ * @returns {import('../data/models.js').CustomChannelDefinition[]}
+ */
+export function ownerStoreIdForChannels(definitions = [], storeId) {
+  return (Array.isArray(definitions) ? definitions : []).map((definition) => ({
+    ...definition,
+    storeId,
+  }))
 }
 
 /**
