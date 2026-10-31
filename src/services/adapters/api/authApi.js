@@ -1,7 +1,7 @@
 /**
  * Auth API adapter.
  *
- * Implements the PROPOSED auth contract (docs/API-CONTRACT.md). Only used
+ * Implements the finalized auth contract (docs/API-CONTRACT.md). Only used
  * when VITE_DATA_SOURCE=api. The backend owns credentials/authorization;
  * the frontend never stores passwords or fakes tokens.
  */
@@ -21,34 +21,57 @@ export function login(payload) {
       email_or_phone: payload.emailOrPhone,
       password: payload.password,
     },
+    unwrapEnvelope: true,
   }).then(toUser)
 }
 
 /**
- * PROPOSED. Backend must return `requires_verification` for email signups; the
- * account is not authenticated until the email OTP is verified.
- * @param {{ emailOrPhone: string, password: string, name?: string }} payload
- * @returns {Promise<{ user: import('../../../data/models.js').User, requiresVerification: boolean, identifier: string|null, channel: string|null }>}
+ * Backend returns `requires_verification` for email signups; the account is not
+ * authenticated until the email OTP is verified. Phone signups start a session.
+ * @param {{
+ *   email?: string|null,
+ *   phone?: string|null,
+ *   password: string,
+ *   passwordConfirmation: string,
+ *   name?: string|null,
+ * }} payload
+ * @returns {Promise<{
+ *   user: import('../../../data/models.js').User,
+ *   requiresVerification: boolean,
+ *   identifier: string|null,
+ *   channel: string|null,
+ *   expiresAt?: string|null,
+ *   cooldownSeconds?: number|null,
+ * }>}
  */
 export function register(payload) {
+  const email = typeof payload.email === 'string' ? payload.email.trim() : ''
+  const phone = typeof payload.phone === 'string' ? payload.phone.trim() : ''
+  const name = typeof payload.name === 'string' ? payload.name.trim() : ''
+
   return request({
     method: 'POST',
     path: '/auth/register',
     body: {
-      email_or_phone: payload.emailOrPhone,
+      email: email || undefined,
+      phone: phone || undefined,
       password: payload.password,
-      name: payload.name || undefined,
+      password_confirmation: payload.passwordConfirmation,
+      name: name || undefined,
     },
+    unwrapEnvelope: true,
   }).then((dto) => ({
-    user: toUser(dto.user ?? dto),
+    user: toUser(dto.user),
     requiresVerification: Boolean(dto.requires_verification),
     identifier: dto.identifier ?? null,
     channel: dto.channel ?? null,
+    expiresAt: dto.expires_at ?? null,
+    cooldownSeconds: dto.cooldown_seconds ?? null,
   }))
 }
 
 /**
- * PROPOSED. Verify the email-registration OTP; returns the activated account.
+ * Verify the email-registration OTP. The backend does not start a session.
  * @param {{ identifier: string, code: string }} payload
  * @returns {Promise<import('../../../data/models.js').User>}
  */
@@ -57,11 +80,12 @@ export function verifyRegistration({ identifier, code }) {
     method: 'POST',
     path: '/auth/email/verify',
     body: { email: identifier, code },
+    unwrapEnvelope: true,
   }).then(toUser)
 }
 
 /**
- * PROPOSED. Resend the email-registration OTP (backend owns the cooldown).
+ * Resend the email-registration OTP (backend owns the cooldown).
  * @param {{ identifier: string }} payload
  */
 export function resendRegistrationOtp({ identifier }) {
@@ -69,6 +93,7 @@ export function resendRegistrationOtp({ identifier }) {
     method: 'POST',
     path: '/auth/email/verify/resend',
     body: { email: identifier },
+    unwrapEnvelope: true,
   }).then((dto) => ({
     expiresAt: dto?.expires_at ?? null,
     cooldownSeconds: dto?.cooldown_seconds ?? null,
@@ -173,9 +198,12 @@ export function verifyRecoveryEmail({ email, code }) {
  * @returns {Promise<import('../../../data/models.js').User | null>}
  */
 export function getCurrentUser() {
-  return request({ path: '/auth/me', notFoundAsNull: true }).then((dto) =>
-    dto ? toUser(dto) : null,
-  )
+  return request({
+    path: '/auth/me',
+    notFoundAsNull: true,
+    unauthorizedAsNull: true,
+    unwrapEnvelope: true,
+  }).then((dto) => (dto ? toUser(dto) : null))
 }
 
 /**
@@ -200,5 +228,9 @@ export function updateCurrentUser(userId, payload) {
  * @returns {Promise<void>}
  */
 export function logout() {
-  return request({ method: 'POST', path: '/auth/logout' }).then(() => undefined)
+  return request({
+    method: 'POST',
+    path: '/auth/logout',
+    unwrapEnvelope: true,
+  }).then(() => undefined)
 }

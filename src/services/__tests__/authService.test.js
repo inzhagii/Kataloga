@@ -89,7 +89,7 @@ describe('register', () => {
     expect(result.user.email).toBe('new@kataloga.test')
     expect(result.user.emailVerified).toBe(false)
     expect(result.user.hasStore).toBe(false)
-    expect(result.user.name).toBe('-')
+    expect(result.user.name).toBeNull()
   })
 
   it('activates a phone account immediately, normalizing the number', async () => {

@@ -6,7 +6,6 @@ import OtpInput from '../../../components/ui/OtpInput'
 import { useAuth } from '../../../hooks/useAuth'
 import useCountdown from '../../../hooks/useCountdown'
 import useReturnPath from '../../../hooks/useReturnPath'
-import { isAuthError } from '../../../services/authErrors'
 import { DEMO_OTP_CODE, isDemoAuthMode } from '../../../services/authService'
 import { OTP_LENGTH } from '../../../constants/auth'
 import {
@@ -17,8 +16,9 @@ import {
 
 /**
  * Email OTP verification for new email-based accounts.
- * A code issued at registration must be confirmed before the account is
- * authenticated. The email address travels in navigation state (persisted in
+ * A code issued at registration must be confirmed before the account can log
+ * in. In API mode verification does not start a session, so a fresh login
+ * follows. The email address travels in navigation state (persisted in
  * sessionStorage for reloads); the code is never stored or placed in the URL.
  */
 function VerifyEmailPage() {
@@ -64,7 +64,7 @@ function VerifyEmailPage() {
       start(result?.expiresAt ?? Date.now() + 60000)
       setInfo('Kode verifikasi baru telah dikirim ke email Anda.')
     } catch (err) {
-      if (isAuthError(err) && err.retryAfterSeconds) {
+      if (err?.retryAfterSeconds) {
         start(Date.now() + err.retryAfterSeconds * 1000)
       }
       setError(err instanceof Error ? err.message : 'Tidak dapat mengirim kode. Coba lagi.')
@@ -88,6 +88,11 @@ function VerifyEmailPage() {
       await verifyEmail({ identifier, code })
       clearAuthFlowIdentifier()
       reset()
+
+      if (!isDemoAuthMode()) {
+        const query = returnPath ? `?returnUrl=${encodeURIComponent(returnPath)}` : ''
+        navigate(`/login${query}`, { replace: true, state: { verified: true } })
+      }
     } catch (err) {
       setSubmitting(false)
       setError(err instanceof Error ? err.message : 'Verifikasi gagal. Silakan coba lagi.')

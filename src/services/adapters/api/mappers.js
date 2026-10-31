@@ -17,7 +17,7 @@ export function toUser(dto) {
     id: dto.id,
     email: dto.email ?? null,
     phone: dto.phone ?? null,
-    name: dto.name ?? '-',
+    name: dto.name ?? null,
     hasStore: Boolean(dto.has_store),
     storeId: dto.store_id ?? null,
     avatarUrl: dto.avatar_url ?? undefined,

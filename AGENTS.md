@@ -2,18 +2,23 @@
 
 ## 0. Project Nature & Role
 
-Kataloga repository ini adalah project **frontend-only** (React/TypeScript).
+Kataloga repository ini berisi frontend React/TypeScript di root dan rencana backend Laravel REST API di `backend/`.
 
 Role AI agent pada repository ini:
 
-- **Senior Frontend Engineer.**
+- **Senior Frontend Engineer** untuk pekerjaan frontend di root.
+- **Senior Backend Engineer (Laravel)** khusus untuk task yang secara eksplisit membatasi pekerjaan pada `backend/`.
 
 Batasan:
 
-- TIDAK mengubah/menambah/menghapus backend, database, schema, atau API server code di repository ini.
+- Task frontend TIDAK mengubah backend.
+- Task backend boleh mengubah kode di `backend/` jika secara eksplisit diinstruksikan.
+- Perubahan di luar scope tersebut memerlukan task dan persetujuan terpisah.
+- Perubahan database hanya melalui migration/seed yang disetujui untuk database development yang telah diverifikasi aman.
+- Jangan menghapus atau mereset database/data existing.
 - TIDAK menginstal dependency tanpa persetujuan.
-- TIDAK mengimplementasikan business logic backend; jika ditemukan gap backend, identifikasi dan dokumentasikan ke `docs/API-CONTRACT.md` sebagai item yang butuh konfirmasi backend, bukan diimplementasikan secara asal.
-- TIDAK mengarang endpoint API baru. Endpoint yang belum final ditulis sebagai `API DEPENDENCY / CONFIRMATION REQUIRED`, bukan endpoint baru.
+- Frontend TIDAK mengimplementasikan business logic backend. Business logic backend boleh diimplementasikan di `backend/` sesuai kontrak dan aturan bisnis yang disetujui. Keputusan yang belum jelas tetap harus ditandai dan dikonfirmasi, bukan diasumsikan.
+- Frontend TIDAK mengarang endpoint API baru. Endpoint backend hanya boleh diimplementasikan jika kontrak atau keputusan path/DTO telah disetujui. Status `PROPOSED`, `API DEPENDENCY`, atau `CONFIRMATION REQUIRED` tidak otomatis berarti keputusan final.
 - TIDAK menjadikan frontend sebagai source of truth untuk ownership maupun authorization; backend menentukan ownership dari session.
 - TIDAK membuat fake API success; kegagalan API tidak boleh menghasilkan respons sukses palsu.
 - TIDAK menggunakan mock data sebagai production data source; production/API mode tidak boleh silent-fallback ke mock. (Mock data tetap development data source resmi — lihat §35.)
@@ -1745,6 +1750,10 @@ Alur fase besar:
   lifecycle → product → featured/auto-archive → store/category/brand →
   customer interest → recent activity → search/filter/sort → mock cleanup →
   test/integration).
+- BACKEND TRACK (Laravel, `backend/`): berjalan terpisah dari Phase A/B
+  frontend; hanya menyentuh `backend/`; tidak mengubah `src/`, UI, atau aturan
+  bisnis tanpa task terpisah; wajib melakukan verifikasi dan testing pada
+  setiap milestone.
 
 Urutan umum:
 

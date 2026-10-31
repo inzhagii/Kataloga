@@ -219,7 +219,7 @@ Item kunci yang diselaraskan pada Phase A (hasil akhir tercatat di docs):
   **mempertahankan** featured; reactivation tidak mengubahnya; archiving menghapus.
 - Product Publish Validation: name, slug, photos (1–5, satu utama), category,
   description, condition, price (0 valid); Product Details / attributes opsional.
-- Category dua level; default category dikelola Kataloga (tidak dapat diedit/dihapus).
+- Category dua level; product mereferensikan Category via category_id; default category (store_id null) dikelola Kataloga (tidak dapat diedit/dihapus); delete diblokir jika direferensikan Product termasuk ARCHIVED atau masih punya child.
 - Brand: global/default (`store_id` null, seeded, read-only) + custom store-scoped.
 - Customer Interest: agregasi (context `STORE|PRODUCT`, `channel`, `total_clicks`);
   tidak ada `channel_type`; destination dibuka hanya setelah POST berhasil.
@@ -329,7 +329,7 @@ Twelve phase, urutan dipertahankan:
 5. **B-5 Featured + Auto Archive** — featured (max 10, SOLD_OUT mempertahankan,
    archive menghapus); Auto Archive `Never(null)/1/7/30/90/180/360` di halaman
    Archive; katalog berisi PUBLISHED + SOLD_OUT dalam jendela auto archive.
-6. **B-6 Store + Categories + Brands** — store DTO (`whatsapp` +
+6. **B-6 Store + Categories + Brands (Milestone 4 scope: Category & Brand Foundation only; Product CRUD in later milestone)** — store DTO (`whatsapp` +
    `external_links`), Store ID cooldown/alias UI; category 2 level + default
    read-only; brand global + custom.
 7. **B-7 Customer Interest** — agregasi (`context STORE|PRODUCT`, `channel`),

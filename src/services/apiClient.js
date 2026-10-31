@@ -18,7 +18,7 @@
  */
 
 import { API_BASE_URL } from './apiConfig'
-import { createApiError } from './ApiError'
+import { ApiError, createApiError } from './ApiError'
 
 const MOCK_LATENCY = 300
 
@@ -187,10 +187,40 @@ async function parseBody(response) {
 }
 
 /**
+ * @param {Response} response
+ * @returns {number|null}
+ */
+function readRetryAfter(response) {
+  const raw = response?.headers?.get?.('Retry-After')
+  if (!raw) {
+    return null
+  }
+  const seconds = Number.parseInt(String(raw), 10)
+  return Number.isFinite(seconds) && seconds >= 0 ? seconds : null
+}
+
+/**
+ * Notify the registered session owner without letting cleanup failures mask the
+ * original request error.
+ */
+function notifyUnauthorized() {
+  if (!unauthorizedHandler) {
+    return
+  }
+  try {
+    unauthorizedHandler()
+  } catch {
+    // Never let a state-cleanup handler mask the original request error.
+  }
+}
+
+/**
  * Perform an HTTP request against the API base URL.
  *
- * The raw parsed body is returned, or `null` when `notFoundAsNull` is set
- * and the response is 404. All other failures throw ApiError.
+ * The parsed body is returned by default. `notFoundAsNull` maps a 404 to null,
+ * `unauthorizedAsNull` maps a 401 to null (guest `/auth/me` probing), and
+ * `unwrapEnvelope` returns the `data` member of the standard
+ * `{ data, message }` success envelope. All other failures throw ApiError.
  *
  * @param {{
  *   method?: 'GET'|'POST'|'PATCH'|'PUT'|'DELETE',
@@ -199,6 +229,8 @@ async function parseBody(response) {
  *   body?: unknown,
  *   headers?: Record<string, string>,
  *   notFoundAsNull?: boolean,
+ *   unauthorizedAsNull?: boolean,
+ *   unwrapEnvelope?: boolean,
  * }} options
  * @returns {Promise<any>}
  */
@@ -209,6 +241,8 @@ export async function request({
   body,
   headers,
   notFoundAsNull = false,
+  unauthorizedAsNull = false,
+  unwrapEnvelope = false,
 }) {
   const upperMethod = String(method).toUpperCase()
   const requestHeaders = { ...(headers || {}) }
@@ -240,14 +274,30 @@ export async function request({
     if (response.status === 404 && notFoundAsNull) {
       return null
     }
-    if ((response.status === 401 || response.status === 419) && unauthorizedHandler) {
-      try {
-        unauthorizedHandler()
-      } catch {
-        // Never let a state-cleanup handler mask the original request error.
-      }
+    if (response.status === 401 && unauthorizedAsNull) {
+      notifyUnauthorized()
+      return null
     }
-    throw createApiError({ status: response.status, data })
+    if (response.status === 401 || response.status === 419) {
+      notifyUnauthorized()
+    }
+    throw createApiError({
+      status: response.status,
+      data,
+      retryAfterSeconds: readRetryAfter(response),
+    })
+  }
+
+  if (unwrapEnvelope) {
+    if (
+      data &&
+      typeof data === 'object' &&
+      !Array.isArray(data) &&
+      Object.prototype.hasOwnProperty.call(data, 'data')
+    ) {
+      return data.data
+    }
+    throw new ApiError({ type: 'parse', status: response.status })
   }
 
   return data

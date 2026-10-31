@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AuthShell from '../components/AuthShell'
 import AuthAlert from '../../../components/ui/AuthAlert'
 import TextField from '../../../components/ui/TextField'
 import { useAuth } from '../../../hooks/useAuth'
 import useReturnPath from '../../../hooks/useReturnPath'
 import { isValidIdentifier } from '../../../services/authService'
-import { isAuthError, AUTH_ERROR_CODE } from '../../../services/authErrors'
+import { AUTH_ERROR_CODE } from '../../../services/authErrors'
 import { setAuthFlowIdentifier } from '../../../utils/authFlowStorage'
 
 function LoginPage() {
   const { user, authLoaded, login } = useAuth()
   const { returnPath, backHref, buildHref } = useReturnPath()
   const navigate = useNavigate()
+  const location = useLocation()
+  const justVerified = Boolean(location.state?.verified)
 
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -67,7 +69,7 @@ function LoginPage() {
       const loggedIn = await login({ emailOrPhone: trimmedIdentifier, password })
       navigate(destination(loggedIn), { replace: true })
     } catch (error) {
-      if (isAuthError(error) && error.code === AUTH_ERROR_CODE.EMAIL_UNVERIFIED) {
+      if (error?.code === AUTH_ERROR_CODE.EMAIL_UNVERIFIED) {
         setAuthFlowIdentifier(trimmedIdentifier)
         navigate('/verify-email', { state: { identifier: trimmedIdentifier } })
         return
@@ -93,6 +95,9 @@ function LoginPage() {
       subtitle="Masuk untuk melanjutkan ke akun Anda."
       backHref={backHref}
     >
+      {justVerified ? (
+        <AuthAlert tone="success">Email berhasil diverifikasi. Silakan masuk.</AuthAlert>
+      ) : null}
       {globalError ? <AuthAlert tone="error">{globalError}</AuthAlert> : null}
 
       <form className="space-y-5" noValidate onSubmit={handleSubmit}>

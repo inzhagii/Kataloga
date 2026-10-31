@@ -152,14 +152,22 @@ Auth capabilities the frontend expects:
 - **account activation / recovery flows** (phone-registered accounts require a
   verified recovery email before recovery / change-password)
 
-Exact endpoint paths may remain unconfirmed:
+Implemented Milestone 2 paths:
 
-`API DEPENDENCY / CONFIRMATION REQUIRED` — exact Sanctum auth/CSRF route paths,
-exact login/register/logout/me paths, register payload for email vs. phone
-variants, OTP vs. magic link for verification/recovery, and the shape of the
+- `POST /auth/login` — `{ email_or_phone, password }`
+- `POST /auth/register` — `{ email?, phone?, password, password_confirmation, name? }`;
+  exactly one of `email`/`phone`, both or neither `422`; `name` optional/nullable.
+- `POST /auth/email/verify` — `{ email, code }`
+- `POST /auth/email/verify/resend` — `{ email }`
+- `GET /auth/me` — `401` for guest
+- `POST /auth/logout`
+
+Still open: OTP vs. magic link for recovery flows and the shape of the
 short-lived proof authorizing password change.
 
-Do not invent paths.
+Do not invent paths. The frontend `authApi` still needs to be wired to the
+implemented envelope and separate `email`/`phone` register fields during the
+integration task.
 
 ---
 
@@ -212,7 +220,7 @@ Store profile fields (mapped to the reconciled wire DTO from
 | operating hours | `operating_hours` | Optional (see §5) |
 | auto archive | `auto_archive_days` | Optional (`null` = Never) (see §11) |
 | announcement | `announcement` | Optional — single object `{ title, message, is_enabled }` (see §4 note) |
-| external channels | `external_links` | Optional — channel references (frontend model `{ channelId, url }`; wire shape unconfirmed, see §13 and §19 #25) |
+| external channels | `external_links` | Optional — store-level channel references (frontend model `{ channelId, url }`; store wire shape unconfirmed, see §13 and §19 #25) |
 
 Notes:
 
@@ -260,14 +268,14 @@ Rules:
 
 - **Maximum depth = 2.** Level 1 = Kategori Utama (root); Level 2 = Sub Kategori
   (child). No deeper hierarchy on V1.
-- **Product has exactly one category** on V1 (product references a category by
-  name — same name-keyed convention as brand).
+- **Product has exactly one category** on V1 (product references a Category via `category_id`;
+  category name is obtained through the relationship).
 - **Default categories are platform-managed:** they cannot be renamed or deleted
   by sellers, and they are **not** seller-scoped.
 - **Custom categories can be created**, scoped to the seller's store.
 - **Custom subcategories may use a default root as a parent** (mix is allowed).
 - Kategori Utama with children cannot be deleted; categories still referenced by
-  products cannot be deleted (no cascade delete; blocked, e.g. 409).
+  products (including `ARCHIVED`) cannot be deleted (no cascade delete; blocked, e.g. 409).
 - **Root usage counts aggregate descendants:** e.g. Computer (5) with Laptop (3)
   and Desktop (2) = aggregate usage 5.
 - Sellers can create a level-1 category directly from the category form.
@@ -316,8 +324,8 @@ Custom:
 - store-scoped
 - seller-created
 - editable / deletable according to backend rules
-- **deletion must respect referenced products** — delete is blocked (409) while
-  any current-store product still references the brand; no cascade delete, no
+- **deletion must respect referenced products** — delete is blocked (409) if any
+  Product references the Brand (including `ARCHIVED`); no cascade delete, no
   silent detach.
 
 Default V1 master brands (**declared backend master-data expectation** — see
@@ -344,18 +352,15 @@ Important:
 
 - **Brand is independent from Category.** Do not create a backend
   Brand → Category relationship unless explicitly confirmed separately.
-- One product references **at most one brand**, by name
-  (`product.brand` joins by name, same convention as `product.category`).
-- Duplicate brand name within the same store is rejected.
+- One product references **at most one brand** via nullable `brand_id`
+  (brand name obtained through the relationship).
+- Names must be unique case-insensitively within the correct scope: global (`store_id = null`) or per Store for custom records.
 - Brand Management is a section inside `/seller/categories` (Kategori | Brand),
   not a separate seller route.
 - Sellers can create a brand directly from Add/Edit Product (same brand list).
-- Brand rename propagation to `product.brand` is backend behavior.
+- Renaming a Brand does not break Product relationships because references use IDs.
 
-`API DEPENDENCY / CONFIRMATION REQUIRED` — identifier contract
-**`brand_id` vs `brand name`** (frontend currently joins by name; the backend may
-use an id — see §19 #19), duplicate/rename propagation semantics, and deletion
-usage counting (whether ARCHIVED products count).
+Resolved: Products reference Brand via nullable `brand_id` (name obtained through the relationship). Duplicate names are rejected case-insensitively within scope; deletion is blocked when any Product references the Brand, including `ARCHIVED`.
 
 ---
 
@@ -366,15 +371,15 @@ Expected product fields:
 | Field | Notes |
 | --- | --- |
 | `name` | Required for publish |
-| `slug` | Canonical URL component; see Slugs below |
+| `slug` | Backend-generated from name; unique within store; immutable after create; see Slugs below |
 | `description` | **Required** for publish |
 | `category` | Exactly one; category name (see §6) |
 | `brand` | **Optional**; at most one; brand name |
 | `condition` | `NEW` or `SECOND` |
-| `price` | **DECIMAL**; **`price = 0` is valid** (free) |
+| `price` | **Decimal string** from backend; **`price = 0` is valid** (free); no `price_value` |
 | `photos` | Minimum 1, maximum 5; **exactly one main photo** |
 | `details` / `attributes` | Product Details (hybrid category-recommended + seller custom); **optional**, never all-required |
-| `external_links` | Channel references (frontend model `{ channelId, url }`; wire shape unconfirmed, see §13 / §19 #25); product-level links; not rendered on customer Product Detail |
+| `external_links` | Product wire shape `{ channel_id, url }`; references channel master; not rendered on customer Product Detail |
 | `status` | DRAFT / PUBLISHED / SOLD_OUT / ARCHIVED (see §9) |
 | `featured` | Boolean; Product Unggulan (see §10) |
 
@@ -382,7 +387,8 @@ Rules:
 
 - `description` required (publish validation).
 - `condition` = NEW or SECOND only.
-- `price` is DECIMAL; `0` is valid (gratis). No stock/quantity concept.
+- `price` is a decimal string; `0` is valid (gratis). No `price_value` and no
+  stock/quantity concept.
 - Minimum 1 photo, maximum 5, exactly one main photo.
 - **SKU is not part of the product contract.** No SKU field.
 - **Availability is not a separate product field.** SOLD_OUT is a lifecycle
@@ -394,7 +400,11 @@ Rules:
 
 Slug:
 
-- **Backend DTO should be the source of truth if the backend provides it.**
+- The backend generates `slug` from the product name.
+- It is unique within a store; collisions use suffixes (`sepatu`, `sepatu-2`,
+  `sepatu-3`, ...).
+- It is immutable after creation; editing the product name does not change it.
+- The frontend must not send or generate `slug`.
 - Product identity remains the numeric **product ID** (`productId`).
 - Public canonical URL:
 
@@ -407,9 +417,6 @@ Example:
 ```text
 /toko-komputer-jaya/product/20/laptop-asus-rog
 ```
-
-`API DEPENDENCY / CONFIRMATION REQUIRED` — whether slug is exposed on the
-product DTO by the backend (expected) or derived client-side (see §19 #18).
 
 ---
 
@@ -607,8 +614,8 @@ Storefront footer (finalized):
 ```
 
   per reference; channel definition (`id`, `name`, `logo` icon token) lives on
-  the master. The exact wire shape (channel_id-reference vs. embedded
-  `{name,url}`) is UNCONFIRMED — see §19 #25.
+  the master. Product external links are confirmed as `{ channel_id, url }`;
+  the store-level external-link wire shape remains unconfirmed — see §19 #25.
 
 - Channel master V1 (mock) contains **exactly** Shopee, Tokopedia, Lazada.
   Custom (seller-created, store-scoped) channels use an id prefix `CUSTOM:`
@@ -936,9 +943,9 @@ markers), and the reconciled frontend docs. **Do not invent answers.**
 
 | # | Dependency | Open question for the backend team | Source |
 | --- | --- | --- | --- |
-| 1 | Sanctum auth/CSRF route | Exact `GET /sanctum/csrf-cookie` path and route paths; CSRF bootstrap applicability; 419 vs 401 semantics | API-CONTRACT §3; BACKEND-DEP §7#1 |
-| 2 | Auth endpoint paths | Exact login/register/me/logout/password/recovery paths + request/response DTOs | API-CONTRACT §3; BACKEND-DEP §7#2 |
-| 3 | Public storefront endpoints | Exact `GET /stores/{storeId}...` paths; public listing/detail; slug in product DTO | API-CONTRACT §4/§5; BACKEND-DEP §7#3 |
+| 1 | Sanctum auth/CSRF route | **Resolved for Milestone 2:** `GET /sanctum/csrf-cookie`, header-based CSRF, `419` = session expired, `401` = guest/invalid session. Production cookie/domain settings remain deployment-specific. | API-CONTRACT §3; BACKEND-DEP §7#1 |
+| 2 | Auth endpoint paths | **Resolved for Milestone 2:** login/register/email-verify/resend/me/logout paths and DTOs; register uses separate `email`/`phone` (exactly one). Password/recovery paths remain open. | API-CONTRACT §3; BACKEND-DEP §7#2 |
+| 3 | Public storefront endpoints | **Slug resolved for Stage 3.1:** backend-generated, unique per store, immutable, and exposed on the product DTO. Still open: exact public listing/detail paths. | API-CONTRACT §4/§5; BACKEND-DEP §7#3 |
 | 4 | Customer Interest list endpoint | Path/pagination for aggregated interest; server-aggregated vs per-record rows | API-CONTRACT §7; BACKEND-DEP §7#4 |
 | 5 | Customer Interest aggregation response | Aggregation key; exact `channel` allowed values; `context` values STORE/PRODUCT; identity source (session vs body) | API-CONTRACT §7; BACKEND-DEP §7#5; §14 |
 | 6 | Activity endpoint | Exact `GET /activities` path + pagination; dashboard 4-item slice server- or client-side | API-CONTRACT §8; BACKEND-DEP §7#6 |
@@ -947,27 +954,27 @@ markers), and the reconciled frontend docs. **Do not invent answers.**
 | 9 | Province/city master data endpoints | Endpoints for province/city lists and per-store storage shape (`province`/`city`/`full_address`) | API-CONTRACT §4; BACKEND-DEP §7#8 |
 | 10 | Search/filter/sort/pagination query parameters | Exact query param names (search, category, brand, condition, sort, page) + sort enum values | API-CONTRACT §5; BACKEND-DEP §7#9; §16 |
 | 11 | Category/brand usage-count endpoints/fields | Are usage counts served by the backend; exact field; seller category/brand filters server- vs client-side | API-CONTRACT §6/§6.1; BACKEND-DEP §7#10 |
-| 12 | Seller product list status query | `?status=` enum values (`active`/`draft`/`sold_out`/`archived` or management set) | API-CONTRACT §5; BACKEND-DEP §7#11, PRODUCT-3/4 |
+| 12 | Seller product list status query | **Resolved for Stage 3.1:** no status returns all session-Store products; `active` = PUBLISHED; `archived` = ARCHIVED; any other value returns `422`; `draft`/`sold_out` are not supported query values. Seller management list mismatch remains open. | API-CONTRACT §5; BACKEND-DEP §7#11, PRODUCT-3/4 |
 | 13 | Lifecycle endpoint verbs | Dedicated endpoints (publish / sold-out / mark-available / archive / restore) vs generic status PATCH; SOLD_OUT→DRAFT endpoint | API-CONTRACT §5; BACKEND-DEP §7#11, PRODUCT-8/9; §9 |
 | 14 | Auto Archive DTO/transport | Field naming, `null` vs `0` vs flag; scheduler behavior; whether a deadline appears on the product DTO | API-CONTRACT §4/§5; BACKEND-DEP §7#12; §11 |
 | 15 | Announcement storage DTO | Confirm single `{ title, message, is_enabled }` wire shape | API-CONTRACT §4; BACKEND-DEP §7#13 |
 | 16 | Operating-hours DTO | Wire representation of structured operating hours (single string vs separate fields) | API-CONTRACT §10.1#9; BACKEND-DEP §7#14; §5 |
-| 17 | Account activation/recovery endpoints | Email vs phone activation variants; OTP vs magic link; short-lived proof shape for change-password; recovery-email endpoints | API-CONTRACT §3; BACKEND-DEP §7#15, AUTH/OTP/RECOVERY rows |
-| 18 | Product slug source | Expose slug on product DTO (expected) vs derive client-side | API-CONTRACT §5; BACKEND-DEP PRODUCT-13; §8 |
+| 17 | Account activation/recovery endpoints | **Resolved for registration:** email requires OTP, phone is active + session, both identifiers `422`. Still open: recovery-email flow, OTP vs magic link, and change-password proof shape. | API-CONTRACT §3; BACKEND-DEP §7#15, AUTH/OTP/RECOVERY rows |
+| 18 | Product slug source | **Resolved for Stage 3.1:** backend-generated from name, unique within store with numeric suffixes, immutable after creation, exposed on the product DTO; frontend does not send it. | API-CONTRACT §5; BACKEND-DEP PRODUCT-13; §8 |
 | 19 | Brand identifier | `brand_id` vs `brand name` for `product.brand`; rename propagation; delete usage counting incl. ARCHIVED | API-CONTRACT §6.1; BACKEND-DEP BRAND-1/2/3/4/5; §7 |
 | 20 | Activity date/time wire format | Raw timestamp vs pre-formatted `DD.MM.YYYY`; datetime format | API-CONTRACT §8; BACKEND-DEP ACTIVITY-4; §15 |
 | 21 | V1 master seed data (NEW — see discrepancy note) | Confirm the category seed (§6) and 12-brand seed (§7) are the authoritative V1 master data | This handoff §6/§7 |
 | 22 | Store CTA Options + Product CTA selection + external destinations (NEW) | `store.ctaOptions` DTO (`[{ type: 'BUY'|'BARGAIN'|'CUSTOM', label }]`, defaults BUY/BARGAIN, seller-added CUSTOM); `product.cta` selects exactly one option (`{ type, label }`, default BUY/"Beli"); whether CTA persisted store-level vs per-product; external destination presets + wire shape (separate field from CTA); `CUSTOM` label count/length/dedup + unused-CUSTOM deletion rules; `channel` value encoding for CUSTOM destinations in Customer Interest | PRODUCT §23/§30; BACKEND-DEP PRODUCT-18/19, INTEREST-7; API-CONTRACT §10.1(17) |
 | 23 | `/seller` entry gateway (NEW) | Confirm session/`GET /auth/me` payload exposes store presence so `/seller` can branch (guest→/login, no-store→/create-store, store→/dashboard); no new endpoint | PRODUCT §2; ROUTES §23/§30/§32; BACKEND-DEP GATEWAY-1; API-CONTRACT §10.1(18) |
 | 24 | Frontend-only UI (no API) — fullscreen "Lihat Full" + Store Landing floating action bar | No wire impact; noted to avoid inventing endpoints | API-CONTRACT §10.1(19); BACKEND-DEP §7#18 |
-| 25 | External channel master (NEW) | Whether the backend serves a channel master (CMS); wire shape for store `external_links` / product `external_links` (`channel_id` reference vs. embedded `{name,url}`); custom (store-scoped `CUSTOM:`) channel representation/storage; backend-side duplicate rejection; whether production CMS includes TikTok Shop / Blibli | HANDOFF §4/§8/§13; API-CONTRACT §4/§5/§10.1(17); BACKEND-DEP row 16; frontend mock = exactly Shopee/Tokopedia/Lazada |
+| 25 | External channel master (NEW) | **Product external links resolved for Stage 3.1:** `{ channel_id, url }`, references channel master, duplicate/invalid channels rejected. Still open: store-level `external_links` wire shape, whether the backend serves a channel master (CMS), custom (store-scoped `CUSTOM:`) channel representation/storage, and whether production CMS includes TikTok Shop / Blibli | HANDOFF §4/§8/§13; API-CONTRACT §4/§5/§10.1(17); BACKEND-DEP row 16; frontend mock = exactly Shopee/Tokopedia/Lazada |
 
 Additional dependency rows already in `docs/BACKEND-DEPENDENCIES.md` §7 and
 register (keep in view):
 
 - Store ID format/validation source of truth (regex) + alias storage/redirect/expiry semantics (§19 #3 overlap; store-level).
-- Register email vs phone payload variants and verification flag keys.
-- OTP rules enforcement (6 digits, 10-min expiry, max 5 attempts, 60-second resend cooldown) — backend is final authority.
+- Register email vs phone payload variants and verification flag keys (**resolved:** separate `email`/`phone`, exactly one, optional nullable name; email OTP vs phone session).
+- OTP rules enforcement (6 digits, 10-min expiry, max 5 attempts, 60-second resend cooldown, max 3 resends/15 min, login 5/min) — backend is final authority.
 - Account-without-store flow: authenticated account with no store reaches `/seller/account` (Profile) to set a verified recovery email; other `/seller/*` require a store.
 - Customer identity / no customer avatar on V1.
 - Self-store exclusion enforcement (backend expected).
@@ -995,8 +1002,8 @@ API ready for frontend integration.
 - [ ] External channel master confirmed (channel refs `{channelId,url}`; custom `CUSTOM:` store-scoped channels; empty-URL + duplicate rejection; §19 #25)
 
 **PRODUCT**
-- [ ] Slug returned/defined (or confirmation recorded that frontend derives it)
-- [ ] Price `0` accepted (DECIMAL)
+- [ ] Slug returned by backend (Stage 3.1: backend-generated, unique per store, immutable)
+- [ ] Price `0` accepted (decimal string; no `price_value`)
 - [ ] Photo rules enforced (1–5, exactly one main)
 - [ ] Lifecycle endpoints confirmed (dedicated vs status PATCH)
 - [ ] Featured behavior confirmed (max 10; PUBLISHED/SOLD_OUT eligible; SOLD_OUT keeps; ARCHIVED clears)

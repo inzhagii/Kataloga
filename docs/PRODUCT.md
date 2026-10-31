@@ -709,7 +709,7 @@ Gallery menyediakan mode fullscreen "Lihat Full" (lihat # 29 Product Detail).
 
 # 14. Product Category
 
-Product hanya memiliki satu category pada V1.
+Product hanya memiliki satu category pada V1. Product mereferensikan Category melalui category_id; nama Category diperoleh melalui relationship. Default/global category menggunakan store_id = null dan bersifat Kataloga-managed (read-only). Custom category scoped ke Store milik user yang terautentikasi; ADMIN tidak dapat membuat custom category sebagai pemilik Store. Renaming Category tidak memutus relasi karena referensi berbasis ID.
 
 Category mendukung maksimal dua level:
 
@@ -737,7 +737,7 @@ Setiap category memiliki "Lihat Produk" yang mengarah ke:
 
 Category product filtering menggunakan URL query sebagai source of truth.
 
-Category deletion tidak diperbolehkan jika masih digunakan oleh product.
+Category deletion is blocked if any Product references the Category, including Products with status `ARCHIVED`. Product display obtains the Category name through the relationship.
 
 Kategori Utama yang masih memiliki child tidak boleh dihapus.
 
@@ -761,7 +761,7 @@ Computer = aggregate usage 5 product.
 
 # 15. Brand
 
-Brand bersifat optional.
+Brand bersifat optional. Product mereferensikan Brand melalui rand_id (nullable); nama Brand diperoleh melalui relationship. Default/global brand menggunakan store_id = null dan bersifat Kataloga-managed (read-only). Custom brand scoped ke Store milik user yang terautentikasi; ADMIN tidak dapat membuat custom brand sebagai pemilik Store. Renaming Brand tidak memutus relasi karena referensi berbasis ID.
 
 Brand terpisah dari Category.
 
@@ -791,9 +791,9 @@ Tidak perlu decorative icon per brand.
 
 ### Hapus Brand
 
-Brand dengan 0 product usage boleh dihapus.
+Brand can be deleted only if no Product references it.
 
-Brand yang masih digunakan oleh product tidak boleh dihapus.
+Brand deletion is blocked if any Product references the Brand, including Products with status `ARCHIVED`. Product display obtains the Brand name through the relationship.
 
 Tidak ada cascade delete ke product.
 

@@ -1,9 +1,9 @@
 /**
  * Auth service.
  *
- * Mock implementation used until the Authentication API lands (Phase 14).
- * When VITE_DATA_SOURCE=api every function delegates to the proposed API
- * adapter. The backend always owns credentials, sessions, OTP expiry/attempts
+ * Mock implementation used by default for development. When
+ * VITE_DATA_SOURCE=api every function delegates to the API adapter. The
+ * backend always owns credentials, sessions, OTP expiry/attempts
  * and cooldown; the mock enforces the same LOCKED rules locally so the UX can
  * be validated before the API exists.
  *
@@ -354,7 +354,14 @@ export async function login(payload) {
  */
 export async function register(payload) {
   if (isApiMode()) {
-    return authApi.register(payload)
+    const identifier = String(payload.emailOrPhone ?? '').trim()
+    return authApi.register({
+      email: isValidEmail(identifier) ? identifier.toLowerCase() : null,
+      phone: isValidPhone(identifier) ? normalizePhone(identifier) : null,
+      password: payload.password,
+      passwordConfirmation: payload.repassword,
+      name: payload.name,
+    })
   }
 
   const identifier = String(payload.emailOrPhone ?? '').trim()
@@ -379,7 +386,8 @@ export async function register(payload) {
     id: nextUserId(),
     email,
     phone,
-    name: typeof payload.name === 'string' && payload.name.trim() ? payload.name.trim() : '-',
+    name:
+      typeof payload.name === 'string' && payload.name.trim() ? payload.name.trim() : null,
     hasStore: false,
     storeId: null,
     avatarUrl: undefined,
@@ -607,7 +615,7 @@ export function updateCurrentUser(userId, payload) {
 
   const updated = {
     ...users[index],
-    name: payload.name === undefined ? users[index].name : payload.name.trim() || '-',
+    name: payload.name === undefined ? users[index].name : payload.name.trim() || null,
     email: email === undefined ? users[index].email : email,
     phone: rawPhone === undefined ? users[index].phone : rawPhone ? normalizePhone(rawPhone) : '',
     avatarUrl: payload.avatarUrl === undefined ? users[index].avatarUrl : payload.avatarUrl,

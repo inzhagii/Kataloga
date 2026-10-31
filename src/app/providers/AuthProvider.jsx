@@ -71,12 +71,16 @@ export function AuthProvider({ children }) {
   }
 
   /**
-   * Verify an email-registration code and sign the account in.
+   * Verify an email-registration code. The backend does not establish a session
+   * on verification, so API mode requires a fresh login; the mock keeps its
+   * demo auto-login behavior.
    * @param {{ identifier: string, code: string }} payload
    */
   async function verifyEmail({ identifier, code }) {
     const verified = await authService.verifyRegistration({ identifier, code })
-    applyUser(verified)
+    if (authService.isDemoAuthMode()) {
+      applyUser(verified)
+    }
     return verified
   }
 

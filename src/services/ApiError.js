@@ -32,12 +32,22 @@ const STATUS_TO_TYPE = {
 }
 
 export class ApiError extends Error {
-  constructor({ type, message, status = null, code = null, cause }) {
+  constructor({
+    type,
+    message,
+    status = null,
+    code = null,
+    errors = null,
+    retryAfterSeconds = null,
+    cause,
+  }) {
     super(message || FALLBACK_MESSAGES[type] || FALLBACK_MESSAGES.server)
     this.name = 'ApiError'
     this.type = type
     this.status = status
     this.code = code
+    this.errors = errors
+    this.retryAfterSeconds = retryAfterSeconds
     if (cause) {
       this.cause = cause
     }
@@ -64,10 +74,16 @@ function extractMessage(data) {
 
 /**
  * Build an ApiError from a failed HTTP response or a network-level failure.
- * @param {{ status?: number|undefined, data?: unknown, cause?: Error }} source
+ * Validation `errors` are preserved so forms can map field-level messages.
+ * @param {{
+ *   status?: number|undefined,
+ *   data?: unknown,
+ *   retryAfterSeconds?: number|null,
+ *   cause?: Error,
+ * }} source
  * @returns {ApiError}
  */
-export function createApiError({ status, data, cause }) {
+export function createApiError({ status, data, retryAfterSeconds = null, cause }) {
   if (cause) {
     return new ApiError({ type: 'network', message: FALLBACK_MESSAGES.network, cause })
   }
@@ -76,6 +92,11 @@ export function createApiError({ status, data, cause }) {
     type,
     status,
     code: data && typeof data.code === 'string' ? data.code : null,
+    errors:
+      data && typeof data === 'object' && data.errors && typeof data.errors === 'object'
+        ? data.errors
+        : null,
+    retryAfterSeconds,
     message: extractMessage(data) || undefined,
   })
 }
